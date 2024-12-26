@@ -12,7 +12,7 @@ export const MobileMenu = ({ onClose }) => {
 
   return (
     <nav className="flex flex-col h-full bg-background border-l">
-      <SheetHeader className="h-14 px-4 border-b flex items-center">
+      <SheetHeader className="h-14 px-4 flex items-center">
         <SheetTitle asChild>
           <div className="flex items-center justify-end w-full h-full">
             <SheetClose asChild>
