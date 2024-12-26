@@ -15,7 +15,7 @@ export const ActionButton = ({
       variant={variant}
       onClick={onClick}
       className={`
-        flex-1 inline-flex items-center justify-center gap-2
+        flex items-center justify-center gap-2
         ${
           destructive
             ? "hover:bg-destructive/10 hover:text-destructive"
@@ -24,12 +24,16 @@ export const ActionButton = ({
         ${className}
       `}
     >
+      <span className="hidden md:inline-block">{label}</span>
       <Icon className="h-4 w-4" />
-      <span className="hidden md:block">{label}</span>
     </Button>
   );
 };
 
 export const ActionButtonGroup = ({ children, className = "" }) => {
-  return <div className={`flex gap-2 ${className}`}>{children}</div>;
+  return (
+    <div className={`flex flex-wrap md:justify-end gap-2 ${className}`}>
+      {children}
+    </div>
+  );
 };
