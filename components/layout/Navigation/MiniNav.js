@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLinks } from "./NavLinks";
 import { cn } from "@/lib/utils";
+import { UserProfile } from "./UserProfile";
 
 export const MiniNav = ({ onExpand }) => {
   return (
@@ -18,7 +19,10 @@ export const MiniNav = ({ onExpand }) => {
           <ChevronLeft className="h-4 w-4 rotate-180" />
         </Button>
       </div>
-      <NavLinks collapsed />
+      <div className="flex-1">
+        <NavLinks collapsed />
+      </div>
+      <UserProfile collapsed />
     </nav>
   );
 };

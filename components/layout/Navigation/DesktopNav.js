@@ -7,6 +7,7 @@ import { NavLinks } from "./NavLinks";
 import { Logo } from "../Logo";
 import { cn } from "@/lib/utils";
 import { MiniNav } from "./MiniNav";
+import { UserProfile } from "./UserProfile";
 
 export const DesktopNav = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -28,7 +29,10 @@ export const DesktopNav = () => {
           <ChevronLeft className="h-4 w-4" />
         </Button>
       </div>
-      <NavLinks />
+      <div className="flex-1">
+        <NavLinks />
+      </div>
+      <UserProfile />
     </nav>
   );
 };
