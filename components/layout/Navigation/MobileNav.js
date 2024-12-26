@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetOverlay,
+} from "@/components/ui/sheet";
 import { MobileMenu } from "./MobileMenu";
 
 export const MobileNav = () => {
@@ -17,7 +22,12 @@ export const MobileNav = () => {
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <MobileMenu onClose={() => setOpen(false)} />
+      <SheetContent
+        side="left"
+        className="fixed inset-y-0 left-0 h-full w-[300px] sm:w-[350px] p-0 z-[100]"
+      >
+        <MobileMenu onClose={() => setOpen(false)} />
+      </SheetContent>
     </Sheet>
   );
 };
