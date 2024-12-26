@@ -107,8 +107,6 @@ BYRAW is crafted by **Visdak**, a company dedicated to building tools that simpl
 
 Take control of your day and your goals with BYRAW. It’s time to think better, work smarter, and achieve more.
 
-**BYRAW by Visdak: Build Yourself, Reflect, Act, Work.**
-
 **[Get Started Now]**
 
 # visdak-byraw-v1
