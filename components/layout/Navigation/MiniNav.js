@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export const MiniNav = ({ onExpand }) => {
   return (
-    <nav className="hidden md:flex flex-col border-r bg-background w-[70px] transition-all duration-300">
+    <nav className="hidden md:flex flex-col border-r bg-background w-[70px] fixed top-0 bottom-0 left-0 transition-all duration-300">
       <div className="h-14 px-2 flex items-center justify-center">
         <Button
           variant="ghost"

@@ -16,7 +16,7 @@ export const DesktopNav = () => {
   }
 
   return (
-    <nav className="hidden md:flex flex-col border-r bg-background w-[240px]">
+    <nav className="hidden md:flex flex-col border-r bg-background w-[240px] fixed top-0 bottom-0 left-0">
       <div className="h-14 px-4 flex items-center justify-between">
         <Logo />
         <Button
