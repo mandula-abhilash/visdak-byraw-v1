@@ -15,7 +15,7 @@ export const ActionButton = ({
       variant={variant}
       onClick={onClick}
       className={`
-        flex-1 justify-center items-center
+        flex-1 inline-flex items-center justify-center gap-2
         ${
           destructive
             ? "hover:bg-destructive/10 hover:text-destructive"
@@ -24,8 +24,8 @@ export const ActionButton = ({
         ${className}
       `}
     >
-      <Icon className="h-4 w-4 mr-2" />
-      <span>{label}</span>
+      <Icon className="h-4 w-4" />
+      <span className="hidden md:block">{label}</span>
     </Button>
   );
 };
