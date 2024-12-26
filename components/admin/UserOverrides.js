@@ -31,7 +31,7 @@ export const UserOverrides = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="space-y-4">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="space-y-2">
             <CardTitle className="text-xl font-semibold break-words">
               User Configuration Overrides
@@ -40,9 +40,11 @@ export const UserOverrides = () => {
               Manage user-specific configuration overrides
             </CardDescription>
           </div>
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search users..." className="pl-8" />
+          <div className="w-full md:w-72 shrink-0">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search users..." className="pl-8" />
+            </div>
           </div>
         </div>
       </CardHeader>
