@@ -6,11 +6,11 @@ import * as Icons from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export const NavLinks = ({ collapsed, className = "", onClick }) => {
+export const NavLinks = ({ collapsed, onClick }) => {
   const pathname = usePathname();
 
   return (
-    <div className={cn("flex flex-col gap-1 p-2", className)}>
+    <div className="flex flex-col gap-1 p-2">
       {NAV_ITEMS.map((item) => {
         const Icon = Icons[item.icon];
         const isActive = pathname === item.path;

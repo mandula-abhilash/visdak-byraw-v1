@@ -1,47 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { NavLinks } from "./NavLinks";
-import { Logo } from "../Logo";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { MobileMenu } from "./MobileMenu";
 
 export const MobileNav = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="mr-2">
+        <Button variant="ghost" size="icon" className="h-9 w-9 md:hidden">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
+          <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] p-0" forceMount>
-        <nav className="flex flex-col h-full bg-background">
-          <div className="h-14 p-4 border-b flex items-center justify-between">
-            <Logo />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <NavLinks onClick={() => setIsOpen(false)} />
-          </div>
-          <div className="p-4 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Theme</span>
-              <ThemeToggle />
-            </div>
-          </div>
-        </nav>
-      </SheetContent>
+      <MobileMenu onClose={() => setOpen(false)} />
     </Sheet>
   );
 };
