@@ -45,7 +45,10 @@ export const OrganizationManagement = () => {
               Manage organizations and their role configurations
             </CardDescription>
           </div>
-          <Button className="bg-primary hover:bg-primary/90 flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center gap-2"
+          >
             <Plus className="h-4 w-4" />
             Add Organization
           </Button>
