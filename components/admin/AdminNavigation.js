@@ -16,7 +16,7 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
       {/* Mobile Dropdown */}
       <div className="block md:hidden w-full relative">
         <Select value={activeTab} onValueChange={onTabChange}>
-          <SelectTrigger className="w-full py-3">
+          <SelectTrigger className="w-full py-2">
             <SelectValue>
               {activeTab === "roles" && "Global Roles"}
               {activeTab === "organizations" && "Organizations"}
@@ -24,20 +24,20 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
             </SelectValue>
           </SelectTrigger>
           <SelectContent
-            className="bg-secondary/50 backdrop-blur-sm w-[var(--radix-select-trigger-width)] absolute left-0"
+            className="bg-secondary/50 backdrop-blur-md w-[var(--radix-select-trigger-width)] absolute left-0 cursor-pointer"
             position="popper"
             sideOffset={4}
           >
-            <SelectItem value="roles" className="py-3 focus:bg-primary/10">
+            <SelectItem value="roles" className="py-2 focus:bg-primary/10">
               Global Roles
             </SelectItem>
             <SelectItem
               value="organizations"
-              className="py-3 focus:bg-primary/10"
+              className="py-2 focus:bg-primary/10"
             >
               Organizations
             </SelectItem>
-            <SelectItem value="overrides" className="py-3 focus:bg-primary/10">
+            <SelectItem value="overrides" className="py-2 focus:bg-primary/10">
               User Overrides
             </SelectItem>
           </SelectContent>

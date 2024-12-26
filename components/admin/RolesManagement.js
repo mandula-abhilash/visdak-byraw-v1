@@ -10,13 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export const RolesManagement = () => {
   const [roles] = useState([
@@ -47,18 +40,6 @@ export const RolesManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="block md:hidden mb-4">
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select view" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="roles">Global Roles</SelectItem>
-              <SelectItem value="organizations">Organizations</SelectItem>
-              <SelectItem value="overrides">User Overrides</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
         <div className="grid gap-4">
           {roles.map((role) => (
             <Card key={role.id} className="overflow-hidden">
