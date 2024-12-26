@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export const MobileMenu = ({ onClose }) => {
   return (
-    <nav className="relative flex flex-col h-full bg-background border-r">
+    <nav className="flex flex-col h-full bg-background border-l">
       <SheetHeader className="h-14 px-4 border-b flex items-center">
         <SheetTitle asChild>
           <div className="flex items-center justify-between w-full">
