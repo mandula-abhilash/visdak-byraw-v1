@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { NavLinks } from "./NavLinks";
+import { UserProfile } from "./UserProfile";
 
 export const MobileMenu = ({ onClose }) => {
   return (
@@ -23,6 +24,7 @@ export const MobileMenu = ({ onClose }) => {
       <div className="flex-1 overflow-auto">
         <NavLinks onClick={onClose} />
       </div>
+      <UserProfile />
     </nav>
   );
 };
