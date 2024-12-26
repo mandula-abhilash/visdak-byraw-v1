@@ -40,7 +40,7 @@ See [`sample_configuration.json`](./sample_configuration.json) for an example of
 
 ## Advanced Notes
 
-See [`ADVANCED_NOTES.md`](./ADVANCED_NOTES.md) for:
+See [`advanced_notes.md`](./advanced_notes.md) for:
 
 - Merging multiple roles’ configurations (global + org-level + user override).
 - Handling team-based data access.
