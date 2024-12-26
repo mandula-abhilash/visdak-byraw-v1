@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import * as Icons from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
-export const NavLinks = ({ collapsed, onClick }) => {
+export const NavLinks = ({ collapsed, onClick, showThemeToggle }) => {
   const pathname = usePathname();
 
   return (
@@ -36,6 +37,15 @@ export const NavLinks = ({ collapsed, onClick }) => {
           </Link>
         );
       })}
+      {showThemeToggle && (
+        <div className="flex items-center gap-3 px-3 py-2">
+          <Icons.Sun className="h-5 w-5 shrink-0" />
+          <span className="text-sm font-medium">Theme</span>
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
