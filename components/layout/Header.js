@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Brain } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { Brain } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export const Header = ({ children }) => {
   return (
@@ -10,7 +10,7 @@ export const Header = ({ children }) => {
         <div className="flex items-center gap-2 md:hidden">
           {children}
           <Brain className="h-6 w-6" />
-          <span className="font-bold">Virtual Assistant</span>
+          <span className="font-bold">BYRAW</span>
         </div>
         <div className="flex flex-1 items-center justify-end">
           <ThemeToggle />

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Menu, X, Brain } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { NavLinks } from './NavLinks';
+import { useState } from "react";
+import { Menu, X, Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { NavLinks } from "./NavLinks";
 
 export const MobileNav = () => {
   const [open, setOpen] = useState(false);
@@ -22,7 +22,7 @@ export const MobileNav = () => {
           <div className="p-4 border-b flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6" />
-              <span className="font-bold">Virtual Assistant</span>
+              <span className="font-bold">BYRAW</span>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
               <X className="h-4 w-4" />
