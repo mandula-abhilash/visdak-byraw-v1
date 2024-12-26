@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Brain, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLinks } from "./NavLinks";
+import { Logo } from "../Logo";
 import { cn } from "@/lib/utils";
 
 export const DesktopNav = () => {
@@ -16,13 +17,8 @@ export const DesktopNav = () => {
         collapsed ? "w-[70px]" : "w-[240px]"
       )}
     >
-      <div className="p-4 border-b flex items-center justify-between">
-        {!collapsed && (
-          <div className="flex items-center gap-2">
-            <Brain className="h-6 w-6" />
-            <span className="font-bold">BYRAW</span>
-          </div>
-        )}
+      <div className="h-14 p-4 flex items-center justify-between">
+        {!collapsed && <Logo />}
         <Button
           variant="ghost"
           size="icon"
