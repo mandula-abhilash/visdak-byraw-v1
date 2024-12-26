@@ -45,8 +45,8 @@ export const OrganizationManagement = () => {
               Manage organizations and their role configurations
             </CardDescription>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button className="bg-primary hover:bg-primary/90 flex items-center gap-2">
+            <Plus className="h-4 w-4" />
             Add Organization
           </Button>
         </div>
@@ -55,10 +55,10 @@ export const OrganizationManagement = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Organization Name</TableHead>
-              <TableHead>Roles</TableHead>
-              <TableHead>Members</TableHead>
-              <TableHead className="w-[120px]">Actions</TableHead>
+              <TableHead className="text-left">Organization Name</TableHead>
+              <TableHead className="text-left">Roles</TableHead>
+              <TableHead className="text-left">Members</TableHead>
+              <TableHead className="text-left w-[120px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,13 +69,25 @@ export const OrganizationManagement = () => {
                 <TableCell>{org.memberCount}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="hover:bg-primary/10"
+                    >
                       <Settings className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="hover:bg-primary/10"
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="hover:bg-destructive/10 hover:text-destructive"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

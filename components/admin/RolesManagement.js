@@ -36,8 +36,8 @@ export const RolesManagement = () => {
               Manage system-wide roles and their configurations
             </CardDescription>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button className="bg-primary hover:bg-primary/90 flex items-center gap-2">
+            <Plus className="h-4 w-4" />
             Add Role
           </Button>
         </div>
@@ -46,9 +46,9 @@ export const RolesManagement = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Role Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead className="text-left">Role Name</TableHead>
+              <TableHead className="text-left">Description</TableHead>
+              <TableHead className="text-left w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,10 +58,18 @@ export const RolesManagement = () => {
                 <TableCell>{role.description}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="hover:bg-primary/10"
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="hover:bg-destructive/10 hover:text-destructive"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

@@ -8,10 +8,25 @@ import { UserOverrides } from "./UserOverrides";
 export const AdminDashboard = () => {
   return (
     <Tabs defaultValue="roles" className="space-y-4">
-      <TabsList>
-        <TabsTrigger value="roles">Global Roles</TabsTrigger>
-        <TabsTrigger value="organizations">Organizations</TabsTrigger>
-        <TabsTrigger value="overrides">User Overrides</TabsTrigger>
+      <TabsList className="bg-transparent justify-start p-1 flex gap-2">
+        <TabsTrigger
+          value="roles"
+          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          Global Roles
+        </TabsTrigger>
+        <TabsTrigger
+          value="organizations"
+          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          Organizations
+        </TabsTrigger>
+        <TabsTrigger
+          value="overrides"
+          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          User Overrides
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="roles" className="space-y-4">
