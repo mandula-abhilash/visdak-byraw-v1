@@ -63,7 +63,7 @@ export const OrganizationManagement = () => {
                       <div>{org.memberCount} Members</div>
                     </div>
                   </div>
-                  <ActionButtonGroup className="grid grid-cols-3">
+                  <ActionButtonGroup>
                     <ActionButton
                       icon={Settings}
                       label="Settings"

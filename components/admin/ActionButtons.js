@@ -15,6 +15,7 @@ export const ActionButton = ({
       variant={variant}
       onClick={onClick}
       className={`
+        w-full md:w-auto
         flex items-center justify-center gap-2
         ${
           destructive
@@ -32,7 +33,14 @@ export const ActionButton = ({
 
 export const ActionButtonGroup = ({ children, className = "" }) => {
   return (
-    <div className={`flex flex-wrap md:justify-end gap-2 ${className}`}>
+    <div
+      className={`
+      grid grid-cols-[repeat(auto-fit,minmax(0,1fr))] md:grid-cols-none
+      md:flex md:justify-end
+      gap-2
+      ${className}
+    `}
+    >
       {children}
     </div>
   );
