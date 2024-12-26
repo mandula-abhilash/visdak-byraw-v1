@@ -1,12 +1,12 @@
-import { Providers } from './providers';
-import { Inter } from 'next/font/google';
-import './globals.css';
+import { Providers } from "./providers";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'Virtual Assistant',
-  description: 'Your personal virtual assistant and second brain',
+  title: "BYRAW",
+  description: "Build Yourself - Reflect, Act, Work",
 };
 
 export default function RootLayout({ children }) {
