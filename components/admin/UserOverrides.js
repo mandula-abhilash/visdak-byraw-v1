@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Search, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ActionButton } from "./ActionButton";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -13,13 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const UserOverrides = () => {
   const [users] = useState([
@@ -40,53 +38,70 @@ export const UserOverrides = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>User Configuration Overrides</CardTitle>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <CardTitle className="text-xl font-semibold break-words">
+              User Configuration Overrides
+            </CardTitle>
             <CardDescription>
               Manage user-specific configuration overrides
             </CardDescription>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search users..." className="pl-8" />
-            </div>
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search users..." className="pl-8" />
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-left">User</TableHead>
-              <TableHead className="text-left">Email</TableHead>
-              <TableHead className="text-left">Active Overrides</TableHead>
-              <TableHead className="text-left w-[120px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.overrides.join(", ")}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <ActionButton
-                      icon={Pencil}
-                      className="hover:bg-primary/10"
-                    />
-                    <ActionButton
-                      icon={Trash2}
-                      className="hover:bg-destructive/10 hover:text-destructive"
-                    />
+        <div className="block md:hidden mb-4">
+          <Select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select view" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="roles">Global Roles</SelectItem>
+              <SelectItem value="organizations">Organizations</SelectItem>
+              <SelectItem value="overrides">User Overrides</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-4">
+          {users.map((user) => (
+            <Card key={user.id} className="overflow-hidden">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-lg">{user.name}</h3>
+                    <div className="flex flex-col sm:flex-row gap-2 text-sm text-muted-foreground">
+                      <div>{user.email}</div>
+                      <div className="hidden sm:block">•</div>
+                      <div>{user.overrides.join(", ")}</div>
+                    </div>
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1 hover:bg-primary/10"
+                      onClick={() => {}}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1 hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => {}}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

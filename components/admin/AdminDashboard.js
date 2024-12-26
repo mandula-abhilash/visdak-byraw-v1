@@ -1,43 +1,28 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { RolesManagement } from "./RolesManagement";
 import { OrganizationManagement } from "./OrganizationManagement";
 import { UserOverrides } from "./UserOverrides";
+import { AdminNavigation } from "./AdminNavigation";
 
 export const AdminDashboard = () => {
-  return (
-    <Tabs defaultValue="roles" className="space-y-4">
-      <TabsList className="bg-transparent justify-start p-1 flex gap-2">
-        <TabsTrigger
-          value="roles"
-          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
-        >
-          Global Roles
-        </TabsTrigger>
-        <TabsTrigger
-          value="organizations"
-          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
-        >
-          Organizations
-        </TabsTrigger>
-        <TabsTrigger
-          value="overrides"
-          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
-        >
-          User Overrides
-        </TabsTrigger>
-      </TabsList>
+  const [activeTab, setActiveTab] = useState("roles");
 
-      <TabsContent value="roles" className="space-y-4">
+  return (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <AdminNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <TabsContent value="roles" className="space-y-4 mt-4">
         <RolesManagement />
       </TabsContent>
 
-      <TabsContent value="organizations" className="space-y-4">
+      <TabsContent value="organizations" className="space-y-4 mt-4">
         <OrganizationManagement />
       </TabsContent>
 
-      <TabsContent value="overrides" className="space-y-4">
+      <TabsContent value="overrides" className="space-y-4 mt-4">
         <UserOverrides />
       </TabsContent>
     </Tabs>
