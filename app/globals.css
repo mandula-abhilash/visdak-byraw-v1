@@ -86,3 +86,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Sheet component overrides */
+  .radix-sheet-overlay {
+    @apply z-40 !important;
+  }
+
+  .radix-sheet-content {
+    @apply z-50 !important;
+  }
+
+  /* Custom animations */
+  @keyframes reveal-menu {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes hide-menu {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .animate-reveal-menu {
+    animation: reveal-menu 0.3s ease-out forwards;
+  }
+
+  .animate-hide-menu {
+    animation: hide-menu 0.2s ease-in forwards;
+  }
+}
