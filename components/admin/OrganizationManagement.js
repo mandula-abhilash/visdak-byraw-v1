@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ActionButton } from "./ActionButton";
 import {
   Card,
   CardContent,
@@ -61,7 +62,7 @@ export const OrganizationManagement = () => {
               <TableHead className="text-left">Organization Name</TableHead>
               <TableHead className="text-left">Roles</TableHead>
               <TableHead className="text-left">Members</TableHead>
-              <TableHead className="text-left w-[120px]">Actions</TableHead>
+              <TableHead className="text-left w-[140px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -72,27 +73,18 @@ export const OrganizationManagement = () => {
                 <TableCell>{org.memberCount}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
+                    <ActionButton
+                      icon={Settings}
                       className="hover:bg-primary/10"
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
+                    />
+                    <ActionButton
+                      icon={Pencil}
                       className="hover:bg-primary/10"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
+                    />
+                    <ActionButton
+                      icon={Trash2}
                       className="hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    />
                   </div>
                 </TableCell>
               </TableRow>

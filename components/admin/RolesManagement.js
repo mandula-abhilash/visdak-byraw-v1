@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ActionButton } from "./ActionButton";
 import {
   Card,
   CardContent,
@@ -51,7 +52,7 @@ export const RolesManagement = () => {
             <TableRow>
               <TableHead className="text-left">Role Name</TableHead>
               <TableHead className="text-left">Description</TableHead>
-              <TableHead className="text-left w-[100px]">Actions</TableHead>
+              <TableHead className="text-left w-[120px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -61,20 +62,14 @@ export const RolesManagement = () => {
                 <TableCell>{role.description}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
+                    <ActionButton
+                      icon={Pencil}
                       className="hover:bg-primary/10"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
+                    />
+                    <ActionButton
+                      icon={Trash2}
                       className="hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    />
                   </div>
                 </TableCell>
               </TableRow>
