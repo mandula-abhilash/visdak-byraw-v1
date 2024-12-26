@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLinks } from "./NavLinks";
 import { Logo } from "../Logo";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 export const DesktopNav = () => {
@@ -33,7 +34,17 @@ export const DesktopNav = () => {
           />
         </Button>
       </div>
-      <NavLinks collapsed={collapsed} />
+      <div className="flex-1">
+        <NavLinks collapsed={collapsed} />
+      </div>
+      <div className="p-4 border-t">
+        {!collapsed && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Theme</span>
+            <ThemeToggle />
+          </div>
+        )}
+      </div>
     </nav>
   );
 };

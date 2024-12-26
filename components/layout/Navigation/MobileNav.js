@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NavLinks } from "./NavLinks";
 import { Logo } from "../Logo";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export const MobileNav = () => {
   const [open, setOpen] = useState(false);
@@ -26,7 +27,15 @@ export const MobileNav = () => {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <NavLinks onClick={() => setOpen(false)} />
+          <div className="flex-1">
+            <NavLinks onClick={() => setOpen(false)} />
+          </div>
+          <div className="p-4 border-t">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Theme</span>
+              <ThemeToggle />
+            </div>
+          </div>
         </nav>
       </SheetContent>
     </Sheet>

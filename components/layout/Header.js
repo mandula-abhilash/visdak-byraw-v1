@@ -1,7 +1,6 @@
 "use client";
 
 import { Logo } from "./Logo";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export const Header = ({ children }) => {
   return (
@@ -11,7 +10,6 @@ export const Header = ({ children }) => {
           <Logo />
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <div className="md:hidden">{children}</div>
         </div>
       </div>
