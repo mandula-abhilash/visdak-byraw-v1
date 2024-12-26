@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ActionButton, ActionButtonGroup } from "./ActionButtons";
 
 export const UserOverrides = () => {
   const [users] = useState([
@@ -62,24 +63,19 @@ export const UserOverrides = () => {
                       <div>{user.overrides.join(", ")}</div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 hover:bg-primary/10"
+                  <ActionButtonGroup>
+                    <ActionButton
+                      icon={Pencil}
+                      label="Edit"
                       onClick={() => {}}
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 hover:bg-destructive/10 hover:text-destructive"
+                    />
+                    <ActionButton
+                      icon={Trash2}
+                      label="Delete"
+                      destructive
                       onClick={() => {}}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  </div>
+                    />
+                  </ActionButtonGroup>
                 </div>
               </CardContent>
             </Card>

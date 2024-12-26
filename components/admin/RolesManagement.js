@@ -11,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { ActionButton, ActionButtonGroup } from "./ActionButtons";
+
 export const RolesManagement = () => {
   const [roles] = useState([
     { id: 1, name: "Freelancer", description: "Independent contractor role" },
@@ -32,7 +34,7 @@ export const RolesManagement = () => {
           </div>
           <Button
             variant="outline"
-            className="w-full md:w-auto shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center gap-2"
+            className="w-full md:w-auto shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center justify-center gap-2"
           >
             <Plus className="h-4 w-4" />
             Add Role
@@ -51,24 +53,19 @@ export const RolesManagement = () => {
                       {role.description}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 hover:bg-primary/10"
+                  <ActionButtonGroup>
+                    <ActionButton
+                      icon={Pencil}
+                      label="Edit"
                       onClick={() => {}}
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 hover:bg-destructive/10 hover:text-destructive"
+                    />
+                    <ActionButton
+                      icon={Trash2}
+                      label="Delete"
+                      destructive
                       onClick={() => {}}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  </div>
+                    />
+                  </ActionButtonGroup>
                 </div>
               </CardContent>
             </Card>
