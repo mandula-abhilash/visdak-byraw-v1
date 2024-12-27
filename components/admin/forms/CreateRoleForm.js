@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -35,6 +35,7 @@ const formSchema = z.object({
 
 export const CreateRoleForm = ({ onSubmit, onCancel }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -42,14 +43,26 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
       name: "",
       description: "",
     },
-    mode: "onChange", // Enable real-time validation
+    mode: "all",
   });
 
-  const { formState } = form;
-  const isValid = formState.isValid;
+  const name = form.watch("name");
+  const description = form.watch("description");
 
-  console.log(isValid);
+  useEffect(() => {
+    const isValid =
+      name?.trim() &&
+      description?.trim() &&
+      !form.formState.errors.name &&
+      !form.formState.errors.description;
+    setIsFormValid(isValid);
+  }, [name, description, form.formState.errors]);
+
   const handleSubmit = async (data) => {
+    if (!isFormValid || isSubmitting) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await onSubmit(data);
@@ -104,19 +117,15 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
         />
 
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
+          <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
           <Button
             type="submit"
-            disabled={isSubmitting || !isValid}
-            className={`text-primary-foreground ${
-              !isValid ? "opacity-50 cursor-not-allowed" : ""
+            className={`${
+              !isFormValid || isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
           >
             {isSubmitting ? "Creating..." : "Create Global Role"}
