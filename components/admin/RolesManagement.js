@@ -48,7 +48,7 @@ export const RolesManagement = () => {
               onClick={() => setShowCreateDialog(true)}
             >
               <Plus className="h-4 w-4" />
-              Add Role
+              Add Global Role
             </Button>
           </div>
         </CardHeader>

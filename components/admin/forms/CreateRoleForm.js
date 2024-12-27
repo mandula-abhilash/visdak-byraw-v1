@@ -19,8 +19,8 @@ import {
 const formSchema = z.object({
   name: z
     .string()
-    .min(1, "Role name is required")
-    .max(50, "Role name cannot exceed 50 characters"),
+    .min(1, "Global role name is required")
+    .max(50, "Global role name cannot exceed 50 characters"),
   description: z.string().optional(),
 });
 
@@ -55,9 +55,9 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Role Name</FormLabel>
+              <FormLabel>Global Role Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter role name" {...field} />
+                <Input placeholder="Enter global role name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,7 +72,7 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter role description (optional)"
+                  placeholder="Enter global role description (optional)"
                   className="resize-none"
                   {...field}
                 />
@@ -91,8 +91,12 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Role"}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="text-primary-foreground"
+          >
+            {isSubmitting ? "Creating..." : "Create Global Role"}
           </Button>
         </div>
       </form>

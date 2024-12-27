@@ -14,7 +14,7 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSubmit }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Role</DialogTitle>
+          <DialogTitle>Create New Global Role</DialogTitle>
           <DialogDescription>
             Add a new global role to the system. Role names must be unique.
           </DialogDescription>
