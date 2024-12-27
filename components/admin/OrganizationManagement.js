@@ -50,11 +50,11 @@ export const OrganizationManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="divide-y">
+        <div className="md:divide-y md:divide-border">
           {organizations.map((org) => (
             <div
               key={org.id}
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4 first:pt-0 last:pb-0"
+              className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-6 lg:py-4 first:pt-0 last:pb-0"
             >
               <div>
                 <h3 className="font-medium text-lg">{org.name}</h3>
