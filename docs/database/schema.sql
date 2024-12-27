@@ -85,15 +85,34 @@ CREATE TABLE organizations (
 
 ---------------------------------------
 -- ORGANIZATION ROLES
--- (e.g. Owner, Manager, Contributor)
 ---------------------------------------
-CREATE TABLE organization_roles (
-    id             SERIAL       PRIMARY KEY,
-    name           VARCHAR(50)  NOT NULL,
-    description    TEXT,
-    created_at     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-    updated_at     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+
+-- Create the Enum Type
+CREATE TYPE organization_role_enum AS ENUM (
+    'Owner',       -- Full control over the organization
+    'Manager',     -- Can manage day-to-day activities but not sensitive settings
+    'Contributor', -- Can work on tasks/projects but with limited permissions
+    'Viewer',      -- Read-only access to organizational data
+    'Admin',       -- Administrative access; a higher-level manager
+    'Member'       -- General membership without special privileges
 );
+
+CREATE TABLE organization_roles (
+    id             SERIAL              PRIMARY KEY,          -- Unique role ID
+    name           organization_role_enum NOT NULL,          -- Use the enum type for role name
+    description    TEXT,                                     -- Optional description for the role
+    created_at     TIMESTAMP          DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP          DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO organization_roles (name, description)
+VALUES 
+    ('Owner', 'Full control over the organization'),
+    ('Manager', 'Can manage day-to-day activities but not sensitive settings'),
+    ('Contributor', 'Can work on tasks/projects with limited permissions'),
+    ('Viewer', 'Read-only access to organizational data'),
+    ('Admin', 'Administrative access; a higher-level manager'),
+    ('Member', 'General participant in the organization');
 
 ---------------------------------------
 -- ORGANIZATION_ROLE_CONFIGURATIONS
