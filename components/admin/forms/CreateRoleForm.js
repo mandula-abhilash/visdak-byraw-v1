@@ -35,7 +35,6 @@ const formSchema = z.object({
 
 export const CreateRoleForm = ({ onSubmit, onCancel }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -43,20 +42,15 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
       name: "",
       description: "",
     },
-    mode: "all",
+    mode: "onChange",
   });
 
-  const name = form.watch("name");
-  const description = form.watch("description");
+  const { formState, watch } = form;
+  const { isValid } = formState;
+  const name = watch("name");
+  const description = watch("description");
 
-  useEffect(() => {
-    const isValid =
-      name?.trim() &&
-      description?.trim() &&
-      !form.formState.errors.name &&
-      !form.formState.errors.description;
-    setIsFormValid(isValid);
-  }, [name, description, form.formState.errors]);
+  const isFormValid = isValid && name?.trim() && description?.trim();
 
   const handleSubmit = async (data) => {
     if (!isFormValid || isSubmitting) {
