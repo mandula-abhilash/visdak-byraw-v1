@@ -23,7 +23,7 @@ export const RolesManagement = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div className="space-y-2">
             <CardTitle className="text-xl font-semibold break-words">
               Global Roles
@@ -34,7 +34,7 @@ export const RolesManagement = () => {
           </div>
           <Button
             variant="outline"
-            className="w-full md:w-auto shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center justify-center gap-2"
+            className="w-full lg:w-auto shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center justify-center gap-2"
           >
             <Plus className="h-4 w-4" />
             Add Role
@@ -46,7 +46,7 @@ export const RolesManagement = () => {
           {roles.map((role) => (
             <div
               key={role.id}
-              className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 first:pt-0 last:pb-0"
+              className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4 first:pt-0 last:pb-0"
             >
               <div>
                 <h3 className="font-medium text-lg">{role.name}</h3>

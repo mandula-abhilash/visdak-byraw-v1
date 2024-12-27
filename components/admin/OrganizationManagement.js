@@ -31,7 +31,7 @@ export const OrganizationManagement = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div className="space-y-2">
             <CardTitle className="text-xl font-semibold break-words">
               Organizations
@@ -42,7 +42,7 @@ export const OrganizationManagement = () => {
           </div>
           <Button
             variant="outline"
-            className="w-full md:w-auto shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center justify-center gap-2"
+            className="w-full lg:w-auto shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center justify-center gap-2"
           >
             <Plus className="h-4 w-4" />
             Add Organization
@@ -54,13 +54,13 @@ export const OrganizationManagement = () => {
           {organizations.map((org) => (
             <div
               key={org.id}
-              className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 first:pt-0 last:pb-0"
+              className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4 first:pt-0 last:pb-0"
             >
               <div>
                 <h3 className="font-medium text-lg">{org.name}</h3>
-                <div className="flex flex-col sm:flex-row gap-2 text-sm text-muted-foreground mt-1">
+                <div className="flex flex-col lg:flex-row gap-2 text-sm text-muted-foreground mt-1">
                   <div>Roles: {org.roles.join(", ")}</div>
-                  <div className="hidden sm:block">•</div>
+                  <div className="hidden lg:block">•</div>
                   <div>{org.memberCount} Members</div>
                 </div>
               </div>
