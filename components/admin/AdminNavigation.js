@@ -19,6 +19,7 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
           <SelectTrigger className="w-full py-2">
             <SelectValue>
               {activeTab === "roles" && "Global Roles"}
+              {activeTab === "configurations" && "Role Configurations"}
               {activeTab === "organizations" && "Organizations"}
               {activeTab === "overrides" && "User Overrides"}
             </SelectValue>
@@ -30,6 +31,12 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
           >
             <SelectItem value="roles" className="py-2 focus:bg-primary/10">
               Global Roles
+            </SelectItem>
+            <SelectItem
+              value="configurations"
+              className="py-2 focus:bg-primary/10"
+            >
+              Role Configurations
             </SelectItem>
             <SelectItem
               value="organizations"
@@ -51,6 +58,12 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
           className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
           Global Roles
+        </TabsTrigger>
+        <TabsTrigger
+          value="configurations"
+          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          Role Configurations
         </TabsTrigger>
         <TabsTrigger
           value="organizations"

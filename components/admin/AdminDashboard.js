@@ -5,6 +5,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { RolesManagement } from "./RolesManagement";
 import { OrganizationManagement } from "./OrganizationManagement";
 import { UserOverrides } from "./UserOverrides";
+import { GlobalConfigManagement } from "./GlobalConfigManagement";
 import { AdminNavigation } from "./AdminNavigation";
 
 export const AdminDashboard = () => {
@@ -16,6 +17,10 @@ export const AdminDashboard = () => {
 
       <TabsContent value="roles" className="space-y-4 mt-4">
         <RolesManagement />
+      </TabsContent>
+
+      <TabsContent value="configurations" className="space-y-4 mt-4">
+        <GlobalConfigManagement />
       </TabsContent>
 
       <TabsContent value="organizations" className="space-y-4 mt-4">
