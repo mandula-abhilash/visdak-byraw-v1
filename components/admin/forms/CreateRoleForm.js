@@ -19,9 +19,18 @@ import {
 const formSchema = z.object({
   name: z
     .string()
+    .trim()
     .min(1, "Global role name is required")
-    .max(50, "Global role name cannot exceed 50 characters"),
-  description: z.string().optional(),
+    .max(50, "Global role name cannot exceed 50 characters")
+    .regex(
+      /^[a-zA-Z\s]+$/,
+      "Global role name can only contain letters and spaces"
+    ),
+  description: z
+    .string()
+    .trim()
+    .min(1, "Description is required")
+    .max(200, "Description cannot exceed 200 characters"),
 });
 
 export const CreateRoleForm = ({ onSubmit, onCancel }) => {
@@ -33,15 +42,20 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
       name: "",
       description: "",
     },
+    mode: "onChange", // Enable real-time validation
   });
 
+  const { formState } = form;
+  const isValid = formState.isValid;
+
+  console.log(isValid);
   const handleSubmit = async (data) => {
     try {
       setIsSubmitting(true);
       await onSubmit(data);
       form.reset();
     } catch (error) {
-      console.error("Failed to create role:", error);
+      console.error("Failed to create global role:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -57,7 +71,14 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
             <FormItem>
               <FormLabel>Global Role Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter global role name" {...field} />
+                <Input
+                  placeholder="Enter global role name"
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,7 +93,7 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter global role description (optional)"
+                  placeholder="Enter global role description"
                   className="resize-none"
                   {...field}
                 />
@@ -93,8 +114,10 @@ export const CreateRoleForm = ({ onSubmit, onCancel }) => {
           </Button>
           <Button
             type="submit"
-            disabled={isSubmitting}
-            className="text-primary-foreground"
+            disabled={isSubmitting || !isValid}
+            className={`text-primary-foreground ${
+              !isValid ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             {isSubmitting ? "Creating..." : "Create Global Role"}
           </Button>
