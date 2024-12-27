@@ -32,16 +32,13 @@ export const ActionButton = ({
 };
 
 export const ActionButtonGroup = ({ children, className = "" }) => {
+  const buttonArray = Array.isArray(children) ? children : [children];
+
   return (
-    <div
-      className={`
-      grid grid-cols-[repeat(auto-fit,minmax(0,1fr))] md:grid-cols-none
-      md:flex md:justify-end
-      gap-2
-      ${className}
-    `}
-    >
-      {children}
+    <div className={`${className}`}>
+      <div className="grid grid-cols-2 gap-2 md:flex md:flex-row md:gap-2">
+        {buttonArray}
+      </div>
     </div>
   );
 };
