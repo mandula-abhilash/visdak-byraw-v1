@@ -7,22 +7,27 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { CreateOrganizationForm } from "../forms/CreateOrganizationForm";
+import { AddOrganizationMemberForm } from "../forms/AddOrganizationMemberForm";
 
-export const CreateOrganizationDialog = ({ open, onOpenChange, onSubmit }) => {
+export const AddOrganizationMemberDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  organizationId,
+}) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Organization</DialogTitle>
+          <DialogTitle>Add Organization Member</DialogTitle>
           <DialogDescription>
-            Create a new organization. After creation, you can add members and
-            assign roles.
+            Add a new member to the organization and assign them a role.
           </DialogDescription>
         </DialogHeader>
-        <CreateOrganizationForm
+        <AddOrganizationMemberForm
           onSubmit={onSubmit}
           onCancel={() => onOpenChange(false)}
+          organizationId={organizationId}
         />
       </DialogContent>
     </Dialog>

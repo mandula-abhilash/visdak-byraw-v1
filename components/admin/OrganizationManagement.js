@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Settings } from "lucide-react";
+import { Plus, Pencil, Trash2, Settings, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,37 +12,47 @@ import {
 } from "@/components/ui/card";
 import { ActionButton, ActionButtonGroup } from "./ActionButtons";
 import { CreateOrganizationDialog } from "./dialogs/CreateOrganizationDialog";
+import { AddOrganizationMemberDialog } from "./dialogs/AddOrganizationMemberDialog";
 
 export const OrganizationManagement = () => {
   const [organizations, setOrganizations] = useState([
     {
       id: 1,
       name: "Freelance Team Alpha",
-      roles: ["Owner", "Manager", "Member"],
-      memberCount: 5,
+      memberCount: 0,
     },
     {
       id: 2,
       name: "Business Solutions",
-      roles: ["Admin", "Editor", "Viewer"],
-      memberCount: 8,
+      memberCount: 0,
     },
   ]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAddMemberDialog, setShowAddMemberDialog] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState(null);
 
   const handleCreateOrganization = async (data) => {
-    // Here you would typically make an API call to create the organization
-    // For now, we'll just add it to the local state
     setOrganizations((prev) => [
       ...prev,
       {
         id: prev.length + 1,
         name: data.name,
-        roles: ["Owner"],
-        memberCount: 1,
+        memberCount: 0,
       },
     ]);
     setShowCreateDialog(false);
+  };
+
+  const handleAddMember = async (data) => {
+    // Here you would make an API call to add the member
+    setOrganizations((prev) =>
+      prev.map((org) =>
+        org.id === data.organizationId
+          ? { ...org, memberCount: org.memberCount + 1 }
+          : org
+      )
+    );
+    setShowAddMemberDialog(false);
   };
 
   return (
@@ -55,7 +65,7 @@ export const OrganizationManagement = () => {
                 Organizations
               </CardTitle>
               <CardDescription>
-                Manage organizations and their role configurations
+                Manage organizations and their members
               </CardDescription>
             </div>
             <Button
@@ -78,12 +88,18 @@ export const OrganizationManagement = () => {
                 <div>
                   <h3 className="font-medium text-lg">{org.name}</h3>
                   <div className="flex flex-col lg:flex-row gap-2 text-sm text-muted-foreground mt-1">
-                    <div>Roles: {org.roles.join(", ")}</div>
-                    <div className="hidden lg:block">•</div>
                     <div>{org.memberCount} Members</div>
                   </div>
                 </div>
                 <ActionButtonGroup>
+                  <ActionButton
+                    icon={UserPlus}
+                    label="Add Member"
+                    onClick={() => {
+                      setSelectedOrgId(org.id);
+                      setShowAddMemberDialog(true);
+                    }}
+                  />
                   <ActionButton
                     icon={Settings}
                     label="Settings"
@@ -107,6 +123,13 @@ export const OrganizationManagement = () => {
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onSubmit={handleCreateOrganization}
+      />
+
+      <AddOrganizationMemberDialog
+        open={showAddMemberDialog}
+        onOpenChange={setShowAddMemberDialog}
+        onSubmit={handleAddMember}
+        organizationId={selectedOrgId}
       />
     </>
   );
