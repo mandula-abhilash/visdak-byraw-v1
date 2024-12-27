@@ -12,7 +12,7 @@ export const JsonEditor = ({ value, onChange, placeholder }) => {
       value={value}
       onChange={handleChange}
       placeholder={placeholder}
-      className="font-mono text-sm h-[400px]"
+      className="font-mono text-sm h-[300px] resize-none"
       spellCheck={false}
     />
   );

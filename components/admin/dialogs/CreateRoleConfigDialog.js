@@ -12,8 +12,8 @@ import { CreateRoleConfigForm } from "../forms/CreateRoleConfigForm";
 export const CreateRoleConfigDialog = ({ open, onOpenChange, onSubmit }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="space-y-1.5">
           <DialogTitle>Create Role Configuration</DialogTitle>
           <DialogDescription>
             Define the configuration for a global role, including sidebar items,
