@@ -29,7 +29,8 @@
     ".next/types/**/*.ts",
     "components/ui/dialog.js",
     "components/ui/select.jsx",
-    "components/ui/form.jsx"
+    "components/ui/form.jsx",
+    "components/ui/button.jsx"
   ],
   "exclude": ["node_modules"]
 }
