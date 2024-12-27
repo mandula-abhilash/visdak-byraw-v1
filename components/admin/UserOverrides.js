@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Search, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -50,35 +49,30 @@ export const UserOverrides = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <div className="divide-y">
           {users.map((user) => (
-            <Card key={user.id} className="overflow-hidden">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-lg">{user.name}</h3>
-                    <div className="flex flex-col sm:flex-row gap-2 text-sm text-muted-foreground">
-                      <div>{user.email}</div>
-                      <div className="hidden sm:block">•</div>
-                      <div>{user.overrides.join(", ")}</div>
-                    </div>
-                  </div>
-                  <ActionButtonGroup>
-                    <ActionButton
-                      icon={Pencil}
-                      label="Edit"
-                      onClick={() => {}}
-                    />
-                    <ActionButton
-                      icon={Trash2}
-                      label="Delete"
-                      destructive
-                      onClick={() => {}}
-                    />
-                  </ActionButtonGroup>
+            <div
+              key={user.id}
+              className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 first:pt-0 last:pb-0"
+            >
+              <div>
+                <h3 className="font-medium text-lg">{user.name}</h3>
+                <div className="flex flex-col sm:flex-row gap-2 text-sm text-muted-foreground mt-1">
+                  <div>{user.email}</div>
+                  <div className="hidden sm:block">•</div>
+                  <div>{user.overrides.join(", ")}</div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              <ActionButtonGroup>
+                <ActionButton icon={Pencil} label="Edit" onClick={() => {}} />
+                <ActionButton
+                  icon={Trash2}
+                  label="Delete"
+                  destructive
+                  onClick={() => {}}
+                />
+              </ActionButtonGroup>
+            </div>
           ))}
         </div>
       </CardContent>

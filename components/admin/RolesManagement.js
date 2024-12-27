@@ -42,33 +42,26 @@ export const RolesManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <div className="divide-y">
           {roles.map((role) => (
-            <Card key={role.id} className="overflow-hidden">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-medium text-lg">{role.name}</h3>
-                    <p className="text-muted-foreground mt-1">
-                      {role.description}
-                    </p>
-                  </div>
-                  <ActionButtonGroup>
-                    <ActionButton
-                      icon={Pencil}
-                      label="Edit"
-                      onClick={() => {}}
-                    />
-                    <ActionButton
-                      icon={Trash2}
-                      label="Delete"
-                      destructive
-                      onClick={() => {}}
-                    />
-                  </ActionButtonGroup>
-                </div>
-              </CardContent>
-            </Card>
+            <div
+              key={role.id}
+              className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 first:pt-0 last:pb-0"
+            >
+              <div>
+                <h3 className="font-medium text-lg">{role.name}</h3>
+                <p className="text-muted-foreground mt-1">{role.description}</p>
+              </div>
+              <ActionButtonGroup>
+                <ActionButton icon={Pencil} label="Edit" onClick={() => {}} />
+                <ActionButton
+                  icon={Trash2}
+                  label="Delete"
+                  destructive
+                  onClick={() => {}}
+                />
+              </ActionButtonGroup>
+            </div>
           ))}
         </div>
       </CardContent>

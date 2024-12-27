@@ -25,8 +25,8 @@ export const ActionButton = ({
         ${className}
       `}
     >
-      <span className="hidden md:inline-block">{label}</span>
-      <Icon className="h-4 w-4" />
+      <span className="">{label}</span>
+      <Icon className="hidden md:inline-block h-4 w-4" />
     </Button>
   );
 };
