@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,8 @@ import {
 import { ActionButton, ActionButtonGroup } from "./ActionButtons";
 import { CreatePersonDialog } from "./dialogs/CreatePersonDialog";
 import { AssignIdentityDialog } from "./dialogs/AssignIdentityDialog";
+import { IdentityList } from "./identity/IdentityList";
+import { useIdentities } from "@/hooks/useIdentities";
 
 export const PeopleManagement = () => {
   const [people, setPeople] = useState([
@@ -30,6 +32,21 @@ export const PeopleManagement = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const [peopleIdentities, setPeopleIdentities] = useState({});
+  const { identities, fetchCurrentIdentities } = useIdentities();
+
+  // Fetch identities for each person
+  useEffect(() => {
+    const loadIdentities = async () => {
+      const identitiesMap = {};
+      for (const person of people) {
+        const currentIdentities = await fetchCurrentIdentities(person.id);
+        identitiesMap[person.id] = currentIdentities;
+      }
+      setPeopleIdentities(identitiesMap);
+    };
+    loadIdentities();
+  }, [people, fetchCurrentIdentities]);
 
   const handleCreatePerson = async (data) => {
     setPeople((prev) => [
@@ -44,9 +61,23 @@ export const PeopleManagement = () => {
   };
 
   const handleAssignIdentity = async (data) => {
-    console.log("Assigning identity:", data);
-    setShowAssignDialog(false);
-    setSelectedPerson(null);
+    try {
+      // Get the selected identities from the identities array
+      const selectedIdentities = data.identity_ids
+        .map((id) => identities.find((identity) => identity.id === id))
+        .filter(Boolean);
+
+      // Update the peopleIdentities state with the new identities
+      setPeopleIdentities((prev) => ({
+        ...prev,
+        [data.person_id]: selectedIdentities,
+      }));
+
+      setShowAssignDialog(false);
+      setSelectedPerson(null);
+    } catch (error) {
+      console.error("Failed to assign identities:", error);
+    }
   };
 
   return (
@@ -79,11 +110,14 @@ export const PeopleManagement = () => {
                 key={person.id}
                 className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-6 lg:py-4 first:pt-0 last:pb-0"
               >
-                <div>
+                <div className="space-y-2">
                   <h3 className="font-medium text-lg">{person.full_name}</h3>
-                  <div className="text-sm text-muted-foreground mt-1">
+                  <div className="text-sm text-muted-foreground">
                     {person.email_address}
                   </div>
+                  {peopleIdentities[person.id]?.length > 0 && (
+                    <IdentityList identities={peopleIdentities[person.id]} />
+                  )}
                 </div>
                 <ActionButtonGroup>
                   <ActionButton

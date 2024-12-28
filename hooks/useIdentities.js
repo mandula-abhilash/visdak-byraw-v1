@@ -15,7 +15,9 @@ export const useIdentities = () => {
   const fetchCurrentIdentities = useCallback(async (personId) => {
     // Simulated API call - replace with actual API integration
     // This would fetch the current identities for the given person
-    setCurrentIdentities([{ id: "1", label: "Doctor" }]);
+    const mockIdentities = [{ id: "1", label: "Doctor" }];
+    setCurrentIdentities(mockIdentities);
+    return mockIdentities;
   }, []);
 
   return {
