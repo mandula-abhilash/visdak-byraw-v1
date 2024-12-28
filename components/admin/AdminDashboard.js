@@ -6,14 +6,19 @@ import { RolesManagement } from "./RolesManagement";
 import { OrganizationManagement } from "./OrganizationManagement";
 import { UserOverrides } from "./UserOverrides";
 import { GlobalConfigManagement } from "./GlobalConfigManagement";
+import { PeopleManagement } from "./PeopleManagement";
 import { AdminNavigation } from "./AdminNavigation";
 
 export const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("roles");
+  const [activeTab, setActiveTab] = useState("people");
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
       <AdminNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <TabsContent value="people" className="space-y-4 mt-4">
+        <PeopleManagement />
+      </TabsContent>
 
       <TabsContent value="roles" className="space-y-4 mt-4">
         <RolesManagement />

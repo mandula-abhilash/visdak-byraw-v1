@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -22,6 +21,7 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
               {activeTab === "configurations" && "Role Configurations"}
               {activeTab === "organizations" && "Organizations"}
               {activeTab === "overrides" && "User Overrides"}
+              {activeTab === "people" && "People"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent
@@ -29,6 +29,9 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
             position="popper"
             sideOffset={4}
           >
+            <SelectItem value="people" className="py-2 focus:bg-primary/10">
+              People
+            </SelectItem>
             <SelectItem value="roles" className="py-2 focus:bg-primary/10">
               Global Roles
             </SelectItem>
@@ -53,6 +56,12 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
 
       {/* Desktop Tabs */}
       <TabsList className="hidden md:flex bg-transparent justify-start p-1 gap-2">
+        <TabsTrigger
+          value="people"
+          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          People
+        </TabsTrigger>
         <TabsTrigger
           value="roles"
           className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"

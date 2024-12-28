@@ -36,7 +36,7 @@ export const ActionButtonGroup = ({ children, className = "" }) => {
 
   return (
     <div className={`${className}`}>
-      <div className="grid grid-cols-2 gap-2 md:flex md:flex-row md:gap-2">
+      <div className="grid grid-cols-2 gap-2 md:flex md:flex-row md:gap-2 md:justify-end">
         {buttonArray}
       </div>
     </div>
