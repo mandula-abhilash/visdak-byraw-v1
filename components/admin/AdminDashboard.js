@@ -7,6 +7,7 @@ import { OrganizationManagement } from "./OrganizationManagement";
 import { UserOverrides } from "./UserOverrides";
 import { GlobalConfigManagement } from "./GlobalConfigManagement";
 import { PeopleManagement } from "./PeopleManagement";
+import { IdentityManagement } from "./IdentityManagement";
 import { AdminNavigation } from "./AdminNavigation";
 
 export const AdminDashboard = () => {
@@ -18,6 +19,10 @@ export const AdminDashboard = () => {
 
       <TabsContent value="people" className="space-y-4 mt-4">
         <PeopleManagement />
+      </TabsContent>
+
+      <TabsContent value="identities" className="space-y-4 mt-4">
+        <IdentityManagement />
       </TabsContent>
 
       <TabsContent value="roles" className="space-y-4 mt-4">

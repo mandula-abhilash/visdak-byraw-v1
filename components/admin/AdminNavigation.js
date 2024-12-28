@@ -17,11 +17,12 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
         <Select value={activeTab} onValueChange={onTabChange}>
           <SelectTrigger className="w-full py-2">
             <SelectValue>
+              {activeTab === "people" && "People"}
+              {activeTab === "identities" && "Identities"}
               {activeTab === "roles" && "Global Roles"}
               {activeTab === "configurations" && "Role Configurations"}
               {activeTab === "organizations" && "Organizations"}
               {activeTab === "overrides" && "User Overrides"}
-              {activeTab === "people" && "People"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent
@@ -31,6 +32,9 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
           >
             <SelectItem value="people" className="py-2 focus:bg-primary/10">
               People
+            </SelectItem>
+            <SelectItem value="identities" className="py-2 focus:bg-primary/10">
+              Identities
             </SelectItem>
             <SelectItem value="roles" className="py-2 focus:bg-primary/10">
               Global Roles
@@ -61,6 +65,12 @@ export const AdminNavigation = ({ activeTab, onTabChange }) => {
           className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
           People
+        </TabsTrigger>
+        <TabsTrigger
+          value="identities"
+          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          Identities
         </TabsTrigger>
         <TabsTrigger
           value="roles"
