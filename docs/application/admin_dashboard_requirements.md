@@ -1,427 +1,272 @@
-Below is a **comprehensive requirements document** for **Admin-level tasks** in your BYRAW application. We will cover:
+# **Admin Dashboard: Phase 1 Requirements (Using New Names)**
 
-1. **Frontend** (Next.js + JavaScript + Tailwind CSS) requirements and workflow.
-2. **Backend** (Express.js + PostgreSQL + pgvector) requirements, including **sample routes, controllers**, and data flow.
-3. **Detailed, sequential tasks** for creating/editing/deleting roles, configurations, and how to handle **dependencies** (e.g., must create a role first before assigning a configuration).
+## **1. Overview**
 
-Everything is focused on the **Admin Dashboard**—the interface and APIs required for an **administrator** to manage roles, configurations, and user overrides.
+We are building an **Admin Dashboard** to help **administrators** manage:
 
----
+1. **People** and their **identities** (like “Doctor” or “Freelancer”).
+2. **Groups** (e.g., “Sunrise Hospital,” “Acme Corp”) and the **roles** in those groups.
+3. **Entity Types** (like “Task,” “Appointment,” “Note”) and **Entities** themselves (the individual records).
+4. **Permissions** or **Configurations** so that each role or person has the correct dashboard layout.
 
-# 1. **Admin-Level Features & Workflow Overview**
+This **Phase 1** focuses on:
 
-At a high level, **Admins** need to:
-
-1. **Manage Roles** (Global and Organization roles).
-2. **Manage Role Configurations** (Global and Organization).
-3. **(Optional) Manage User Overrides** – if you allow direct admin manipulation.
-4. **Safely Delete or Modify** with confirmations.
-5. **Impersonate** or test roles (optional).
-
-Below, we break this into **frontend** and **backend** tasks, with **sequential steps** and **dependencies**.
+1. **Basic CRUD (Create, Read, Update, Delete)** of people, identities, groups, roles, etc.
+2. **Role-based configurations** to specify **which panels** or **widgets** show up for a given role.
+3. **(Optional) Person-level overrides** for customized dashboards.
 
 ---
 
-## 2. **Frontend Requirements (Next.js + JavaScript + Tailwind)**
+## **2. Core Concepts to Manage**
 
-### 2.1. **Admin Dashboard** Structure
+### **2.1 People & Identities**
 
-- A **Next.js page** (e.g., `/admin`) hosting an **Admin Layout** with:
+- **People**: The main table storing each user’s name, email, etc.
+- **Identities**: Labels like “Doctor,” “Freelancer,” or “Student.” A person can have multiple identities.
 
-  - **Sidebar** or **Header Nav** for different admin sections:
-    1. **Roles** (Global & Org)
-    2. **Role Configurations** (Global & Org)
-    3. **User Overrides** (Optional)
-    4. **Other Admin Tools** (Impersonation, logs, etc.)
+### **2.2 Groups & Roles**
 
-- **Tailwind CSS** for styling. Provide consistent, responsive components (buttons, forms, modals, etc.).
+- **Groups**: Organizational structures (e.g., “Sunrise Hospital”).
+- **Group Roles**: “Owner,” “Admin,” “Member,” etc. Tied to a single group.
+- **Group Memberships**: Connect a person to a group in a specific role.
 
-### 2.2. **Admin Pages & Workflows**
+### **2.3 Entity Types & Entities**
 
-Below are the **key pages** or sections. We include **sequential tasks** with **dependencies**:
+- **Entity Types**: Like “Task,” “Appointment,” or “Reminder.”
+- **Entities**: Actual items stored in the system. Could be tasks or notes. Each entity references one **type**.
 
-#### A) **Manage Global Roles**
+### **2.4 Permissions & Configurations**
 
-**Purpose**: Create, Edit, Delete global roles like “Freelancer,” “HeadOfFamily,” etc.
-
-1. **Create Global Role**
-
-   - **Form Fields**: `Role Name`, `Description`
-   - **Validation**: Ensure unique name.
-   - **Dependency**: None (you can create roles anytime).
-   - **UI**: A page or modal: `/admin/roles/create`
-
-2. **Edit Global Role**
-
-   - Select a **role** from a **dropdown** or a **list**.
-   - Click **Edit** -> a modal or page with existing data.
-   - Make changes -> Save.
-   - **Dependency**: Must have at least one role in DB.
-   - **UI**: A page or modal: `/admin/roles/[roleId]/edit`
-
-3. **Delete Global Role**
-   - **Confirmation** prompt: “Are you sure?”
-   - If confirmed, delete role if no critical dependencies.
-   - **Dependency**: The role must exist, and if you want strict measures, ensure no users are currently assigned to it (or handle reassignment).
-   - **UI**: Button or action on role detail page `/admin/roles/[roleId]`
+- **Entity Permissions**: Fine-grained sharing (e.g., only certain people or groups can see an entity).
+- **Role Configurations**: JSON-based layouts or widget settings for each role (or identity, if you prefer).
+- **Person Overrides**: If a specific user wants to override default settings.
 
 ---
 
-#### B) **Manage Global Role Configurations**
+## **3. Phase 1 Admin Tasks**
 
-**Purpose**: Each global role can have a **JSON-based** config (sidebar items, widgets, labels, forms, etc.).
+In **Phase 1**, admins need straightforward pages to do the following:
 
-1. **Create Role Configuration**
+1. **Create, View, Edit, Delete People**
+2. **Create, View, Edit, Delete Identities**
+3. **Assign Identities** to People
+4. **Create, View, Edit, Delete Groups**
+5. **Create, View, Edit, Delete Group Roles**
+6. **Assign People** to Groups with a specific Role
+7. **Create, View, Edit, Delete Role Configurations** (JSON-based)
+8. **(Optional) Manage Person Overrides** for specialized dashboards
 
-   - **Dropdown** to select an existing **Global Role** (if no roles exist, you must create them first).
-   - **JSON Editor** or **Form** to build the configuration.
-   - Press **Save** -> calls backend to store JSON in `global_role_configurations`.
-   - **Dependency**: Must have **Global Role** created.
-   - **UI**: `/admin/global-configs/create?roleId=XYZ`
-
-2. **Edit Role Configuration**
-
-   - Select a role from dropdown or list -> loads existing JSON config.
-   - Possibly show a **simple form** or **JSON text editor**.
-   - Save changes.
-   - **Dependency**: Must have an existing **role configuration**.
-   - **UI**: `/admin/global-configs/[configId]/edit`
-
-3. **Delete Role Configuration**
-   - **Confirmation** prompt.
-   - **Dependency**: The configuration must exist.
-   - Typically, it’s rare to delete; might prefer to “archive” or keep a default.
-   - **UI**: A button on the config detail page.
-
-**Strict Measures**:
-
-- If you **delete** a global role config, you must ensure users with that role revert to a fallback or a “default” config. Provide a **confirmation** specifying the fallback mechanism.
+Each action typically involves a **form** (for creating/editing) and a **confirmation** prompt (for deleting).
 
 ---
 
-#### C) **Manage Organization Roles** (If you have org-level roles)
+## **4. Detailed Requirements**
 
-**Similar** to global roles, but these roles belong to an organization, e.g. “TeamOwner,” “Manager,” “Viewer.”
+### **4.1 Managing People & Identities**
 
-1. **Create Org Role**
+#### 4.1.1 People
 
-   - Choose an organization from a **dropdown** (if no organizations, create them first).
-   - Enter `Role Name`, `Description`.
-   - **Dependency**: Organization must exist.
-   - **UI**: `/admin/orgs/[orgId]/roles/create`
+- **List People**
+  - An admin sees a table of all `people`.
+- **Create Person**
+  - A form asking for **full_name** and **email_address**.
+- **Edit Person**
+  - A page or modal to change name, email, or placeholder flag.
+- **Delete Person**
+  - Must confirm. If they belong to a group, you might ask if that’s okay or require a reassign.
 
-2. **Edit Org Role**
+#### 4.1.2 Identities
 
-   - Select org role from list -> show form -> save changes.
-   - **UI**: `/admin/orgs/[orgId]/roles/[orgRoleId]/edit`
+- **List Identities**
+  - E.g., “Doctor,” “Freelancer,” “Student.”
+- **Create Identity**
+  - Just needs a **label** and **details**.
+- **Edit Identity**
+  - Update the label if needed.
+- **Delete Identity**
+  - Confirmation. If people are using this identity, you may block deletion or reassign them.
 
-3. **Delete Org Role**
-   - Confirmation check. Possibly ensure no members hold that role, or handle reassignments.
-   - **UI**: Button or link: `/admin/orgs/[orgId]/roles/[orgRoleId]`
+#### 4.1.3 Person-Identity Assignments
 
----
-
-#### D) **Manage Org Role Configurations** (Optional)
-
-Similar to global role configs but for an organization role:
-
-1. **Create Organization Role Config**
-
-   - **Dropdown** for `Organization` and `OrgRole`.
-   - **JSON Editor** or form to define the config.
-   - **Dependency**: Org role must exist.
-   - **UI**: `/admin/orgs/[orgId]/config/create?roleId=XYZ`
-
-2. **Edit Organization Role Config**
-
-   - Load existing JSON -> edit -> save.
-   - **UI**: `/admin/orgs/[orgId]/config/[configId]/edit`
-
-3. **Delete Organization Role Config**
-   - Confirmation. Possibly fallback to a default org config.
-   - **UI**: Button or link on the config detail page.
+- **Add Identity to Person**
+  - Choose a **person** and pick an **identity**.
+- **Remove Identity**
+  - Possibly remove the row in `person_identities`.
+- **UI Example**
+  - A dropdown of identities + a “+Add” button on the person’s page.
 
 ---
 
-#### E) **User Overrides** (Optional)
+### **4.2 Managing Groups & Their Roles**
 
-If the admin can manage user-level overrides:
+#### 4.2.1 Groups
 
-1. **View User Overrides**
+- **List Groups**
+  - Example: “Sunrise Hospital,” “Acme Corp.”
+- **Create Group**
+  - Needs a **group_name**.
+- **Edit Group**
+  - Change name if needed.
+- **Delete Group**
+  - Confirm. If it has members, you might block or require a plan to reassign them.
 
-   - Admin searches for a user -> sees overrides in `user_configurations`.
-   - Possibly a table showing which widgets were added/removed.
-   - **Dependency**: Must have a user with existing overrides.
-   - **UI**: `/admin/users/[userId]/overrides`
+#### 4.2.2 Group Roles
 
-2. **Add/Edit Override**
+- **List Roles for a Group**
+  - E.g., for “Sunrise Hospital,” see “Doctor,” “Nurse,” “Admin.”
+- **Create Group Role**
+  - Form with **role_name** and **description**.
+- **Edit Group Role**
+  - Possibly rename the role or change description.
+- **Delete Group Role**
+  - If members have this role, decide on reassignment or block the deletion.
 
-   - Provide a form or JSON editor for the user override.
-   - **Dependency**: The user must exist.
-   - **UI**: `/admin/users/[userId]/overrides/edit`
+#### 4.2.3 Group Membership
 
-3. **Delete Override**
-   - Confirmation prompt.
-   - **UI**: A button in user’s override detail.
-
----
-
-#### F) **Strict Deletion / Modification Rules**
-
-1. **Confirmations**
-   - **Always** require a “Yes, delete” or “Yes, I understand” step to avoid accidental data loss.
-2. **Dependency Checks**
-   - If a global role is in use, you can’t delete it unless you reassign or remove that role from all users.
-   - If a role config is the only config for 100+ users, consider a fallback.
-3. **UI Implementation**
-   - Typically a **modal** or separate “Confirmation” page with disclaimers.
-
----
-
-### 2.3. **Additional Frontend Features**
-
-- **Admin Authentication**
-  - Ensure only Admins can access `/admin` pages.
-- **Dropdowns**
-  - For selecting roles, organizations, org roles, etc.
-  - If none exist, provide a **button** to create them first.
-- **JSON Editor** (Optional)
-  - Could be a text area with syntax highlighting or a dynamic form.
-- **Search & Pagination**
-  - If the number of roles or configurations grows large.
+- **Add Person to Group**
+  - Select a **person**, select the group, pick a role.
+- **View Members of a Group**
+  - See all who belong to “Sunrise Hospital,” for example.
+- **Remove Person** from a Group
+  - For example, they leave the hospital or are no longer staff.
 
 ---
 
-## 3. **Backend Requirements (Express.js + PostgreSQL + pgvector)**
+### **4.3 Entity Types & Entities** (Optional for Phase 1)
 
-### 3.1. **Routes & Controllers**: Sample Endpoints
+In some projects, you might let admins define **entity_types**. Or you might fix them (like “Task,” “Appointment”). If you do:
 
-We’ll define a possible **API structure** under `/api/admin`.
+1. **List Entity Types**
+   - E.g., “Task,” “Note,” “Appointment.”
+2. **Create, Edit, Delete** an Entity Type
+   - Possibly with a **type_name** and **description**.
 
-> **Note**: Use **async/await** with **try/catch** blocks for error handling.
+**Entities** (the actual tasks/notes) might not need direct admin management in Phase 1 unless you want to provide a test data panel:
 
----
-
-#### A) **Global Roles**
-
-- **`POST /api/admin/global-roles`**
-
-  - **Controller**: `createGlobalRole(req, res)`
-  - **Body**: `{ name, description }`
-  - **Logic**: Insert into `global_roles`, return success + created role.
-
-- **`GET /api/admin/global-roles`**
-
-  - **Controller**: `listGlobalRoles(req, res)`
-  - Returns an array of all global roles.
-
-- **`GET /api/admin/global-roles/:id`**
-
-  - **Controller**: `getGlobalRole(req, res)`
-  - Returns a single role with details.
-
-- **`PUT /api/admin/global-roles/:id`**
-
-  - **Controller**: `updateGlobalRole(req, res)`
-  - **Body**: `{ name?, description? }`
-  - Update the specified role.
-
-- **`DELETE /api/admin/global-roles/:id`**
-  - **Controller**: `deleteGlobalRole(req, res)`
-  - Must check dependencies (e.g., users assigned to this role).
+- **(Optional) Create Test Entities**: Let admin create sample tasks or notes.
 
 ---
 
-#### B) **Global Role Configurations**
+### **4.4 Role Configurations (JSON-based)**
 
-- **`POST /api/admin/global-role-configs`**
+This is where an admin decides **what widgets or panels** a role sees:
 
-  - **Controller**: `createGlobalRoleConfig(req, res)`
-  - **Body**: `{ global_role_id, configuration: { ... } }` (JSON)
-  - Insert into `global_role_configurations`.
+- **List Configs**
+  - Possibly each row is “(Role ID: X, Config ID: Y).”
+- **Create Config**
+  - A form or JSON editor. For instance:
+    ```json
+    {
+      "dashboard_panels": ["Calendar", "TaskList"],
+      "theme": "dark"
+    }
+    ```
+- **Edit Config**
+  - Load existing JSON, let admin edit it.
+- **Delete Config**
+  - Confirmation needed. If a role has no config, they might fall back to defaults.
 
-- **`GET /api/admin/global-role-configs/:globalRoleId`**
+#### 4.4.1 Where to Store?
 
-  - **Controller**: `listGlobalRoleConfigs(req, res)`
-  - Returns all configs for a given global role (if you allow multiple versions).
-  - Or return the **single** config if you only store one.
-
-- **`PUT /api/admin/global-role-configs/:id`**
-
-  - **Controller**: `updateGlobalRoleConfig(req, res)`
-  - **Body**: `{ configuration: {...} }`
-  - Updates the JSON in `global_role_configurations`.
-
-- **`DELETE /api/admin/global-role-configs/:id`**
-  - **Controller**: `deleteGlobalRoleConfig(req, res)`
-  - Confirmation logic + fallback if needed.
-
----
-
-#### C) **Organization Roles & Configs** (If Applicable)
-
-- **`POST /api/admin/org-roles`**
-
-  - **Controller**: `createOrgRole(req, res)`
-  - **Body**: `{ org_id, name, description }`
-
-- **`PUT /api/admin/org-roles/:id`**
-
-  - **Controller**: `updateOrgRole(req, res)`
-
-- **`DELETE /api/admin/org-roles/:id`**
-
-  - **Controller**: `deleteOrgRole(req, res)`
-
-- **`POST /api/admin/org-role-configs`**
-
-  - **Controller**: `createOrgRoleConfig(req, res)`
-  - **Body**: `{ organization_id, organization_role_id, configuration: {...} }`
-
-- **`PUT /api/admin/org-role-configs/:id`**
-
-  - **Controller**: `updateOrgRoleConfig(req, res)`
-
-- **`DELETE /api/admin/org-role-configs/:id`**
-  - **Controller**: `deleteOrgRoleConfig(req, res)`
+- You might have a table like `role_configurations` or `group_role_configs`. If it’s a “group role,” store it in something like `group_role_configs`.
+- Admins **must** create the **role** first, then link a configuration to that role.
 
 ---
 
-#### D) **User Configurations (Overrides)**
+### **4.5 Person Overrides** (Optional)
 
-- **`GET /api/admin/users/:userId/config`**
-
-  - **Controller**: `getUserConfig(req, res)`
-  - Returns `user_configurations.configuration` for that user if exists.
-
-- **`POST /api/admin/users/:userId/config`**
-
-  - **Controller**: `createUserConfig(req, res)`
-  - Body can include `configuration` JSON.
-
-- **`PUT /api/admin/users/:userId/config`**
-
-  - **Controller**: `updateUserConfig(req, res)`
-  - Overwrite or merge.
-
-- **`DELETE /api/admin/users/:userId/config`**
-  - **Controller**: `deleteUserConfig(req, res)`
+- **List Person Overrides**: A table showing each user who has a custom override.
+- **Create/Edit Override**: Let the admin set a custom JSON for a single user. For instance, `{"hidePanel": "RevenueChart"}`.
+- **Delete Override**: Revert the user back to their role-based config.
 
 ---
 
-### 3.2. **Backend Data Flows & Validation**
+## **5. Workflow for Admins (Step by Step)**
 
-1. **Validation**:
-
-   - Check if role name is unique before creating.
-   - Validate JSON structure if you have a schema (e.g., JSON schema).
-   - For “delete role,” ensure no users are assigned or handle reassignments.
-
-2. **Error Handling** (try/catch):
-
-   - If a constraint fails (like unique role name or foreign key violation), return a **400** or **409** with a descriptive error.
-
-3. **Security**:
-
-   - Only Admin users can call these routes. Possibly use a JWT or session-based middleware that checks `req.user.is_admin`.
-
-4. **pgvector** (Future):
-   - Not heavily used in **admin** endpoints unless you store embedding-based metadata in configurations. Typically, you’ll use pgvector in user-facing data queries.
+1. **Create or Edit People**
+   - Admin adds new staff or corrects spelling of a name.
+2. **Create Identities** (like “Doctor,” “Nurse,” “Freelancer”).
+3. **Assign Identities to People**
+   - If needed.
+4. **Create Groups** (like “Sunrise Hospital”).
+5. **Create Roles within the Group** (e.g., “Doctor,” “Admin”).
+6. **Add People to Groups** with the appropriate Role.
+7. **Create or Edit Role Config** to define the dashboard for each role.
+8. (Optional) **Person Overrides** if a special user needs a special layout.
+9. (Optional) **Test Entities**: Admin might create some “fake tasks” or “fake appointments” to see how things look on the user’s dashboard.
 
 ---
 
-## 4. **Sequential Task List (Admin Perspective)**
+## **6. Frontend & Backend Examples**
 
-Below is a possible **step-by-step** guide for an Admin setting up new roles and configurations:
+### **6.1 Frontend Pages (Next.js)**
 
-1. **Create New Global Role** (if needed)
+1. **`/admin/people`**
 
-   - **Dependency**: None.
-   - Creates row in `global_roles`.
+   - List all people. “Create New Person” button.
+   - Each row has “Edit” or “Delete.”
+   - A link to “Assign Identities.”
 
-2. **Create Global Role Configuration**
+2. **`/admin/identities`**
 
-   - **Dependency**: Must have a global role.
-   - Sets up the JSON that defines sidebars, widgets, forms, etc.
+   - Similar layout for listing, creating, and deleting.
 
-3. **(Optional) Create Organization**
+3. **`/admin/groups`**
 
-   - **Dependency**: If you want team-based roles, you need an organization first.
+   - Show each group. “Create Group” button.
+   - Each group has “Manage Roles” and “View Members.”
 
-4. **(Optional) Create Organization Role**
+4. **`/admin/[groupId]/roles`**
 
-   - **Dependency**: Must have the organization.
+   - List roles in that group.
+   - “Create Role,” “Edit,” “Delete,” “Link Config.”
 
-5. **(Optional) Create Org Role Configuration**
+5. **`/admin/role-configs`**
 
-   - **Dependency**: Must have an organization role.
+   - List all role configs (global or group-based).
+   - “Create” or “Edit” with a JSON editor or simple form.
 
-6. **Assign Users to Roles**
+6. **`/admin/user-overrides`**
+   - Search for a user → “Edit override.”
 
-   - **Dependency**: The roles exist.
-   - In a separate flow, you might do: “Add user to global role(s), add user to an organization with an org-role.”
+### **6.2 Backend Endpoints (Express.js)**
 
-7. **User Configuration Overrides**
+1. **POST /api/admin/people** → Create a new person
+2. **GET /api/admin/people** → List people
+3. **PUT /api/admin/people/:personId** → Update a person
+4. **DELETE /api/admin/people/:personId** → Delete a person
 
-   - **Dependency**: The user must exist.
-   - Admin can add custom user-level changes if business logic allows.
+... and so on for:
 
-8. **Deletion / Editing**
-   - If you want to delete a role, ensure no users rely on it (or reassign them).
-   - If you want to delete a configuration, consider fallback logic.
-
----
-
-## 5. **Putting It All Together**
-
-1. **Frontend**
-
-   - **Next.js** pages:
-     - `/admin/roles` for listing/creating/editing global roles.
-     - `/admin/roles/[roleId]/config` for editing that role’s config.
-     - `/admin/orgs/[orgId]/roles` for org-level roles, etc.
-   - **Tailwind** for a consistent UI/UX, forms, and modals.
-   - **Validation**: Basic checks (non-empty fields, JSON structure).
-   - **Confirmations**: For destructive operations.
-
-2. **Backend**
-
-   - **Express** routes under `/api/admin/...`.
-   - Controllers performing **CRUD** on:
-     - `global_roles`, `global_role_configurations`, `organization_roles`, `organization_role_configurations`, `user_configurations`, etc.
-   - **Database**: PostgreSQL. If you need advanced search or AI, you’ll incorporate **pgvector** primarily for user data (notes, tasks), but admin data is more straightforward.
-
-3. **Security & Authentication**
-
-   - Ensure only Admins reach these routes.
-   - Possibly store `is_admin` or `role` in `users` or have a separate admin check.
-
-4. **Testing**
-   - Admin creates roles -> assigns config -> checks user sees correct UI.
-   - Admin deletes config -> ensures user sees fallback.
-   - Admin updates config -> user’s UI updates in real time or after refresh.
+- **Identities**: `/api/admin/identities`
+- **Groups**: `/api/admin/groups`
+- **Group Roles**: `/api/admin/groups/:groupId/roles` (or just `/api/admin/group-roles`)
+- **Role Configs**: `/api/admin/role-configs`
+- **User Overrides**: `/api/admin/users/:personId/override`
 
 ---
 
-## 6. **Conclusion**
+## **7. Edge Cases & Deletion Rules**
 
-By **following** the above requirements and **workflow**:
+1. **Deleting a Role**
+   - If people are using that role, you might force them to pick a new role or block deletion.
+2. **Deleting an Identity**
+   - If assigned to people, confirm first.
+3. **Deleting a Group**
+   - If it has members, reassign or block.
+4. **Deleting a Role Config**
+   - If it’s the only config for a popular role, you could break dashboards. Prompt a fallback or block.
 
-- **Frontend** has a clear roadmap of **pages** and **components** to build:
+---
 
-  - Roles listing/creation, configuration editors, organization management, user overrides, etc.
-  - Each page triggers **API calls** to the backend.
+## **8. Conclusion**
 
-- **Backend** has a well-defined set of **endpoints** with **sample methods** (`createGlobalRole`, `updateGlobalRoleConfig`, etc.).
+Using **new names** like `people`, `identities`, `groups`, `entity_types`, and `entities`, your **Admin Dashboard** (Phase 1) will let administrators:
 
-  - Each endpoint handles **CRUD** logic, **validation**, and returning meaningful **HTTP responses**.
+1. **Onboard** new people, give them identities.
+2. **Create** groups (like companies or hospitals).
+3. **Define** roles in those groups and assign people.
+4. **Write** JSON config to shape each role’s default dashboard.
+5. **Optionally** customize single-user overrides for special cases.
 
-- **Dependencies** are spelled out so that Admins do tasks in a **logical sequence**: create roles, then configurations, then assign them to users or organizations.
-
-With this **blueprint**, both frontend and backend teams can work in **parallel**, confident that they have:
-
-1. **UI flow** for Admin to manage roles & configs.
-2. **API endpoints** for each operation.
-3. A **consistent** approach to confirming destructive changes and handling fallback logic.
-
-This ensures a **robust**, maintainable **Admin Dashboard** that supports your role-based and organization-based customization in BYRAW.
+This approach gives you a **clean** foundation, letting admins easily manage the system while staying consistent with your new **“Second Brain”** schema.

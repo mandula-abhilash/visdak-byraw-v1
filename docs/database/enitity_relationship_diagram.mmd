@@ -1,0 +1,179 @@
+erDiagram
+
+    %% ==========================================
+    %% PEOPLE
+    %% ==========================================
+    people {
+        int       person_id PK
+        string    full_name
+        string    email_address
+        boolean   placeholder
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% IDENTITIES
+    %% ==========================================
+    identities {
+        int       identity_id PK
+        string    label
+        text      details
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% PERSON_IDENTITIES (Junction Table)
+    %% ==========================================
+    person_identities {
+        int       person_id PK, FK
+        int       identity_id PK, FK
+        timestamp assigned_on
+    }
+
+    %% ==========================================
+    %% GROUPS
+    %% ==========================================
+    groups {
+        int       group_id PK
+        string    group_name
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% GROUP ROLES
+    %% ==========================================
+    group_roles {
+        int       role_id PK
+        string    role_name
+        text      description
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% GROUP MEMBERSHIPS
+    %% (Links person <-> group <-> group_role)
+    %% ==========================================
+    group_memberships {
+        int       person_id PK, FK
+        int       group_id PK, FK
+        int       role_id FK
+        timestamp joined_on
+    }
+
+    %% ==========================================
+    %% ENTITY_TYPES (e.g., Task, Appointment)
+    %% ==========================================
+    entity_types {
+        int       type_id PK
+        string    type_name
+        text      description
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% ENTITIES
+    %% (Unified items: tasks, appointments, notes, etc.)
+    %% ==========================================
+    entities {
+        int       entity_id PK
+        int       owner_id FK
+        int       group_id FK
+        int       type_id FK
+        string    title
+        text      description
+        timestamp start_at
+        timestamp end_at
+        jsonb     extra_data
+        vector    vector_embed
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% ENTITY_PERMISSIONS
+    %% (Fine-grained sharing)
+    %% ==========================================
+    entity_permissions {
+        int       permission_id PK
+        int       entity_id FK
+        string    subject_type
+        int       subject_id
+        string    access_level
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% WIDGETS
+    %% ==========================================
+    widgets {
+        int       widget_id PK
+        string    widget_name
+        jsonb     widget_config
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% PERSON_WIDGETS (User/Persona Dashboard Config)
+    %% ==========================================
+    person_widgets {
+        int       person_widget_id PK
+        int       person_id FK
+        int       widget_id FK
+        jsonb     user_config
+        int       position
+        boolean   enabled
+    }
+
+    %% ==========================================
+    %% RELATIONSHIPS
+    %% ==========================================
+
+    %% 1) people <--> person_identities <--> identities
+    people ||--|{ person_identities : "can have many identities"
+    identities ||--|{ person_identities : "can belong to many people"
+
+    person_identities }|..|| people : "FK: person_id"
+    person_identities }|..|| identities : "FK: identity_id"
+
+    %% 2) people <--> group_memberships <--> groups
+    people ||--|{ group_memberships : "can be in many groups"
+    groups ||--|{ group_memberships : "has many members"
+
+    group_memberships }|..|| people : "FK: person_id"
+    group_memberships }|..|| groups : "FK: group_id"
+
+    %% 3) group_roles <--> group_memberships
+    group_roles ||--|{ group_memberships : "assigned role"
+
+    group_memberships }|..|| group_roles : "FK: role_id"
+
+    %% 4) entity_types <--> entities
+    entity_types ||--|{ entities : "defines the type of"
+
+    entities }|..|| entity_types : "FK: type_id"
+
+    %% 5) people (owner) <--> entities
+    people ||--|{ entities : "can own many entities"
+    entities }|..|| people : "FK: owner_id"
+
+    %% 6) groups <--> entities
+    groups ||--|{ entities : "optional group association"
+    entities }|..|| groups : "FK: group_id"
+
+    %% 7) entities <--> entity_permissions
+    entities ||--|{ entity_permissions : "can have permissions"
+    entity_permissions }|..|| entities : "FK: entity_id"
+
+    %% 8) people <--> person_widgets <--> widgets
+    people ||--|{ person_widgets : "personal widget config"
+    widgets ||--|{ person_widgets : "can be reused by many people"
+
+    person_widgets }|..|| people : "FK: person_id"
+    person_widgets }|..|| widgets : "FK: widget_id"
