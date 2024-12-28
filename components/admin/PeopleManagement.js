@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,32 +12,41 @@ import {
 } from "@/components/ui/card";
 import { ActionButton, ActionButtonGroup } from "./ActionButtons";
 import { CreatePersonDialog } from "./dialogs/CreatePersonDialog";
+import { AssignIdentityDialog } from "./dialogs/AssignIdentityDialog";
 
 export const PeopleManagement = () => {
   const [people, setPeople] = useState([
     {
-      id: 1,
+      id: "1",
       full_name: "John Doe",
       email_address: "john@example.com",
     },
     {
-      id: 2,
+      id: "2",
       full_name: "Jane Smith",
       email_address: "jane@example.com",
     },
   ]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
 
   const handleCreatePerson = async (data) => {
     setPeople((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
+        id: String(prev.length + 1),
         full_name: data.full_name,
         email_address: data.email_address,
       },
     ]);
     setShowCreateDialog(false);
+  };
+
+  const handleAssignIdentity = async (data) => {
+    console.log("Assigning identity:", data);
+    setShowAssignDialog(false);
+    setSelectedPerson(null);
   };
 
   return (
@@ -77,6 +86,14 @@ export const PeopleManagement = () => {
                   </div>
                 </div>
                 <ActionButtonGroup>
+                  <ActionButton
+                    icon={UserPlus}
+                    label="Assign Identity"
+                    onClick={() => {
+                      setSelectedPerson(person);
+                      setShowAssignDialog(true);
+                    }}
+                  />
                   <ActionButton icon={Pencil} label="Edit" onClick={() => {}} />
                   <ActionButton
                     icon={Trash2}
@@ -95,6 +112,13 @@ export const PeopleManagement = () => {
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onSubmit={handleCreatePerson}
+      />
+
+      <AssignIdentityDialog
+        open={showAssignDialog}
+        onOpenChange={setShowAssignDialog}
+        onSubmit={handleAssignIdentity}
+        person={selectedPerson}
       />
     </>
   );

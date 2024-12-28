@@ -16,12 +16,12 @@ import { CreateIdentityDialog } from "./dialogs/CreateIdentityDialog";
 export const IdentityManagement = () => {
   const [identities, setIdentities] = useState([
     {
-      id: 1,
+      id: "1",
       label: "Doctor",
       details: "Medical professional identity",
     },
     {
-      id: 2,
+      id: "2",
       label: "Freelancer",
       details: "Independent contractor identity",
     },
@@ -32,7 +32,7 @@ export const IdentityManagement = () => {
     setIdentities((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
+        id: String(prev.length + 1),
         label: data.label,
         details: data.details || "",
       },
