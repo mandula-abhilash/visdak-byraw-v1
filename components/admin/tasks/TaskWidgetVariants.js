@@ -2,6 +2,19 @@
 
 import { TaskWidget } from "@/components/widgets";
 
+const widthClasses = {
+  "1/4": "w-full md:w-1/4 px-3",
+  "1/3": "w-full md:w-1/3 px-3",
+  "1/2": "w-full md:w-1/2 px-3",
+  "2/3": "w-full md:w-2/3 px-3",
+  "3/4": "w-full md:w-3/4 px-3",
+  full: "w-full px-3",
+};
+
+const getWidgetWidth = (width) => {
+  return widthClasses[width] || widthClasses["full"];
+};
+
 export const TaskWidgetVariants = () => {
   const widgets = [
     {
@@ -11,7 +24,7 @@ export const TaskWidgetVariants = () => {
       limit: 5,
       statusFilter: ["pending"],
       showDueDate: true,
-      width: "3/4",
+      width: "full",
     },
     {
       title: "Overdue Tasks",
@@ -21,7 +34,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["overdue"],
       showDueDate: true,
       showOverdueDuration: true,
-      width: "3/4",
+      width: "1/2",
     },
     {
       title: "Recently Completed",
@@ -30,7 +43,7 @@ export const TaskWidgetVariants = () => {
       limit: 5,
       statusFilter: ["completed"],
       showCompletedDate: true,
-      width: "3/4",
+      width: "1/2",
     },
     {
       title: "High Priority",
@@ -50,7 +63,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["pending"],
       showDueDate: true,
       showPriority: true,
-      width: "3/4",
+      width: "1/3",
     },
     {
       title: "Oldest Pending",
@@ -65,9 +78,11 @@ export const TaskWidgetVariants = () => {
   ];
 
   return (
-    <div className="flex flex-wrap -mx-3 gap-y-6">
+    <div className="flex flex-wrap -mx-3 space-y-4">
       {widgets.map((widget, index) => (
-        <TaskWidget key={index} {...widget} />
+        <div key={index} className={getWidgetWidth(widget.width)}>
+          <TaskWidget {...widget} />
+        </div>
       ))}
     </div>
   );
