@@ -12,12 +12,7 @@ export const MobileMenu = ({ onClose }) => {
       <SheetHeader className="h-14 px-4 flex items-center">
         <SheetTitle asChild>
           <div className="flex items-center justify-end w-full h-full px-4">
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" onClick={onClose}>
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close menu</span>
-              </Button>
-            </SheetClose>
+            <SheetClose asChild />
           </div>
         </SheetTitle>
       </SheetHeader>
