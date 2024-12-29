@@ -13,7 +13,7 @@ export const TaskWidget = ({
   limit = 5,
   statusFilter = ["pending"],
   priorityFilter = null,
-  groupBy = null,
+  groupBy = "status",
   showDueDate = true,
   showPriority = false,
   showStatusCount = false,
@@ -22,13 +22,14 @@ export const TaskWidget = ({
   showKanbanToggle = false,
 }) => {
   const [selectedView, setSelectedView] = useState("list");
+  const [selectedGroupBy, setSelectedGroupBy] = useState(groupBy);
   const { tasks, isLoading, error } = useTaskWidget({
     dateRange,
     sort,
     limit,
     statusFilter,
     priorityFilter,
-    groupBy,
+    groupBy: selectedGroupBy,
   });
 
   if (error) {
@@ -50,6 +51,8 @@ export const TaskWidget = ({
           title={title}
           selectedView={selectedView}
           onViewChange={setSelectedView}
+          selectedGroupBy={selectedGroupBy}
+          onGroupByChange={setSelectedGroupBy}
           taskCount={tasks?.length || 0}
           showKanbanToggle={showKanbanToggle}
         />
@@ -60,6 +63,7 @@ export const TaskWidget = ({
             tasks={tasks}
             isLoading={isLoading}
             view={selectedView}
+            groupBy={selectedGroupBy}
             showDueDate={showDueDate}
             showPriority={showPriority}
             showStatusCount={showStatusCount}

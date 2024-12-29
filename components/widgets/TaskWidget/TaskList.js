@@ -80,10 +80,79 @@ const KanbanColumn = ({ title, tasks, taskProps }) => (
   </div>
 );
 
+const groupTasksByStatus = (tasks) => {
+  const groups = {
+    pending: tasks.filter((task) => task.status === "pending"),
+    "in progress": tasks.filter((task) => task.status === "in progress"),
+    completed: tasks.filter((task) => task.status === "completed"),
+    overdue: tasks.filter((task) => task.status === "overdue"),
+  };
+
+  return Object.entries(groups).map(([status, tasks]) => ({
+    title: `${status.charAt(0).toUpperCase() + status.slice(1)} (${
+      tasks.length
+    })`,
+    tasks,
+  }));
+};
+
+const groupTasksByPriority = (tasks) => {
+  const groups = {
+    high: tasks.filter((task) => task.priority === "high"),
+    medium: tasks.filter((task) => task.priority === "medium"),
+    low: tasks.filter((task) => task.priority === "low" || !task.priority),
+  };
+
+  return Object.entries(groups).map(([priority, tasks]) => ({
+    title: `${priority.charAt(0).toUpperCase() + priority.slice(1)} Priority (${
+      tasks.length
+    })`,
+    tasks,
+  }));
+};
+
+const groupTasksByDueDate = (tasks) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+
+  const groups = {
+    overdue: tasks.filter((task) => {
+      const dueDate = new Date(task.due_date);
+      return dueDate < today;
+    }),
+    today: tasks.filter((task) => {
+      const dueDate = new Date(task.due_date);
+      return dueDate >= today && dueDate < tomorrow;
+    }),
+    tomorrow: tasks.filter((task) => {
+      const dueDate = new Date(task.due_date);
+      return dueDate >= tomorrow && dueDate < nextWeek;
+    }),
+    later: tasks.filter((task) => {
+      const dueDate = new Date(task.due_date);
+      return dueDate >= nextWeek;
+    }),
+  };
+
+  return Object.entries(groups).map(([timeframe, tasks]) => ({
+    title: `${timeframe.charAt(0).toUpperCase() + timeframe.slice(1)} (${
+      tasks.length
+    })`,
+    tasks,
+  }));
+};
+
 export const TaskList = ({
   tasks = [],
   isLoading,
   view,
+  groupBy = "status",
   showDueDate,
   showPriority,
   showStatusCount,
@@ -119,35 +188,30 @@ export const TaskList = ({
       showOverdueDuration,
     };
 
-    const pendingTasks = tasks.filter((task) => task.status === "pending");
-    const inProgressTasks = tasks.filter(
-      (task) => task.status === "in progress"
-    );
-    const completedTasks = tasks.filter((task) => task.status === "completed");
-    const overdueTasks = tasks.filter((task) => task.status === "overdue");
+    let groupedTasks;
+    switch (groupBy) {
+      case "priority":
+        groupedTasks = groupTasksByPriority(tasks);
+        break;
+      case "dueDate":
+        groupedTasks = groupTasksByDueDate(tasks);
+        break;
+      case "status":
+      default:
+        groupedTasks = groupTasksByStatus(tasks);
+        break;
+    }
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KanbanColumn
-          title={`Pending (${pendingTasks.length})`}
-          tasks={pendingTasks}
-          taskProps={taskProps}
-        />
-        <KanbanColumn
-          title={`In Progress (${inProgressTasks.length})`}
-          tasks={inProgressTasks}
-          taskProps={taskProps}
-        />
-        <KanbanColumn
-          title={`Completed (${completedTasks.length})`}
-          tasks={completedTasks}
-          taskProps={taskProps}
-        />
-        <KanbanColumn
-          title={`Overdue (${overdueTasks.length})`}
-          tasks={overdueTasks}
-          taskProps={taskProps}
-        />
+        {groupedTasks.map(({ title, tasks }) => (
+          <KanbanColumn
+            key={title}
+            title={title}
+            tasks={tasks}
+            taskProps={taskProps}
+          />
+        ))}
       </div>
     );
   }

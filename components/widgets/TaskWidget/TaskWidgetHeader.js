@@ -3,11 +3,20 @@
 import { LayoutList, SquareKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const TaskWidgetHeader = ({
   title,
   selectedView,
   onViewChange,
+  selectedGroupBy,
+  onGroupByChange,
   taskCount,
   showKanbanToggle,
 }) => {
@@ -23,7 +32,19 @@ export const TaskWidgetHeader = ({
           )}
         </CardTitle>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
+        {showKanbanToggle && selectedView === "kanban" && (
+          <Select value={selectedGroupBy} onValueChange={onGroupByChange}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Group by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="status">Status</SelectItem>
+              <SelectItem value="priority">Priority</SelectItem>
+              <SelectItem value="dueDate">Due Date</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
         {showKanbanToggle && (
           <>
             <Button
