@@ -35,7 +35,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["overdue"],
       showDueDate: true,
       showOverdueDuration: true,
-      width: "1/2",
+      width: "1/3",
     },
     {
       title: "Recently Completed",
@@ -44,7 +44,7 @@ export const TaskWidgetVariants = () => {
       limit: 5,
       statusFilter: ["completed"],
       showCompletedDate: true,
-      width: "1/2",
+      width: "1/3",
     },
     {
       title: "High Priority",
@@ -77,25 +77,15 @@ export const TaskWidgetVariants = () => {
       showOverdueDuration: true,
       width: "1/3",
     },
-    {
-      title: "Oldest Pending",
-      dateRange: ["past"],
-      sort: "asc",
-      limit: 5,
-      statusFilter: ["pending"],
-      showDueDate: true,
-      showOverdueDuration: true,
-      width: "1/3",
-    },
   ];
 
   return (
-    <div className="flex flex-wrap -mx-3 space-y-4">
+    <div className="flex flex-wrap -mx-3">
       {widgets.map((widget, index) => (
         <div key={index} className={`${getWidgetWidth(widget.width)} mb-6`}>
           <div className="h-full">
             <TaskWidget {...widget} />
-          </div>{" "}
+          </div>
         </div>
       ))}
     </div>
