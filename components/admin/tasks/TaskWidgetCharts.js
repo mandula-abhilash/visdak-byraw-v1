@@ -1,5 +1,21 @@
 "use client";
 
+import { useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  Legend,
+} from "recharts";
 import { TaskChartCard } from "./charts/TaskChartCard";
 import {
   getTaskCompletionStats,
@@ -11,7 +27,49 @@ import {
   getHighPriorityOverview,
 } from "./charts/TaskChartUtils";
 
+const COLORS = {
+  primary: "hsl(var(--primary))",
+  chart2: "hsl(var(--chart-2))",
+  chart3: "hsl(var(--chart-3))",
+  chart4: "hsl(var(--chart-4))",
+  chart5: "hsl(var(--chart-5))",
+  destructive: "hsl(var(--destructive))",
+  muted: "hsl(var(--muted))",
+};
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/85 p-2 rounded-lg border shadow-lg">
+        <p className="text-sm font-medium">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} className="text-sm text-muted-foreground">
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomPieTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/85 p-2 rounded-lg border shadow-lg">
+        <p className="text-sm font-medium">{payload[0].name}</p>
+        <p className="text-sm text-muted-foreground">
+          Count: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const TaskWidgetCharts = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
+
   // Get all chart data
   const completionStats = getTaskCompletionStats();
   const priorityStats = getTaskPriorityStats();
@@ -21,170 +79,151 @@ export const TaskWidgetCharts = () => {
   const upcomingTimeline = getUpcomingTasksTimeline();
   const highPriorityOverview = getHighPriorityOverview();
 
-  const renderBarChart = (data, color = "bg-primary") => (
-    <div className="flex flex-col justify-end h-full space-y-2">
-      <div className="flex items-end justify-around h-[calc(100%-2rem)] gap-2">
-        {data.map(({ label, value }, index) => (
-          <div key={index} className="flex flex-col items-center flex-1">
-            <div className="w-full">
-              <div
-                className={`w-full ${color} rounded-t-sm transition-all duration-300`}
-                style={{
-                  height: `${
-                    (value / Math.max(...data.map((d) => d.value))) * 100
-                  }%`,
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-around text-xs text-muted-foreground">
-        {data.map(({ label }, index) => (
-          <div key={index} className="text-center truncate">
-            {label}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
   const renderPieChart = (data) => (
-    <div className="relative h-full flex items-center justify-center">
-      <svg viewBox="0 0 100 100" className="w-full h-full">
-        {data
-          .reduce((elements, { label, value }, index, array) => {
-            const total = array.reduce((sum, item) => sum + item.value, 0);
-            const startAngle = elements.length
-              ? elements[elements.length - 1].endAngle
-              : 0;
-            const percentage = value / total;
-            const endAngle = startAngle + percentage * 360;
-
-            const start = polarToCartesian(50, 50, 40, startAngle);
-            const end = polarToCartesian(50, 50, 40, endAngle);
-
-            const largeArcFlag = percentage > 0.5 ? 1 : 0;
-
-            elements.push({
-              element: (
-                <path
-                  key={label}
-                  d={`M 50 50 L ${start.x} ${start.y} A 40 40 0 ${largeArcFlag} 1 ${end.x} ${end.y} Z`}
-                  className={`hover:opacity-90 transition-opacity ${
-                    index === 0
-                      ? "fill-primary"
-                      : index === 1
-                      ? "fill-chart-2"
-                      : index === 2
-                      ? "fill-chart-3"
-                      : "fill-chart-4"
-                  }`}
-                />
-              ),
-              endAngle,
-            });
-
-            return elements;
-          }, [])
-          .map(({ element }) => element)}
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center text-xs">
-        {data.reduce((sum, { value }) => sum + value, 0)} Total
-      </div>
-    </div>
-  );
-
-  const renderHorizontalBarChart = (data, color = "bg-primary") => (
-    <div className="h-full flex flex-col justify-between space-y-2">
-      {data.map(({ label, value }, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <div className="text-xs text-muted-foreground w-20 truncate">
-            {label}
-          </div>
-          <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
-            <div
-              className={`h-full ${color} transition-all duration-300`}
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          innerRadius={60}
+          outerRadius={80}
+          paddingAngle={5}
+          dataKey="value"
+          nameKey="label"
+          onMouseEnter={(_, index) => setActiveIndex(index)}
+          onMouseLeave={() => setActiveIndex(null)}
+        >
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={Object.values(COLORS)[index % Object.values(COLORS).length]}
+              strokeWidth={activeIndex === index ? 2 : 1}
+              className="transition-all duration-200"
               style={{
-                width: `${
-                  (value / Math.max(...data.map((d) => d.value))) * 100
-                }%`,
+                filter: activeIndex === index ? "brightness(1.1)" : "none",
+                transform: activeIndex === index ? "scale(1.05)" : "scale(1)",
               }}
             />
-          </div>
-          <div className="text-xs w-8 text-right">{value}</div>
-        </div>
-      ))}
-    </div>
+          ))}
+        </Pie>
+        <Tooltip content={<CustomPieTooltip />} />
+        <Legend
+          verticalAlign="bottom"
+          height={36}
+          formatter={(value) => (
+            <span className="text-sm text-muted-foreground">{value}</span>
+          )}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+
+  const renderBarChart = (data, color = COLORS.primary) => (
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={data} barSize={20}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-muted/30" />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 12 }}
+          className="text-muted-foreground"
+        />
+        <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
+        <Tooltip
+          content={<CustomTooltip />}
+          cursor={{ fill: "var(--muted)", opacity: 0.1 }}
+        />
+        <Bar
+          dataKey="value"
+          fill={color}
+          radius={[4, 4, 0, 0]}
+          className="hover:brightness-110 transition-all duration-200"
+        />
+      </BarChart>
+    </ResponsiveContainer>
   );
 
   const renderLineChart = (data) => (
-    <div className="h-full flex flex-col justify-end">
-      <svg
-        viewBox="0 0 100 60"
-        className="w-full h-full"
-        preserveAspectRatio="none"
-      >
-        <polyline
-          points={data
-            .map(({ value }, index) => {
-              const x = (index / (data.length - 1)) * 100;
-              const y =
-                60 - (value / Math.max(...data.map((d) => d.value))) * 50;
-              return `${x},${y}`;
-            })
-            .join(" ")}
-          fill="none"
-          stroke="hsl(var(--primary))"
-          strokeWidth="2"
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-muted/30" />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 12 }}
+          className="text-muted-foreground"
         />
-      </svg>
-      <div className="flex justify-between text-xs text-muted-foreground mt-2">
-        {data.map(({ label }, index) => (
-          <div key={index}>{label}</div>
-        ))}
-      </div>
-    </div>
+        <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
+        <Tooltip
+          content={<CustomTooltip />}
+          cursor={{ stroke: "var(--muted)", strokeWidth: 1 }}
+        />
+        <Line
+          type="monotone"
+          dataKey="value"
+          stroke={COLORS.primary}
+          strokeWidth={2}
+          dot={{ fill: COLORS.primary, r: 4 }}
+          activeDot={{
+            fill: COLORS.primary,
+            stroke: "var(--background)",
+            r: 6,
+            strokeWidth: 2,
+          }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
   );
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <TaskChartCard title="Task Completion Status">
+      <TaskChartCard
+        title="Task Completion Status"
+        description="Overview of tasks by their current status"
+      >
         {renderPieChart(completionStats)}
       </TaskChartCard>
 
-      <TaskChartCard title="Task Priority Distribution">
-        {renderBarChart(priorityStats, "bg-chart-2")}
+      <TaskChartCard
+        title="Task Priority Distribution"
+        description="Distribution of tasks across different priority levels"
+      >
+        {renderBarChart(priorityStats, COLORS.chart2)}
       </TaskChartCard>
 
-      <TaskChartCard title="Overdue Tasks by Days Late">
-        {renderHorizontalBarChart(overdueStats, "bg-destructive")}
+      <TaskChartCard
+        title="Overdue Tasks by Days Late"
+        description="Tasks that are past their due date, sorted by days overdue"
+      >
+        {renderBarChart(overdueStats, COLORS.destructive)}
       </TaskChartCard>
 
-      <TaskChartCard title="Tasks Due Today by Priority">
+      <TaskChartCard
+        title="Tasks Due Today by Priority"
+        description="Tasks that need attention today, grouped by priority"
+      >
         {renderPieChart(dueTodayStats)}
       </TaskChartCard>
 
-      <TaskChartCard title="Completed Tasks by Priority">
-        {renderBarChart(completedByPriority, "bg-chart-3")}
+      <TaskChartCard
+        title="Completed Tasks by Priority"
+        description="Analysis of completed tasks across priority levels"
+      >
+        {renderBarChart(completedByPriority, COLORS.chart3)}
       </TaskChartCard>
 
-      <TaskChartCard title="Upcoming Tasks by Due Date">
+      <TaskChartCard
+        title="Upcoming Tasks Timeline"
+        description="Task distribution over the next 7 days"
+      >
         {renderLineChart(upcomingTimeline)}
       </TaskChartCard>
 
-      <TaskChartCard title="High-Priority Tasks Overview">
-        {renderBarChart(highPriorityOverview, "bg-chart-4")}
+      <TaskChartCard
+        title="High-Priority Tasks Overview"
+        description="Status breakdown of high-priority tasks"
+      >
+        {renderBarChart(highPriorityOverview, COLORS.chart4)}
       </TaskChartCard>
     </div>
   );
-};
-
-// Helper function for pie chart
-const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
-  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
-  return {
-    x: centerX + radius * Math.cos(angleInRadians),
-    y: centerY + radius * Math.sin(angleInRadians),
-  };
 };
