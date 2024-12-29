@@ -1,96 +1,131 @@
 // Generate dates relative to today
 const today = new Date();
-const yesterday = new Date(today);
-yesterday.setDate(today.getDate() - 1);
-const tomorrow = new Date(today);
-tomorrow.setDate(today.getDate() + 1);
-const nextWeek = new Date(today);
-nextWeek.setDate(today.getDate() + 7);
-const lastWeek = new Date(today);
-lastWeek.setDate(today.getDate() - 7);
+const getDate = (daysOffset) => {
+  const date = new Date(today);
+  date.setDate(today.getDate() + daysOffset);
+  return date.toISOString().split("T")[0];
+};
 
 export const MOCK_TASKS = [
-  // Upcoming Tasks
+  // High Priority Tasks
   {
     id: 1,
-    title: "Review project proposal",
+    title: "Critical System Update",
     status: "pending",
     priority: "high",
-    due_date: tomorrow.toISOString().split("T")[0],
+    due_date: getDate(1),
   },
   {
     id: 2,
-    title: "Team planning meeting",
+    title: "Security Audit",
+    status: "in progress",
+    priority: "high",
+    due_date: getDate(2),
+  },
+  {
+    id: 3,
+    title: "Client Presentation",
+    status: "completed",
+    priority: "high",
+    due_date: getDate(-1),
+    completed_on: getDate(-1),
+  },
+
+  // Medium Priority Tasks
+  {
+    id: 4,
+    title: "Team Planning",
     status: "pending",
     priority: "medium",
-    due_date: nextWeek.toISOString().split("T")[0],
+    due_date: getDate(3),
+  },
+  {
+    id: 5,
+    title: "Documentation Update",
+    status: "in progress",
+    priority: "medium",
+    due_date: getDate(1),
+  },
+  {
+    id: 6,
+    title: "Code Review",
+    status: "completed",
+    priority: "medium",
+    due_date: getDate(-2),
+    completed_on: getDate(-2),
+  },
+
+  // Low Priority Tasks
+  {
+    id: 7,
+    title: "Office Supplies",
+    status: "pending",
+    priority: "low",
+    due_date: getDate(5),
+  },
+  {
+    id: 8,
+    title: "Team Lunch",
+    status: "completed",
+    priority: "low",
+    due_date: getDate(-3),
+    completed_on: getDate(-3),
   },
 
   // Overdue Tasks
   {
-    id: 3,
-    title: "Submit quarterly report",
+    id: 9,
+    title: "Quarterly Report",
     status: "overdue",
     priority: "high",
-    due_date: lastWeek.toISOString().split("T")[0],
+    due_date: getDate(-7),
     overdue_days: 7,
   },
   {
-    id: 4,
-    title: "Client presentation preparation",
+    id: 10,
+    title: "Budget Review",
     status: "overdue",
     priority: "high",
-    due_date: yesterday.toISOString().split("T")[0],
-    overdue_days: 1,
+    due_date: getDate(-5),
+    overdue_days: 5,
   },
 
-  // Completed Tasks
+  // Today's Tasks
   {
-    id: 5,
-    title: "Update documentation",
-    status: "completed",
-    priority: "medium",
-    due_date: yesterday.toISOString().split("T")[0],
-    completed_on: yesterday.toISOString().split("T")[0],
-  },
-  {
-    id: 6,
-    title: "Code review",
-    status: "completed",
-    priority: "high",
-    due_date: yesterday.toISOString().split("T")[0],
-    completed_on: yesterday.toISOString().split("T")[0],
-  },
-
-  // High Priority Tasks
-  {
-    id: 7,
-    title: "Security audit",
-    status: "pending",
-    priority: "high",
-    due_date: tomorrow.toISOString().split("T")[0],
-  },
-  {
-    id: 8,
-    title: "Deploy hotfix",
-    status: "in progress",
-    priority: "high",
-    due_date: today.toISOString().split("T")[0],
-  },
-
-  // Due Today
-  {
-    id: 9,
-    title: "Daily standup",
+    id: 11,
+    title: "Daily Standup",
     status: "pending",
     priority: "medium",
-    due_date: today.toISOString().split("T")[0],
+    due_date: getDate(0),
   },
   {
-    id: 10,
-    title: "Review pull requests",
+    id: 12,
+    title: "Client Meeting",
     status: "pending",
     priority: "high",
-    due_date: today.toISOString().split("T")[0],
+    due_date: getDate(0),
+  },
+
+  // Additional Tasks for Timeline
+  {
+    id: 13,
+    title: "Project Milestone",
+    status: "pending",
+    priority: "high",
+    due_date: getDate(4),
+  },
+  {
+    id: 14,
+    title: "Team Training",
+    status: "pending",
+    priority: "medium",
+    due_date: getDate(6),
+  },
+  {
+    id: 15,
+    title: "Performance Reviews",
+    status: "pending",
+    priority: "high",
+    due_date: getDate(2),
   },
 ];

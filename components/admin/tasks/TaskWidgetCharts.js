@@ -26,6 +26,11 @@ import {
   getUpcomingTasksTimeline,
   getHighPriorityOverview,
 } from "./charts/TaskChartUtils";
+import {
+  CustomPieTooltip,
+  CustomBarTooltip,
+  CustomLineTooltip,
+} from "./charts/ChartTooltips";
 
 const COLORS = {
   primary: "hsl(var(--primary))",
@@ -35,36 +40,6 @@ const COLORS = {
   chart5: "hsl(var(--chart-5))",
   destructive: "hsl(var(--destructive))",
   muted: "hsl(var(--muted))",
-};
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/85 p-2 rounded-lg border shadow-lg">
-        <p className="text-sm font-medium">{label}</p>
-        {payload.map((entry, index) => (
-          <p key={index} className="text-sm text-muted-foreground">
-            {entry.name}: {entry.value}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
-const CustomPieTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-3">
-        <p className="text-sm font-medium">{payload[0].name}</p>
-        <p className="text-sm text-muted-foreground">
-          Count: {payload[0].value}
-        </p>
-      </div>
-    );
-  }
-  return null;
 };
 
 export const TaskWidgetCharts = () => {
@@ -127,17 +102,14 @@ export const TaskWidgetCharts = () => {
   const renderBarChart = (data, color = COLORS.primary) => (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} barSize={20}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-muted/30" />
+        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
         <XAxis
           dataKey="label"
           tick={{ fontSize: 12 }}
           className="text-muted-foreground"
         />
         <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-        <Tooltip
-          content={<CustomTooltip />}
-          cursor={{ fill: "var(--muted)", opacity: 0.1 }}
-        />
+        <Tooltip content={<CustomBarTooltip />} />
         <Bar
           dataKey="value"
           fill={color}
@@ -151,29 +123,21 @@ export const TaskWidgetCharts = () => {
   const renderLineChart = (data) => (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-muted/30" />
+        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
         <XAxis
           dataKey="label"
           tick={{ fontSize: 12 }}
           className="text-muted-foreground"
         />
         <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-        <Tooltip
-          content={<CustomTooltip />}
-          cursor={{ stroke: "var(--muted)", strokeWidth: 1 }}
-        />
+        <Tooltip content={<CustomLineTooltip />} />
         <Line
           type="monotone"
           dataKey="value"
           stroke={COLORS.primary}
           strokeWidth={2}
-          dot={{ fill: COLORS.primary, r: 4 }}
-          activeDot={{
-            fill: COLORS.primary,
-            stroke: "var(--background)",
-            r: 6,
-            strokeWidth: 2,
-          }}
+          dot={{ fill: COLORS.primary }}
+          activeDot={{ r: 6, className: "animate-pulse" }}
         />
       </LineChart>
     </ResponsiveContainer>
@@ -196,36 +160,36 @@ export const TaskWidgetCharts = () => {
       </TaskChartCard>
 
       <TaskChartCard
-        title="Overdue Tasks by Days Late"
-        description="Tasks that are past their due date, sorted by days overdue"
+        title="Overdue Tasks"
+        description="Tasks that are past their due date"
       >
         {renderBarChart(overdueStats, COLORS.destructive)}
       </TaskChartCard>
 
       <TaskChartCard
-        title="Tasks Due Today by Priority"
-        description="Tasks that need attention today, grouped by priority"
+        title="Tasks Due Today"
+        description="Tasks that need to be completed today"
       >
         {renderPieChart(dueTodayStats)}
       </TaskChartCard>
 
       <TaskChartCard
         title="Completed Tasks by Priority"
-        description="Analysis of completed tasks across priority levels"
+        description="Analysis of completed tasks based on their priority"
       >
         {renderBarChart(completedByPriority, COLORS.chart3)}
       </TaskChartCard>
 
       <TaskChartCard
         title="Upcoming Tasks Timeline"
-        description="Task distribution over the next 7 days"
+        description="Overview of tasks due in the next 7 days"
       >
         {renderLineChart(upcomingTimeline)}
       </TaskChartCard>
 
       <TaskChartCard
-        title="High-Priority Tasks Overview"
-        description="Status breakdown of high-priority tasks"
+        title="High Priority Overview"
+        description="Status distribution of high priority tasks"
       >
         {renderBarChart(highPriorityOverview, COLORS.chart4)}
       </TaskChartCard>
