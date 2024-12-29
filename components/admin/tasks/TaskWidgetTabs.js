@@ -10,13 +10,13 @@ export const TaskWidgetTabs = () => {
       <TabsList className="bg-transparent justify-start p-1 gap-2">
         <TabsTrigger
           value="widgets"
-          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+          className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
           Widgets
         </TabsTrigger>
         <TabsTrigger
           value="charts"
-          className="rounded-md px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+          className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
           Charts & Analytics
         </TabsTrigger>
