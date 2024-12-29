@@ -63,14 +63,29 @@ export const PeopleManagement = () => {
   const handleAssignIdentity = async (data) => {
     try {
       // Get the selected identities from the identities array
-      const selectedIdentities = data.identity_ids
+      const newIdentities = data.identity_ids
         .map((id) => identities.find((identity) => identity.id === id))
         .filter(Boolean);
 
-      // Update the peopleIdentities state with the new identities
+      // Get existing identities for this person
+      const existingIdentities = peopleIdentities[data.person_id] || [];
+
+      // Merge existing and new identities, removing duplicates by ID
+      const mergedIdentities = [...existingIdentities, ...newIdentities].reduce(
+        (unique, item) => {
+          const exists = unique.find((x) => x.id === item.id);
+          if (!exists) {
+            unique.push(item);
+          }
+          return unique;
+        },
+        []
+      );
+
+      // Update the peopleIdentities state with the merged identities
       setPeopleIdentities((prev) => ({
         ...prev,
-        [data.person_id]: selectedIdentities,
+        [data.person_id]: mergedIdentities,
       }));
 
       setShowAssignDialog(false);

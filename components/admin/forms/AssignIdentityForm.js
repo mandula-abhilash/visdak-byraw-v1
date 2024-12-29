@@ -68,13 +68,6 @@ export const AssignIdentityForm = ({ onSubmit, onCancel, selectedPerson }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        {selectedPerson && (
-          <div className="text-sm">
-            Assigning identities to{" "}
-            <span className="font-medium">{selectedPerson.full_name}</span>
-          </div>
-        )}
-
         {currentIdentities.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">

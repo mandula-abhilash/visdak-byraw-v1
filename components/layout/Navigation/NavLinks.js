@@ -17,83 +17,94 @@ export const NavLinks = ({ collapsed, onClick }) => {
     setMounted(true);
   }, []);
 
-  return (
-    <div className="flex flex-col gap-1 p-2">
-      {NAV_ITEMS.map((item) => {
-        const Icon = Icons[item.icon];
-        const isActive = pathname === item.path;
+  const renderNavItem = (item) => {
+    const Icon = Icons[item.icon];
+    const isActive = pathname === item.path;
 
-        const handleClick = (e) => {
-          if (item.isThemeToggle) {
-            e.preventDefault();
-            setTheme(theme === "light" ? "dark" : "light");
-          }
-          onClick?.();
-        };
+    const handleClick = (e) => {
+      if (item.isThemeToggle) {
+        e.preventDefault();
+        setTheme(theme === "light" ? "dark" : "light");
+      }
+      onClick?.();
+    };
 
-        if (item.isThemeToggle) {
-          if (!mounted) {
-            return (
-              <div
-                key={item.id}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md",
-                  "text-muted-foreground",
-                  collapsed && "justify-center px-2"
-                )}
-              >
-                <div className="h-5 w-5" />
-                {!collapsed && (
-                  <span className="text-sm font-medium">{item.label}</span>
-                )}
-              </div>
-            );
-          }
-
-          return (
-            <button
-              key={item.id}
-              onClick={handleClick}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
-                "hover:bg-accent hover:text-accent-foreground",
-                "text-muted-foreground",
-                collapsed && "justify-center px-2"
-              )}
-            >
-              {theme === "dark" ? (
-                <Icons.Moon className="h-5 w-5 shrink-0" />
-              ) : (
-                <Icons.Sun className="h-5 w-5 shrink-0" />
-              )}
-              {!collapsed && (
-                <span className="text-sm font-medium">{item.label}</span>
-              )}
-            </button>
-          );
-        }
-
+    if (item.isThemeToggle) {
+      if (!mounted) {
         return (
-          <Link
+          <div
             key={item.id}
-            href={item.path}
-            onClick={onClick}
             className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
-              "hover:bg-accent hover:text-accent-foreground",
-              isActive
-                ? "bg-secondary text-secondary-foreground"
-                : "text-muted-foreground",
+              "flex items-center gap-3 px-3 py-2 rounded-md",
+              "text-muted-foreground",
               collapsed && "justify-center px-2"
             )}
           >
-            <Icon className="h-5 w-5 shrink-0" />
+            <div className="h-5 w-5" />
             {!collapsed && (
               <span className="text-sm font-medium">{item.label}</span>
             )}
-          </Link>
+          </div>
         );
-      })}
+      }
+
+      return (
+        <button
+          key={item.id}
+          onClick={handleClick}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+            "hover:bg-accent hover:text-accent-foreground",
+            "text-muted-foreground",
+            collapsed && "justify-center px-2"
+          )}
+        >
+          {theme === "dark" ? (
+            <Icons.Moon className="h-5 w-5 shrink-0" />
+          ) : (
+            <Icons.Sun className="h-5 w-5 shrink-0" />
+          )}
+          {!collapsed && (
+            <span className="text-sm font-medium">{item.label}</span>
+          )}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        key={item.id}
+        href={item.path}
+        onClick={onClick}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+          "hover:bg-accent hover:text-accent-foreground",
+          isActive
+            ? "bg-secondary text-secondary-foreground"
+            : "text-muted-foreground",
+          collapsed && "justify-center px-2"
+        )}
+      >
+        <Icon className="h-5 w-5 shrink-0" />
+        {!collapsed && (
+          <span className="text-sm font-medium">{item.label}</span>
+        )}
+      </Link>
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-1 p-2">
+      {NAV_ITEMS.map((section) => (
+        <div key={section.section} className="space-y-1">
+          {!collapsed && (
+            <h4 className="px-3 py-2 text-sm font-semibold text-foreground/70">
+              {section.section}
+            </h4>
+          )}
+          {section.items.map(renderNavItem)}
+        </div>
+      ))}
     </div>
   );
 };
