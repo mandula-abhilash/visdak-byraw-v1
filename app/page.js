@@ -1,11 +1,22 @@
 import { Layout } from "@/components/layout/Layout";
-import { Dashboard } from "@/components/dashboard/Dashboard";
 
 export default function Home() {
   return (
     <Layout>
-      <div className="md:pl-[240px]">
-        <Dashboard />
+      <div className="md:pl-[240px] space-y-6">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Overview of your activities and insights
+          </p>
+        </div>
+        <div className="grid gap-4">
+          <div className="bg-card p-6 rounded-lg border">
+            <p className="text-muted-foreground">
+              Dashboard management features coming soon...
+            </p>
+          </div>
+        </div>
       </div>
     </Layout>
   );

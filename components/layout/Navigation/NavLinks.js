@@ -54,7 +54,7 @@ export const NavLinks = ({ collapsed, onClick }) => {
           onClick={handleClick}
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
-            "hover:bg-accent hover:text-accent-foreground",
+            "hover:bg-accent hover:text-accent-foreground w-full",
             "text-muted-foreground",
             collapsed && "justify-center px-2"
           )}
@@ -95,9 +95,12 @@ export const NavLinks = ({ collapsed, onClick }) => {
 
   return (
     <div className="flex flex-col gap-1 p-2">
-      {NAV_ITEMS.map((section) => (
-        <div key={section.section} className="space-y-1">
-          {!collapsed && (
+      {NAV_ITEMS.map((section, index) => (
+        <div
+          key={section.section}
+          className={cn("space-y-1", index !== 0 && "mt-4")}
+        >
+          {section.section && !collapsed && (
             <h4 className="px-3 py-2 text-sm font-semibold text-foreground/70">
               {section.section}
             </h4>
