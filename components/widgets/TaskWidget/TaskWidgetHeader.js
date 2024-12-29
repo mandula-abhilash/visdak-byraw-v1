@@ -46,26 +46,34 @@ export const TaskWidgetHeader = ({
           </Select>
         )}
         {showKanbanToggle && (
-          <>
+          <div className="bg-muted rounded-md p-1 flex gap-1">
             <Button
-              variant={selectedView === "list" ? "secondary" : "ghost"}
+              variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className={`h-7 w-7 ${
+                selectedView === "list"
+                  ? "bg-background shadow-sm"
+                  : "hover:bg-background/50"
+              }`}
               onClick={() => onViewChange("list")}
             >
               <LayoutList className="h-4 w-4" />
               <span className="sr-only">List view</span>
             </Button>
             <Button
-              variant={selectedView === "kanban" ? "secondary" : "ghost"}
+              variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className={`h-7 w-7 ${
+                selectedView === "kanban"
+                  ? "bg-background shadow-sm"
+                  : "hover:bg-background/50"
+              }`}
               onClick={() => onViewChange("kanban")}
             >
               <SquareKanban className="h-4 w-4" />
               <span className="sr-only">Kanban view</span>
             </Button>
-          </>
+          </div>
         )}
       </div>
     </div>
