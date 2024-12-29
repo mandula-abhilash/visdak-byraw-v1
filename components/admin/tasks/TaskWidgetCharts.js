@@ -56,7 +56,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 const CustomPieTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/85 p-2 rounded-lg border shadow-lg">
+      <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-3">
         <p className="text-sm font-medium">{payload[0].name}</p>
         <p className="text-sm text-muted-foreground">
           Count: {payload[0].value}
@@ -94,18 +94,23 @@ export const TaskWidgetCharts = () => {
           onMouseEnter={(_, index) => setActiveIndex(index)}
           onMouseLeave={() => setActiveIndex(null)}
         >
-          {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={Object.values(COLORS)[index % Object.values(COLORS).length]}
-              strokeWidth={activeIndex === index ? 2 : 1}
-              className="transition-all duration-200"
-              style={{
-                filter: activeIndex === index ? "brightness(1.1)" : "none",
-                transform: activeIndex === index ? "scale(1.05)" : "scale(1)",
-              }}
-            />
-          ))}
+          {data.map((entry, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  Object.values(COLORS)[index % Object.values(COLORS).length]
+                }
+                className="transition-all duration-300 ease-in-out"
+                style={{
+                  transform: isActive ? "scale(1.1)" : "scale(1)",
+                  filter: isActive ? "brightness(1.1)" : "none",
+                  transformOrigin: "center",
+                }}
+              />
+            );
+          })}
         </Pie>
         <Tooltip content={<CustomPieTooltip />} />
         <Legend
