@@ -64,6 +64,22 @@ const TaskItem = ({
   );
 };
 
+const KanbanColumn = ({ title, tasks, taskProps }) => (
+  <div className="flex-1">
+    <h3 className="font-medium text-sm mb-3">{title}</h3>
+    <div className="space-y-2">
+      {tasks.map((task) => (
+        <TaskItem key={task.id} task={task} {...taskProps} />
+      ))}
+      {tasks.length === 0 && (
+        <div className="text-sm text-muted-foreground text-center py-4 border rounded-lg">
+          No tasks
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 export const TaskList = ({
   tasks = [],
   isLoading,
@@ -95,23 +111,60 @@ export const TaskList = ({
     );
   }
 
-  if (view === "list") {
+  if (view === "kanban") {
+    const taskProps = {
+      showDueDate,
+      showPriority,
+      showCompletedDate,
+      showOverdueDuration,
+    };
+
+    const pendingTasks = tasks.filter((task) => task.status === "pending");
+    const inProgressTasks = tasks.filter(
+      (task) => task.status === "in progress"
+    );
+    const completedTasks = tasks.filter((task) => task.status === "completed");
+    const overdueTasks = tasks.filter((task) => task.status === "overdue");
+
     return (
-      <div className="space-y-2">
-        {tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            showDueDate={showDueDate}
-            showPriority={showPriority}
-            showCompletedDate={showCompletedDate}
-            showOverdueDuration={showOverdueDuration}
-          />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KanbanColumn
+          title={`Pending (${pendingTasks.length})`}
+          tasks={pendingTasks}
+          taskProps={taskProps}
+        />
+        <KanbanColumn
+          title={`In Progress (${inProgressTasks.length})`}
+          tasks={inProgressTasks}
+          taskProps={taskProps}
+        />
+        <KanbanColumn
+          title={`Completed (${completedTasks.length})`}
+          tasks={completedTasks}
+          taskProps={taskProps}
+        />
+        <KanbanColumn
+          title={`Overdue (${overdueTasks.length})`}
+          tasks={overdueTasks}
+          taskProps={taskProps}
+        />
       </div>
     );
   }
 
-  // Kanban view would go here
-  return null;
+  // List view
+  return (
+    <div className="space-y-2">
+      {tasks.map((task) => (
+        <TaskItem
+          key={task.id}
+          task={task}
+          showDueDate={showDueDate}
+          showPriority={showPriority}
+          showCompletedDate={showCompletedDate}
+          showOverdueDuration={showOverdueDuration}
+        />
+      ))}
+    </div>
+  );
 };
