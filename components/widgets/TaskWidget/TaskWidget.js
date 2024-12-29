@@ -32,7 +32,7 @@ export const TaskWidget = ({
 
   if (error) {
     return (
-      <Card>
+      <Card className="h-full">
         <CardContent className="pt-6">
           <div className="text-sm text-destructive">
             Error loading tasks: {error.message}
@@ -43,8 +43,8 @@ export const TaskWidget = ({
   }
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader className="pb-3">
+    <Card className="h-full flex flex-col shadow-lg">
+      <CardHeader className="pb-3 flex-none">
         <TaskWidgetHeader
           title={title}
           selectedView={selectedView}
@@ -52,17 +52,19 @@ export const TaskWidget = ({
           taskCount={tasks?.length || 0}
         />
       </CardHeader>
-      <CardContent>
-        <TaskList
-          tasks={tasks}
-          isLoading={isLoading}
-          view={selectedView}
-          showDueDate={showDueDate}
-          showPriority={showPriority}
-          showStatusCount={showStatusCount}
-          showCompletedDate={showCompletedDate}
-          showOverdueDuration={showOverdueDuration}
-        />
+      <CardContent className="flex-1 min-h-[300px] overflow-hidden">
+        <div className="h-full overflow-y-auto">
+          <TaskList
+            tasks={tasks}
+            isLoading={isLoading}
+            view={selectedView}
+            showDueDate={showDueDate}
+            showPriority={showPriority}
+            showStatusCount={showStatusCount}
+            showCompletedDate={showCompletedDate}
+            showOverdueDuration={showOverdueDuration}
+          />
+        </div>
       </CardContent>
     </Card>
   );

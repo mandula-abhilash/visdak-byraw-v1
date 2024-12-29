@@ -80,8 +80,10 @@ export const TaskWidgetVariants = () => {
   return (
     <div className="flex flex-wrap -mx-3 space-y-4">
       {widgets.map((widget, index) => (
-        <div key={index} className={getWidgetWidth(widget.width)}>
-          <TaskWidget {...widget} />
+        <div key={index} className={`${getWidgetWidth(widget.width)} mb-6`}>
+          <div className="h-full">
+            <TaskWidget {...widget} />
+          </div>{" "}
         </div>
       ))}
     </div>
