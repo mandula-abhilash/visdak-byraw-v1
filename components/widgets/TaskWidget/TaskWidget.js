@@ -19,6 +19,7 @@ export const TaskWidget = ({
   showStatusCount = false,
   showCompletedDate = false,
   showOverdueDuration = false,
+  showKanbanToggle = false,
 }) => {
   const [selectedView, setSelectedView] = useState("list");
   const { tasks, isLoading, error } = useTaskWidget({
@@ -50,6 +51,7 @@ export const TaskWidget = ({
           selectedView={selectedView}
           onViewChange={setSelectedView}
           taskCount={tasks?.length || 0}
+          showKanbanToggle={showKanbanToggle}
         />
       </CardHeader>
       <CardContent className="flex-1 min-h-[300px] overflow-hidden">

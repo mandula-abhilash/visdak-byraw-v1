@@ -25,6 +25,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["pending"],
       showDueDate: true,
       width: "full",
+      showKanbanToggle: true,
     },
     {
       title: "Overdue Tasks",
@@ -63,6 +64,17 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["pending"],
       showDueDate: true,
       showPriority: true,
+      width: "full",
+      showKanbanToggle: true,
+    },
+    {
+      title: "Oldest Pending",
+      dateRange: ["past"],
+      sort: "asc",
+      limit: 5,
+      statusFilter: ["pending"],
+      showDueDate: true,
+      showOverdueDuration: true,
       width: "1/3",
     },
     {
@@ -73,7 +85,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["pending"],
       showDueDate: true,
       showOverdueDuration: true,
-      width: "full",
+      width: "1/3",
     },
   ];
 
