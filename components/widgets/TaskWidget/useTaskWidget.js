@@ -1,33 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-// Simulated tasks data - replace with actual API call
-const MOCK_TASKS = [
-  {
-    id: 1,
-    title: "Review project proposal",
-    status: "pending",
-    priority: "high",
-    due_date: "2024-02-20",
-  },
-  {
-    id: 2,
-    title: "Update documentation",
-    status: "completed",
-    priority: "medium",
-    due_date: "2024-02-19",
-    completed_on: "2024-02-19",
-  },
-  {
-    id: 3,
-    title: "Schedule team meeting",
-    status: "overdue",
-    priority: "high",
-    due_date: "2024-02-15",
-    overdue_days: 5,
-  },
-];
+import { MOCK_TASKS } from "@/components/admin/tasks/mockData";
 
 export const useTaskWidget = ({
   dateRange,

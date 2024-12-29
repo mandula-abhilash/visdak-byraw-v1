@@ -1,7 +1,6 @@
 "use client";
 
 import { TaskWidget } from "@/components/widgets";
-import { MOCK_TASKS } from "./mockData";
 
 export const TaskWidgetVariants = () => {
   return (
