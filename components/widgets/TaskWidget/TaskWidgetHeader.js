@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutList, LayoutKanban } from "lucide-react";
+import { LayoutList, SquareKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 
@@ -38,7 +38,7 @@ export const TaskWidgetHeader = ({
           className="h-8 w-8"
           onClick={() => onViewChange("kanban")}
         >
-          <LayoutKanban className="h-4 w-4" />
+          <SquareKanban className="h-4 w-4" />
           <span className="sr-only">Kanban view</span>
         </Button>
       </div>
