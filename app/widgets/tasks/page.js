@@ -1,7 +1,7 @@
 "use client";
 
 import { Layout } from "@/components/layout/Layout";
-import { TaskWidgetVariants } from "@/components/admin/tasks/TaskWidgetVariants";
+import { TaskWidgetTabs } from "@/components/admin/tasks/TaskWidgetTabs";
 
 export default function TaskWidgetsPage() {
   return (
@@ -10,10 +10,11 @@ export default function TaskWidgetsPage() {
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Task Widgets</h1>
           <p className="text-muted-foreground">
-            Available task widget variations for dashboard configuration
+            Available task widget variations and analytics for dashboard
+            configuration
           </p>
         </div>
-        <TaskWidgetVariants />
+        <TaskWidgetTabs />
       </div>
     </Layout>
   );
