@@ -7,26 +7,65 @@ import * as Icons from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
+
+const SubNavItem = ({ subItem, onClick, isActive }) => {
+  // Get icon component dynamically
+  const IconComponent = Icons[subItem.icon];
+
+  return (
+    <Link
+      key={subItem.id}
+      href={subItem.path}
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+        "hover:bg-accent hover:text-accent-foreground",
+        isActive
+          ? "bg-secondary text-secondary-foreground"
+          : "text-muted-foreground"
+      )}
+    >
+      {IconComponent && <IconComponent className="h-4 w-4 shrink-0" />}
+      <span className="text-sm font-medium">{subItem.label}</span>
+    </Link>
+  );
+};
 
 export const NavLinks = ({ collapsed, onClick }) => {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [expandedItems, setExpandedItems] = useState({});
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const toggleExpanded = (itemId) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
+  };
+
   const renderNavItem = (item) => {
-    const Icon = Icons[item.icon];
+    const IconComponent = Icons[item.icon];
     const isActive = pathname === item.path;
+    const hasSubItems = item.subItems && item.subItems.length > 0;
+    const isExpanded = expandedItems[item.id];
 
     const handleClick = (e) => {
       if (item.isThemeToggle) {
         e.preventDefault();
         setTheme(theme === "light" ? "dark" : "light");
+      } else if (hasSubItems) {
+        e.preventDefault();
+        toggleExpanded(item.id);
       }
-      onClick?.();
+      if (!hasSubItems) {
+        onClick?.();
+      }
     };
 
     if (item.isThemeToggle) {
@@ -53,8 +92,8 @@ export const NavLinks = ({ collapsed, onClick }) => {
           key={item.id}
           onClick={handleClick}
           className={cn(
-            "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
-            "hover:bg-accent hover:text-accent-foreground w-full",
+            "flex items-center gap-3 px-3 py-2 rounded-md transition-colors w-full",
+            "hover:bg-accent hover:text-accent-foreground",
             "text-muted-foreground",
             collapsed && "justify-center px-2"
           )}
@@ -72,24 +111,47 @@ export const NavLinks = ({ collapsed, onClick }) => {
     }
 
     return (
-      <Link
-        key={item.id}
-        href={item.path}
-        onClick={onClick}
-        className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
-          "hover:bg-accent hover:text-accent-foreground",
-          isActive
-            ? "bg-secondary text-secondary-foreground"
-            : "text-muted-foreground",
-          collapsed && "justify-center px-2"
+      <div key={item.id}>
+        <Link
+          href={hasSubItems ? "#" : item.path}
+          onClick={handleClick}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+            "hover:bg-accent hover:text-accent-foreground",
+            isActive
+              ? "bg-secondary text-secondary-foreground"
+              : "text-muted-foreground",
+            collapsed && "justify-center px-2"
+          )}
+        >
+          {IconComponent && <IconComponent className="h-5 w-5 shrink-0" />}
+          {!collapsed && (
+            <div className="flex flex-1 items-center justify-between">
+              <span className="text-sm font-medium">{item.label}</span>
+              {hasSubItems && (
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 transition-transform",
+                    isExpanded && "rotate-180"
+                  )}
+                />
+              )}
+            </div>
+          )}
+        </Link>
+        {hasSubItems && isExpanded && !collapsed && (
+          <div className="ml-6 mt-1 space-y-1">
+            {item.subItems.map((subItem) => (
+              <SubNavItem
+                key={subItem.id}
+                subItem={subItem}
+                onClick={onClick}
+                isActive={pathname === subItem.path}
+              />
+            ))}
+          </div>
         )}
-      >
-        <Icon className="h-5 w-5 shrink-0" />
-        {!collapsed && (
-          <span className="text-sm font-medium">{item.label}</span>
-        )}
-      </Link>
+      </div>
     );
   };
 
