@@ -19,8 +19,8 @@ export const TaskChartCard = ({ title, children, description }) => {
                 ?
               </div>
             </HoverCardTrigger>
-            <HoverCardContent className="w-80">
-              <p className="text-sm text-muted-foreground">{description}</p>
+            <HoverCardContent className="w-80 bg-popover border shadow-md">
+              <p className="text-sm text-popover-foreground">{description}</p>
             </HoverCardContent>
           </HoverCard>
         )}
