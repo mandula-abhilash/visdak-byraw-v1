@@ -11,7 +11,7 @@ export const TaskWidgetVariants = () => {
       limit: 5,
       statusFilter: ["pending"],
       showDueDate: true,
-      width: "1/2",
+      width: "3/4",
     },
     {
       title: "Overdue Tasks",
@@ -21,7 +21,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["overdue"],
       showDueDate: true,
       showOverdueDuration: true,
-      width: "1/2",
+      width: "3/4",
     },
     {
       title: "Recently Completed",
@@ -30,7 +30,7 @@ export const TaskWidgetVariants = () => {
       limit: 5,
       statusFilter: ["completed"],
       showCompletedDate: true,
-      width: "2/3",
+      width: "3/4",
     },
     {
       title: "High Priority",
@@ -50,7 +50,7 @@ export const TaskWidgetVariants = () => {
       statusFilter: ["pending"],
       showDueDate: true,
       showPriority: true,
-      width: "1/3",
+      width: "3/4",
     },
     {
       title: "Oldest Pending",
