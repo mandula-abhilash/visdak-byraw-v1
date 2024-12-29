@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLinks } from "./NavLinks";
 import { Logo } from "../Logo";
-import { cn } from "@/lib/utils";
 import { MiniNav } from "./MiniNav";
 import { UserProfile } from "./UserProfile";
+import { useLayout } from "@/lib/context/LayoutContext";
 
 export const DesktopNav = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const { isNavCollapsed, toggleNav } = useLayout();
 
-  if (collapsed) {
-    return <MiniNav onExpand={() => setCollapsed(false)} />;
+  if (isNavCollapsed) {
+    return <MiniNav onExpand={toggleNav} />;
   }
 
   return (
-    <nav className="hidden md:flex flex-col border-r bg-background w-[240px] fixed top-0 bottom-0 left-0">
+    <nav className="hidden md:block fixed top-0 left-0 bottom-0 w-[240px] border-r bg-background z-40">
       <div className="h-14 px-4 flex items-center">
         <Logo />
       </div>
@@ -28,7 +27,7 @@ export const DesktopNav = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setCollapsed(true)}
+        onClick={toggleNav}
         className="h-8 w-8 absolute -right-4 top-10 bg-background border rounded-full shadow-md"
       >
         <ChevronLeft className="h-4 w-4" />

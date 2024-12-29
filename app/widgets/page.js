@@ -6,7 +6,7 @@ import { WidgetManagement } from "@/components/admin/WidgetManagement";
 export default function WidgetsPage() {
   return (
     <Layout>
-      <div className="md:pl-[240px] space-y-6">
+      <div className="space-y-6">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">
             Widget Management

@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 export default function SettingsPage() {
   return (
     <Layout>
-      <div className="md:pl-[240px] space-y-6">
+      <div className=" space-y-6">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground">Customize your experience</p>
