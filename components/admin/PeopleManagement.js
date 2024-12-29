@@ -125,13 +125,15 @@ export const PeopleManagement = () => {
                 key={person.id}
                 className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-6 lg:py-4 first:pt-0 last:pb-0"
               >
-                <div className="space-y-2">
+                <div className="space-y-2 w-full">
                   <h3 className="font-medium text-lg">{person.full_name}</h3>
                   <div className="text-sm text-muted-foreground">
                     {person.email_address}
                   </div>
                   {peopleIdentities[person.id]?.length > 0 && (
-                    <IdentityList identities={peopleIdentities[person.id]} />
+                    <div className="w-full">
+                      <IdentityList identities={peopleIdentities[person.id]} />
+                    </div>
                   )}
                 </div>
                 <ActionButtonGroup>
