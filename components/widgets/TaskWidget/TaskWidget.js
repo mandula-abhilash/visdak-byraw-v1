@@ -46,7 +46,7 @@ export const TaskWidget = ({
 
   return (
     <Card className="h-full flex flex-col shadow-lg">
-      <CardHeader className="pb-3 flex-none">
+      <CardHeader className="pb-3 flex-none border-b">
         <TaskWidgetHeader
           title={title}
           selectedView={selectedView}
@@ -57,8 +57,8 @@ export const TaskWidget = ({
           showKanbanToggle={showKanbanToggle}
         />
       </CardHeader>
-      <CardContent className="flex-1 min-h-[300px] overflow-hidden">
-        <div className="h-full overflow-y-auto">
+      <CardContent className="flex-1 p-4 min-h-[300px] max-h-[500px] overflow-y-auto">
+        <div className="h-full">
           <TaskList
             tasks={tasks}
             isLoading={isLoading}
