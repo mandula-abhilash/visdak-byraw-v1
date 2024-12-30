@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TaskList } from "./TaskList";
 import { TaskWidgetHeader } from "./TaskWidgetHeader";
 import { useTaskWidget } from "./useTaskWidget";
+import { WIDGET_STYLES } from "@/lib/constants/widget-styles";
 
 export const TaskWidget = ({
   title = "Tasks",
@@ -57,7 +58,13 @@ export const TaskWidget = ({
           showKanbanToggle={showKanbanToggle}
         />
       </CardHeader>
-      <CardContent className="flex-1 p-4 min-h-[300px] max-h-[500px] overflow-y-auto">
+      <CardContent
+        className="flex-1 p-4 overflow-y-auto"
+        style={{
+          minHeight: WIDGET_STYLES.MIN_HEIGHT,
+          maxHeight: WIDGET_STYLES.MAX_HEIGHT,
+        }}
+      >
         <div className="h-full">
           <TaskList
             tasks={tasks}

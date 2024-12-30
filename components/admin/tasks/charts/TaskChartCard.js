@@ -6,6 +6,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { WIDGET_STYLES } from "@/lib/constants/widget-styles";
 
 export const TaskChartCard = ({ title, children, description }) => {
   return (
@@ -27,7 +28,13 @@ export const TaskChartCard = ({ title, children, description }) => {
           )}
         </div>
       </div>
-      <div className="flex-1 p-4 min-h-[300px] max-h-[500px] overflow-y-auto">
+      <div
+        className="flex-1 p-4 overflow-y-auto"
+        style={{
+          minHeight: WIDGET_STYLES.MIN_HEIGHT,
+          maxHeight: WIDGET_STYLES.MAX_HEIGHT,
+        }}
+      >
         <div className="h-full">{children}</div>
       </div>
     </Card>

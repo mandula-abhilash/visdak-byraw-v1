@@ -18,7 +18,7 @@ export const UserProfile = ({ collapsed }) => {
         )}
       >
         <Avatar>
-          <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&q=80&fit=crop" />
+          <AvatarImage src="https://i.imgur.com/XLxbS7D.jpg" />
           <AvatarFallback>AM</AvatarFallback>
         </Avatar>
         {!collapsed && (
