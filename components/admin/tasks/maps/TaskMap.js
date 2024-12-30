@@ -42,7 +42,7 @@ export const TaskMap = ({ tasks = [], type = "markers", onMarkerClick }) => {
     const defaultCenter = { lat: 17.385, lng: 78.4867 };
     const mapOptions = {
       center: defaultCenter,
-      zoom: 12,
+      zoom: 10,
       mapTypeId: "roadmap",
       styles: [
         {
