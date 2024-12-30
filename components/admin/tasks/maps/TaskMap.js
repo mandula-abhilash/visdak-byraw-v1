@@ -2,13 +2,21 @@
 
 import { useEffect, useRef } from "react";
 import { useGoogleMaps } from "@/lib/providers/GoogleMapsProvider";
+import { useGoogleMapsLibraries } from "@/lib/maps/useGoogleMapsLibraries";
+import {
+  renderMarkers,
+  renderHeatmap,
+  renderClusters,
+  renderRoutes,
+} from "@/lib/maps/mapRenderers";
 
-export const TaskMap = ({ tasks = [], onMarkerClick }) => {
+export const TaskMap = ({ tasks = [], type = "markers", onMarkerClick }) => {
   const mapRef = useRef(null);
-  const markersRef = useRef([]);
+  const elementsRef = useRef([]);
   const infoWindowRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const { isLoaded, loadError } = useGoogleMaps();
+  const { libraries, loadVisualization } = useGoogleMapsLibraries();
 
   useEffect(() => {
     if (isLoaded && mapRef.current && !mapInstanceRef.current) {
@@ -17,14 +25,21 @@ export const TaskMap = ({ tasks = [], onMarkerClick }) => {
   }, [isLoaded]);
 
   useEffect(() => {
+    const loadRequiredLibraries = async () => {
+      if (type === "heatmap" && !libraries.visualization) {
+        await loadVisualization();
+      }
+    };
+
     if (mapInstanceRef.current) {
-      updateMarkers();
+      loadRequiredLibraries().then(() => {
+        updateMap();
+      });
     }
-  }, [tasks]);
+  }, [tasks, type, libraries.visualization]);
 
   const initializeMap = () => {
     const defaultCenter = { lat: 17.385, lng: 78.4867 };
-
     const mapOptions = {
       center: defaultCenter,
       zoom: 12,
@@ -50,84 +65,52 @@ export const TaskMap = ({ tasks = [], onMarkerClick }) => {
       mapOptions
     );
 
-    // Initialize InfoWindow
     infoWindowRef.current = new window.google.maps.InfoWindow();
-
-    updateMarkers();
   };
 
-  const createInfoWindowContent = (task) => {
-    return `
-      <div class="p-4 min-w-[200px]">
-        <h3 class="font-medium mb-2">${task.title}</h3>
-        <div class="space-y-1 text-sm">
-          ${
-            task.customer
-              ? `
-            <p class="text-muted-foreground">
-              <strong>Customer:</strong> ${task.customer.name}
-            </p>
-            <p class="text-muted-foreground">
-              <strong>Address:</strong> ${task.customer.address}
-            </p>
-          `
-              : ""
-          }
-          ${
-            task.service_type
-              ? `
-            <p class="text-muted-foreground">
-              <strong>Service:</strong> ${task.service_type}
-            </p>
-          `
-              : ""
-          }
-          <p class="text-muted-foreground">
-            <strong>Status:</strong> ${task.status}
-          </p>
-          <p class="text-muted-foreground">
-            <strong>Priority:</strong> ${task.priority}
-          </p>
-          <p class="text-muted-foreground">
-            <strong>Due:</strong> ${new Date(
-              task.due_date
-            ).toLocaleDateString()}
-          </p>
-        </div>
-      </div>
-    `;
+  const clearMap = () => {
+    if (Array.isArray(elementsRef.current)) {
+      elementsRef.current.forEach((element) => {
+        if (element && typeof element.setMap === "function") {
+          element.setMap(null);
+        }
+      });
+    }
+    elementsRef.current = [];
   };
 
-  const updateMarkers = () => {
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    markersRef.current = [];
+  const updateMap = () => {
+    if (!mapInstanceRef.current) return;
 
-    // Add new markers
-    tasks.forEach((task) => {
-      if (task.location) {
-        const marker = new window.google.maps.Marker({
-          position: task.location,
-          map: mapInstanceRef.current,
-          title: task.title,
-        });
+    clearMap();
 
-        marker.addListener("click", () => {
-          // Close any open info window
-          infoWindowRef.current.close();
-
-          // Set content and open the info window
-          infoWindowRef.current.setContent(createInfoWindowContent(task));
-          infoWindowRef.current.open(mapInstanceRef.current, marker);
-
-          if (onMarkerClick) {
-            onMarkerClick(task);
-          }
-        });
-
-        markersRef.current.push(marker);
-      }
-    });
+    switch (type) {
+      case "heatmap":
+        if (libraries.visualization) {
+          elementsRef.current = renderHeatmap(tasks, mapInstanceRef.current);
+        }
+        break;
+      case "clusters":
+        elementsRef.current = renderClusters(
+          tasks,
+          mapInstanceRef.current,
+          infoWindowRef.current,
+          onMarkerClick
+        );
+        break;
+      case "routes":
+        elementsRef.current = renderRoutes(tasks, mapInstanceRef.current);
+        break;
+      case "markers":
+      default:
+        elementsRef.current = renderMarkers(
+          tasks,
+          mapInstanceRef.current,
+          infoWindowRef.current,
+          onMarkerClick
+        );
+        break;
+    }
   };
 
   if (loadError) {

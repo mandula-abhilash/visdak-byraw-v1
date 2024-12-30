@@ -5,10 +5,9 @@ import { TaskMapCard } from "./maps/TaskMapCard";
 import { TaskMap } from "./maps/TaskMap";
 import {
   getTasksByLocation,
-  getTasksByPriority,
-  getTasksByStatus,
-  getOverdueTasks,
-  getTodaysTasks,
+  getTaskHeatmapData,
+  getTaskClusterData,
+  getTaskRouteData,
 } from "./maps/TaskMapUtils";
 
 const widthClasses = {
@@ -29,42 +28,39 @@ export const TaskWidgetMaps = ({ maps = [] }) => {
 
   // Get all map data
   const allTasks = getTasksByLocation();
-  const highPriorityTasks = getTasksByPriority();
-  const pendingTasks = getTasksByStatus("pending");
-  const overdueTasks = getOverdueTasks();
-  const todaysTasks = getTodaysTasks();
+  const heatmapData = getTaskHeatmapData();
+  const clusterData = getTaskClusterData();
+  const routeData = getTaskRouteData();
 
   // Default maps configuration if none provided
   const defaultMaps = [
     {
-      title: "All Tasks",
-      description: "Overview of all task locations",
+      title: "Task Locations",
+      description: "Overview of all task locations with markers",
       data: allTasks,
+      type: "markers",
       width: "1/2",
     },
     {
-      title: "High Priority Tasks",
-      description: "Map of high priority tasks that need immediate attention",
-      data: highPriorityTasks,
+      title: "Task Density Heatmap",
+      description: "Visualize areas with high concentration of tasks",
+      data: heatmapData,
+      type: "heatmap",
       width: "1/2",
     },
     {
-      title: "Pending Tasks",
-      description: "Tasks that are yet to be started",
-      data: pendingTasks,
-      width: "1/3",
+      title: "Task Clusters",
+      description: "Grouped tasks by proximity with cluster markers",
+      data: clusterData,
+      type: "clusters",
+      width: "1/2",
     },
     {
-      title: "Overdue Tasks",
-      description: "Tasks that are past their due date",
-      data: overdueTasks,
-      width: "1/3",
-    },
-    {
-      title: "Today's Tasks",
-      description: "Tasks scheduled for today",
-      data: todaysTasks,
-      width: "1/3",
+      title: "Service Routes",
+      description: "Optimized routes for service tasks",
+      data: routeData,
+      type: "routes",
+      width: "1/2",
     },
   ];
 
@@ -75,7 +71,11 @@ export const TaskWidgetMaps = ({ maps = [] }) => {
       {mapsToRender.map((map, index) => (
         <div key={index} className={`${getChartWidth(map.width)} px-3 mb-6`}>
           <TaskMapCard title={map.title} description={map.description}>
-            <TaskMap tasks={map.data} onMarkerClick={setSelectedTask} />
+            <TaskMap
+              tasks={map.data}
+              type={map.type}
+              onMarkerClick={setSelectedTask}
+            />
           </TaskMapCard>
         </div>
       ))}

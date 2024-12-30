@@ -9,15 +9,23 @@ export const getTasksByLocation = () => {
   }));
 };
 
-export const getTasksByPriority = () => {
-  return MOCK_TASKS.filter((task) => task.priority === "high");
+export const getTaskHeatmapData = () => {
+  return MOCK_TASKS.map((task) => ({
+    ...task,
+    intensity:
+      task.priority === "high" ? 3 : task.priority === "medium" ? 2 : 1,
+  }));
 };
 
-export const getTasksByStatus = (status) => {
-  return MOCK_TASKS.filter((task) => task.status === status);
+export const getTaskClusterData = () => {
+  return MOCK_TASKS.map((task) => ({
+    ...task,
+    cluster: task.service_type,
+  }));
 };
 
-export const getTasksByServiceType = () => {
+export const getTaskRouteData = () => {
+  // Group tasks by service type to create routes
   const serviceTypes = {};
   MOCK_TASKS.forEach((task) => {
     if (!serviceTypes[task.service_type]) {
@@ -25,21 +33,35 @@ export const getTasksByServiceType = () => {
     }
     serviceTypes[task.service_type].push(task);
   });
-  return serviceTypes;
-};
 
-export const getOverdueTasks = () => {
-  return MOCK_TASKS.filter((task) => task.status === "overdue");
-};
+  // Create routes for each service type
+  return Object.entries(serviceTypes).map(([service, tasks]) => {
+    // Sort tasks by due date to create a logical route
+    const sortedTasks = [...tasks].sort(
+      (a, b) => new Date(a.due_date) - new Date(b.due_date)
+    );
 
-export const getTodaysTasks = () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  return MOCK_TASKS.filter((task) => {
-    const taskDate = new Date(task.due_date);
-    return taskDate >= today && taskDate < tomorrow;
+    return {
+      service_type: service,
+      path: sortedTasks.map((task) => task.location),
+      color: getRouteColor(service),
+      tasks: sortedTasks,
+    };
   });
+};
+
+const getRouteColor = (serviceType) => {
+  const colors = {
+    Maintenance: "#4CAF50", // Green
+    Security: "#F44336", // Red
+    Installation: "#2196F3", // Blue
+    Setup: "#9C27B0", // Purple
+    Inspection: "#FF9800", // Orange
+    Review: "#795548", // Brown
+    Upgrade: "#607D8B", // Blue Grey
+    Support: "#00BCD4", // Cyan
+    Migration: "#E91E63", // Pink
+  };
+
+  return colors[serviceType] || "#000000";
 };
