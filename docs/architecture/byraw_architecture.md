@@ -1,58 +1,49 @@
-# BYRAW Architecture Overview
+Below is a **comprehensive, single-source architecture document** that merges the **existing “One Brain” design** with the **new organizational features**: group/team hierarchies, collaboration tools, workflow automation, and analytics. This document is meant to be **production-grade**—all teams (technical, non-technical, management) should rely on it to understand, build, and extend the system.
+
+---
 
 # **1. Introduction**
 
 ## **1.1 Purpose**
 
-This document details the **“One Brain”** architecture—a system designed to unify **personal** and **organizational** data into a **single** integrated platform. The goal is to provide:
+The “One Brain” platform aims to **centralize personal and organizational data** into a **single system**. It must accommodate:
 
-1. **A single source of truth** for tasks, appointments, notes, and more.
-2. **Flexible persona or identity management** for individuals who wear multiple hats.
-3. **Granular sharing and permissions** across organizations, teams, or individuals.
-4. **Customizable dashboards** (widgets) that adapt to each user’s needs, context, or role.
+1. **Personal usage** (individual tasks, notes, appointments, etc.)
+2. **Organizational usage** (team tasks, approvals, analytics dashboards, recurring processes).
+
+This document describes how the **core architecture** supports **all** these use cases seamlessly.
 
 ## **1.2 Vision**
 
-- **Think Better**: Help users capture and organize ideas instantly.
-- **Work Smarter**: Optimize daily routines through tasks, reminders, AI-driven insights, and integrated calendars.
-- **Achieve More**: Provide powerful but user-friendly tools that adapt from personal use to enterprise scale.
+1. **Think Better**
+   - Capture and organize ideas, notes, tasks in real time, for individuals and teams.
+2. **Work Smarter**
+   - Streamline daily routines with tasks, reminders, recurring workflows, and integrated calendars.
+3. **Achieve More**
+   - Provide both **simple** personal productivity features and **powerful** enterprise-level modules (approvals, analytics, collaboration).
 
 ---
 
 # **2. Core Concepts**
 
-## **2.1 People and Identities**
-
-- **People**: Every individual who interacts with the system is a “person” with a profile.
-- **Identities**: A “persona” or “role-based perspective” that a person can assume. For instance, “Freelancer,” “Doctor,” or “Student.” Multiple identities can attach to one person.
-
-## **2.2 Groups and Roles**
-
-- **Groups**: Collective entities—companies, hospitals, schools, families.
-- **Roles**: Defines a person’s level of access or responsibility within a group (e.g., “Owner,” “Admin,” “Member”).
-
-## **2.3 Entities (Items)**
-
-- **Entities**: The universal container for tasks, appointments, reminders, notes, analytics widgets, etc.
-- **Entity Types**: Admin-defined categories like “Task,” “Reminder,” “Appointment,” “Report,” or “Widget.”
-
-## **2.4 Permissions**
-
-- **Fine-Grained Access**: Entities can be shared with individuals, entire groups, or specialized teams at different permission levels (“view,” “edit,” “admin”).
-- **Metadata & Linking**: Additional data stored in JSON for custom fields or cross-references (e.g., “source: Hospital X,” “department: Marketing”).
-
-## **2.5 Widgets**
-
-- **Definition**: Modular components (calendars, analytics charts, forms) that pull data from entities.
-- **Dashboard Customization**: Users or admins can enable/disable specific widgets, define layouts, or set filters.
+1. **Unified Data Model**
+   - Everything (tasks, notes, appointments, approvals) is an **entity** in the same table.
+2. **Personas / Identities**
+   - Each user can switch between personal and organizational roles.
+3. **Hierarchical Groups**
+   - Companies, departments, sub-teams, families—arranged in parent-child relationships.
+4. **Granular Permissions**
+   - Roles at the group/team level (e.g. “Team Lead,” “Team Member”).
+5. **Collaboration & Automation**
+   - Shared tasks, comments, activity logs, approval workflows, recurring tasks.
+6. **Analytics**
+   - Dashboards and widgets that show productivity, budget usage, or any custom reports.
 
 ---
 
 # **3. Data Model & Schema**
 
-Below is the **new database schema** to support all these features. Use it as the **canonical reference** for implementation. You may rename columns or tables to suit your naming conventions, but the structure and relationships are designed for **scalability** and **modularity**.
-
----
+This section provides **all tables** required to support personal and organizational features. **Every new feature** (team hierarchy, comments, approvals, etc.) appears here in detail.
 
 ## **3.1 People & Identities**
 
@@ -63,15 +54,9 @@ Below is the **new database schema** to support all these features. Use it as th
 | **person_id**     | `SERIAL PK`                    | Uniquely identifies each person.             |
 | **full_name**     | `VARCHAR(100)`                 | Person’s display name (e.g., “Alice Baker”). |
 | **email_address** | `VARCHAR(255) UNIQUE NOT NULL` | Primary email or login credential.           |
-| **placeholder**   | `BOOLEAN`                      | Marks “dummy” or “test” accounts.            |
+| **placeholder**   | `BOOLEAN`                      | For “guest” or “shell” users.                |
 | **created_on**    | `TIMESTAMP`                    | Defaults to `CURRENT_TIMESTAMP`.             |
-| **updated_on**    | `TIMESTAMP`                    | Updated automatically (trigger or in code).  |
-
-**Notes**:
-
-- **`placeholder`** can be used for “guest” or “shell” users (e.g., patients who haven’t logged in yet).
-
----
+| **updated_on**    | `TIMESTAMP`                    | Timestamp of last update.                    |
 
 ### **Table: `identities`**
 
@@ -83,60 +68,40 @@ Below is the **new database schema** to support all these features. Use it as th
 | **created_on**  | `TIMESTAMP`   | Defaults to `CURRENT_TIMESTAMP`.         |
 | **updated_on**  | `TIMESTAMP`   | Timestamp for last update.               |
 
-**Notes**:
-
-- **Example**: “Freelancer,” “Professor,” “Consultant.”
-- This helps differentiate the tools/widgets a person might see.
-
----
-
 ### **Table: `person_identities`**
 
-| Column                                  | Type        | Description                               |
-| --------------------------------------- | ----------- | ----------------------------------------- |
-| **person_id**                           | `INT`       | FK referencing `people(person_id)`.       |
-| **identity_id**                         | `INT`       | FK referencing `identities(identity_id)`. |
-| **assigned_on**                         | `TIMESTAMP` | Defaults to `CURRENT_TIMESTAMP`.          |
-| **PRIMARY KEY**(person_id, identity_id) | -           | Ensures uniqueness.                       |
-
-**Example**:
-
-- Person #1 (Alice) might have identity #2 (“Doctor”) and identity #3 (“Artist”).
+| Column                                  | Type        | Description                                |
+| --------------------------------------- | ----------- | ------------------------------------------ |
+| **person_id**                           | `INT`       | FK referencing `people(person_id)`.        |
+| **identity_id**                         | `INT`       | FK referencing `identities(identity_id)`.  |
+| **assigned_on**                         | `TIMESTAMP` | Defaults to `CURRENT_TIMESTAMP`.           |
+| **PRIMARY KEY**(person_id, identity_id) | -           | Ensures uniqueness per (person, identity). |
 
 ---
 
-## **3.2 Groups & Roles**
+## **3.2 Groups & Hierarchies**
 
 ### **Table: `groups`**
 
-| Column         | Type           | Description                                               |
-| -------------- | -------------- | --------------------------------------------------------- |
-| **group_id**   | `SERIAL PK`    | Unique group identifier.                                  |
-| **group_name** | `VARCHAR(100)` | Descriptive name (e.g., “Acme Corp,” “Sunrise Hospital”). |
-| **created_on** | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                          |
-| **updated_on** | `TIMESTAMP`    | Track changes.                                            |
+| Column              | Type           | Description                                               |
+| ------------------- | -------------- | --------------------------------------------------------- |
+| **group_id**        | `SERIAL PK`    | Unique group identifier.                                  |
+| **group_name**      | `VARCHAR(100)` | Descriptive name (e.g., “Acme Corp,” “Sunrise Hospital”). |
+| **parent_group_id** | `INT`          | FK to `groups(group_id)` for hierarchical structure.      |
+| **created_on**      | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                          |
+| **updated_on**      | `TIMESTAMP`    | Track changes.                                            |
 
-**Use Cases**:
-
-- Could represent a **company**, **hospital**, or even a **family** unit for group-based data sharing.
-
----
+> **Note**: `parent_group_id` can be `NULL` for top-level organizations or set to another `group_id` to form a parent-child hierarchy (e.g., “Marketing Dept” within “Acme Corp”).
 
 ### **Table: `group_roles`**
 
-| Column          | Type          | Description                                 |
-| --------------- | ------------- | ------------------------------------------- |
-| **role_id**     | `SERIAL PK`   | Unique role record.                         |
-| **role_name**   | `VARCHAR(50)` | E.g., “Owner,” “Admin,” “Member,” “Viewer.” |
-| **description** | `TEXT`        | Explains what privileges are included.      |
-| **created_on**  | `TIMESTAMP`   | Defaults to `CURRENT_TIMESTAMP`.            |
-| **updated_on**  | `TIMESTAMP`   | Track last update.                          |
-
-**Note**:
-
-- You can keep a standard set of roles or allow group admins to add new roles.
-
----
+| Column          | Type          | Description                               |
+| --------------- | ------------- | ----------------------------------------- |
+| **role_id**     | `SERIAL PK`   | Unique role record.                       |
+| **role_name**   | `VARCHAR(50)` | E.g., “Owner,” “Admin,” “Team Lead,” etc. |
+| **description** | `TEXT`        | Explains privileges or intended usage.    |
+| **created_on**  | `TIMESTAMP`   | Defaults to `CURRENT_TIMESTAMP`.          |
+| **updated_on**  | `TIMESTAMP`   | Track last update.                        |
 
 ### **Table: `group_memberships`**
 
@@ -148,294 +113,398 @@ Below is the **new database schema** to support all these features. Use it as th
 | **joined_on**                        | `TIMESTAMP` | Defaults to `CURRENT_TIMESTAMP`.       |
 | **PRIMARY KEY**(person_id, group_id) | -           | One record per (person, group).        |
 
-**Example**:
-
-- Person #1 joins Group #10 with role #2 (“Admin”).
-- This means they have that level of access in that group’s data.
+> Roles determine what a user can do within the group: **Team Lead** can create tasks and assign them; **Team Member** might only view tasks.
 
 ---
 
-## **3.3 Unified Entities & Permissions**
+## **3.3 Unified Entities**
 
 ### **Table: `entity_types`**
 
-| Column          | Type           | Description                                                 |
-| --------------- | -------------- | ----------------------------------------------------------- |
-| **type_id**     | `SERIAL PK`    | Unique ID for each entity type.                             |
-| **type_name**   | `VARCHAR(100)` | Name like “Task,” “Reminder,” “Widget,” “Appointment,” etc. |
-| **description** | `TEXT`         | More info for admin reference.                              |
-| **created_on**  | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                            |
-| **updated_on**  | `TIMESTAMP`    | When last updated.                                          |
-
-**Notes**:
-
-- Admins or super-admins can insert new types: “Form,” “Analytics,” “FileUpload,” etc.
-
----
+| Column          | Type           | Description                                              |
+| --------------- | -------------- | -------------------------------------------------------- |
+| **type_id**     | `SERIAL PK`    | Unique ID for each entity type.                          |
+| **type_name**   | `VARCHAR(100)` | E.g., “Task,” “Note,” “Appointment,” “Widget,” “Report.” |
+| **description** | `TEXT`         | More info for admin reference.                           |
+| **created_on**  | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                         |
+| **updated_on**  | `TIMESTAMP`    | When last updated.                                       |
 
 ### **Table: `entities`**
 
-| Column           | Type           | Description                                                       |
-| ---------------- | -------------- | ----------------------------------------------------------------- |
-| **entity_id**    | `SERIAL PK`    | Primary key for each entity (item).                               |
-| **owner_id**     | `INT NOT NULL` | The “person_id” who primarily owns/created this item.             |
-| **group_id**     | `INT`          | If this entity belongs to a group, references `groups(group_id)`. |
-| **type_id**      | `INT NOT NULL` | References `entity_types(type_id)` (e.g., “Task,” “Note”).        |
-| **title**        | `VARCHAR(255)` | A short label or summary of the item.                             |
-| **description**  | `TEXT`         | Longer text or content.                                           |
-| **start_at**     | `TIMESTAMP`    | Scheduling field (start time).                                    |
-| **end_at**       | `TIMESTAMP`    | Scheduling field (end time).                                      |
-| **extra_data**   | `JSONB`        | Store custom fields (e.g., location, tags, or domain-specific).   |
-| **vector_embed** | `VECTOR(768)`  | Optional embedding for AI / semantic queries (pgvector).          |
-| **created_on**   | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                                  |
-| **updated_on**   | `TIMESTAMP`    | Track changes.                                                    |
+| Column           | Type           | Description                                                                 |
+| ---------------- | -------------- | --------------------------------------------------------------------------- |
+| **entity_id**    | `SERIAL PK`    | Primary key for each entity (item).                                         |
+| **owner_id**     | `INT NOT NULL` | The “person_id” who owns/created this item.                                 |
+| **group_id**     | `INT`          | If this entity belongs to a group, references `groups(group_id)`.           |
+| **type_id**      | `INT NOT NULL` | References `entity_types(type_id)` (e.g. “Task,” “Note,” etc.).             |
+| **title**        | `VARCHAR(255)` | A short label or summary of the item.                                       |
+| **description**  | `TEXT`         | Longer text or content.                                                     |
+| **start_at**     | `TIMESTAMP`    | Scheduling field (start time) for tasks, appointments, events.              |
+| **end_at**       | `TIMESTAMP`    | Scheduling field (end time).                                                |
+| **extra_data**   | `JSONB`        | Stores custom fields (e.g., priority, assigned_to, recurrence rules, etc.). |
+| **vector_embed** | `VECTOR(768)`  | Optional embedding for AI / semantic queries (if using pgvector).           |
+| **created_on**   | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                                            |
+| **updated_on**   | `TIMESTAMP`    | Track changes.                                                              |
 
-**Relationship & Usage**:
+> **Key Points**:
+>
+> - `extra_data` is central to storing domain-specific data—e.g., `{"task_status":"Pending", "assigned_to":[2,3], "approval_status":"Approved"}`.
+> - `group_id` indicates whether the item is personal (`NULL`) or belongs to an organization/team.
 
-- **`owner_id`** references `people(person_id)`.
-- **`group_id`** is optional. If present, indicates the entity is “tied” to that group.
-- **`extra_data`** can hold anything from “doctor_id” to “task_priority” without altering schema.
-
-**Example**:
-
-1. A personal “Buy Groceries” item:
-   - `owner_id = 1`, `group_id = NULL`, `type_id` (for “Task”), `title = 'Buy Groceries'`.
-2. A “Team Meeting” item in a “Marketing Dept” group:
-   - `owner_id = 2` (the person who created it), `group_id = 5` (Marketing), `type_id` (for “Appointment”), `title = 'Weekly Sync'`.
-
----
-
-### **Table: `entity_permissions`** (Optional if using RLS)
+### **Table: `entity_permissions`** (Optional if using Row-Level Security)
 
 | Column            | Type           | Description                                       |
 | ----------------- | -------------- | ------------------------------------------------- |
 | **permission_id** | `SERIAL PK`    | Unique row ID for each permission record.         |
 | **entity_id**     | `INT NOT NULL` | FK referencing `entities(entity_id)`.             |
-| **subject_type**  | `VARCHAR(50)`  | “Person,” “Group,” “Team,” etc.                   |
+| **subject_type**  | `VARCHAR(50)`  | E.g. “Person,” “Group,” “Team,” etc.              |
 | **subject_id**    | `INT NOT NULL` | ID of the subject (person_id, group_id, team_id). |
 | **access_level**  | `VARCHAR(50)`  | “view,” “edit,” “admin,” etc.                     |
 | **created_on**    | `TIMESTAMP`    | Defaults to `CURRENT_TIMESTAMP`.                  |
 | **updated_on**    | `TIMESTAMP`    | Track changes.                                    |
 
-**Example**:
-
-- If an entity must be visible only to person_id = 10, insert `(entity_id=99, subject_type='Person', subject_id=10, access_level='view')`.
-- If the entire group_id=5 can see it, `(entity_id=99, subject_type='Group', subject_id=5, access_level='view')`.
+> Most group-level permission checks can be done by referencing `group_memberships`. This table is for **fine-grained exceptions** (e.g., “Only Dr. Bob can see this patient record.”).
 
 ---
 
-## **3.4 Widgets & Dashboards (Optional Tables)**
+## **3.4 Collaboration Tools**
 
-If your system provides **configurable dashboards**, you might store **widget definitions** and **user-specific** or **group-specific** widget placements:
+### 3.4.1 Comments
+
+**Option A**: Make “Comment” another entity type in `entities`.  
+**Option B**: Use a separate `comments` table.
+
+Below is a **dedicated table** approach (common in production):
+
+```sql
+CREATE TABLE comments (
+    comment_id   SERIAL PRIMARY KEY,
+    entity_id    INT NOT NULL,
+    author_id    INT NOT NULL,
+    content      TEXT NOT NULL,
+    created_on   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (entity_id) REFERENCES entities(entity_id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES people(person_id) ON DELETE CASCADE
+);
+```
+
+- **@Mentions** can be stored or parsed in the `content`. The system might detect “@alice” or “@person_2” to notify that user.
+
+### 3.4.2 Activity Logs / Notifications
+
+Record key events (task created, status changed, comment added) for display in an activity feed.
+
+```sql
+CREATE TABLE activity_logs (
+    activity_id    SERIAL PRIMARY KEY,
+    entity_id      INT,           -- Which entity (task/note/etc.) changed
+    actor_id       INT,           -- Who performed the action
+    action_type    VARCHAR(50),   -- e.g. 'COMMENT_ADDED','STATUS_UPDATED','APPROVED'
+    details        JSONB,         -- Additional data, e.g. {"old_status":"Open","new_status":"Closed"}
+    created_on     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+> **Notifications** can be generated from these logs or stored separately, depending on the UI approach.
+
+---
+
+## **3.5 Basic Workflow Automation**
+
+### 3.5.1 Approval Workflows
+
+**Minimal**: Store a state machine inside `extra_data`:
+
+```json
+{
+  "approval_status": "Pending"
+}
+```
+
+When the manager approves:
+
+```json
+{
+  "approval_status": "Approved",
+  "approved_by": 4,
+  "approved_on": "2025-01-02 15:30:00"
+}
+```
+
+**Advanced**: A separate `approvals` table for multi-step flows. Example:
+
+```sql
+CREATE TABLE approvals (
+    approval_id SERIAL PRIMARY KEY,
+    entity_id   INT NOT NULL,      -- The entity under approval
+    approver_id INT NOT NULL,      -- Person who can approve
+    status      VARCHAR(50),       -- Pending, Approved, Rejected
+    created_on  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_on  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (entity_id) REFERENCES entities(entity_id) ON DELETE CASCADE,
+    FOREIGN KEY (approver_id) REFERENCES people(person_id) ON DELETE CASCADE
+);
+```
+
+---
+
+### 3.5.2 Recurring Tasks
+
+**Option A**: Store recurrence in `extra_data` (e.g., `"recurrence_rule":"FREQ=MONTHLY;BYDAY=MO"`).  
+**Option B**: A separate `recurring_tasks` table that spawns new entities periodically.
+
+**Extra Data Example**:
+
+```json
+{
+  "recurrence_rule": "FREQ=WEEKLY;BYDAY=MO",
+  "task_status": "Open"
+}
+```
+
+A **background job** processes these rules and creates new entries in `entities` as needed.
+
+---
+
+## **3.6 Analytics & Insights**
+
+### 3.6.1 Widgets
+
+**Global Widget Definitions**:
 
 ```sql
 CREATE TABLE widgets (
     widget_id      SERIAL PRIMARY KEY,
-    widget_name    VARCHAR(100) NOT NULL, -- e.g. 'CalendarWidget', 'RevenueChart'
-    widget_config  JSONB,                -- default or global config for the widget
+    widget_name    VARCHAR(100) NOT NULL, -- e.g., 'CalendarWidget', 'TaskBoardWidget'
+    widget_config  JSONB,                -- default or global config
     created_on     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_on     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
 
+### 3.6.2 Personalized Dashboards
+
+**Per Person**:
+
+```sql
 CREATE TABLE person_widgets (
     person_widget_id SERIAL PRIMARY KEY,
     person_id        INT NOT NULL,
     widget_id        INT NOT NULL,
-    user_config      JSONB, -- user’s overrides (like theme color, data filters)
-    position         INT,    -- ordering on the dashboard
+    user_config      JSONB,      -- user’s overrides (filters, color schemes)
+    position         INT,         -- ordering on the user’s dashboard
     enabled          BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (person_id) REFERENCES people(person_id) ON DELETE CASCADE,
     FOREIGN KEY (widget_id) REFERENCES widgets(widget_id) ON DELETE CASCADE
 );
 ```
 
-**Explanation**:
+### 3.6.3 Group/Team Dashboards
 
-- **`widgets`**: Global definitions (e.g., “Task List Widget,” “ITR Filing Chart Widget,” “Appointment Viewer”).
-- **`person_widgets`**: Each user can enable/disable or reorder these widgets in their personal dashboard.
+**Shared**:
+
+```sql
+CREATE TABLE group_widgets (
+    group_widget_id SERIAL PRIMARY KEY,
+    group_id        INT NOT NULL,
+    widget_id       INT NOT NULL,
+    config          JSONB,  -- e.g. default filters for the entire team
+    position        INT,
+    enabled         BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE CASCADE,
+    FOREIGN KEY (widget_id) REFERENCES widgets(widget_id) ON DELETE CASCADE
+);
+```
+
+- **Example**: A “Team Task Board” for the Marketing Department, showing open tasks (`type_id='Task'`) with `group_id=MarketingDept`.
+
+### 3.6.4 Custom Reports
+
+- Create a new entity type “Report.” Then store the report definition in `extra_data`.
+- Example:
+
+  ```sql
+  INSERT INTO entity_types (type_name) VALUES ('Report');
+
+  INSERT INTO entities (
+    owner_id, group_id, type_id, title, extra_data
+  )
+  VALUES (
+    1,        -- e.g., Admin
+    10,       -- group id for "Acme Corp"
+    (SELECT type_id FROM entity_types WHERE type_name='Report'),
+    'Monthly Budget Usage',
+    '{"date_start":"2025-01-01","date_end":"2025-01-31","department_id":12}'
+  );
+  ```
+
+- A “Report Widget” might read these definitions and render the data.
 
 ---
 
-# **4. System Workflow & Examples**
+# **4. Putting It All Together: Implementation Workflow**
 
-## **4.1 Creating a Person and Their Identity**
+Below is how various teams (front-end, back-end, DevOps) can use these tables to build the actual features.
 
-1. **Insert** a new row into `people`.
-2. **Optionally** assign an identity: “Freelancer,” “Doctor,” etc., in `person_identities`.
+## 4.1 Create a Group Hierarchy
 
-**Example**:
+1. Insert the top-level org:
+
+   ```sql
+   INSERT INTO groups (group_name) VALUES ('Acme Corp');
+   -- Suppose group_id=10
+   ```
+
+2. Insert a child group (e.g., “Marketing Department”):
+
+   ```sql
+   INSERT INTO groups (group_name, parent_group_id)
+   VALUES ('Marketing Department', 10);
+   -- Suppose group_id=11
+   ```
+
+3. Add roles if not present:
+
+   ```sql
+   INSERT INTO group_roles (role_name, description)
+   VALUES ('Team Lead', 'Can create & assign tasks'),
+          ('Team Member', 'Can view tasks');
+   ```
+
+4. Assign people to those groups:
+
+   ```sql
+   -- Alice is a Team Lead in Acme Corp
+   INSERT INTO group_memberships (person_id, group_id, role_id)
+   VALUES (1, 10, 2);
+
+   -- Bob is a Team Member in Marketing
+   INSERT INTO group_memberships (person_id, group_id, role_id)
+   VALUES (2, 11, 3);
+   ```
+
+## 4.2 Create & Collaborate on a Task
+
+1. **Alice** creates a group task:
+
+   ```sql
+   INSERT INTO entities (
+       owner_id, group_id, type_id, title, description, extra_data
+   )
+   VALUES (
+       1,      -- Alice
+       11,     -- Marketing Department
+       1,      -- Suppose type_id=1 => "Task"
+       'Plan Marketing Campaign',
+       'Focus on social media strategy',
+       '{"assigned_to": [2], "task_status":"Open"}'
+   );
+   ```
+
+2. **Bob** comments on it:
+
+   ```sql
+   INSERT INTO comments (entity_id, author_id, content)
+   VALUES ( (the new entity_id from above), 2, 'We need to finalize budget first! @alice');
+   ```
+
+3. The system logs that comment:
+   ```sql
+   INSERT INTO activity_logs (entity_id, actor_id, action_type, details)
+   VALUES ( (the same entity_id), 2, 'COMMENT_ADDED', '{"mention":["alice"]}');
+   ```
+
+## 4.3 Approval Workflow Example
+
+If a purchase request is needed:
 
 ```sql
-INSERT INTO people (full_name, email_address)
-VALUES ('Alice Baker', 'alice@example.com') RETURNING person_id;
-```
-
-Then:
-
-```sql
-INSERT INTO person_identities (person_id, identity_id)
-VALUES (1, 2); -- 1=Alice, 2=Doctor identity
-```
-
-## **4.2 Creating a Group and Adding Members**
-
-1. **Insert** into `groups`: “Acme Corp.”
-2. **Insert** roles into `group_roles`: “Owner,” “Admin,” “Member.”
-3. **Add** membership records in `group_memberships`.
-
-**Example**:
-
-```sql
-INSERT INTO groups (group_name) VALUES ('Acme Corp') RETURNING group_id;
--- Suppose it returns group_id = 10
-
-INSERT INTO group_memberships (person_id, group_id, role_id)
-VALUES (1, 10, 2); -- Person #1 (Alice) joins Acme with role #2= 'Admin'
-```
-
-## **4.3 Creating an Entity (e.g., a Task or Appointment)**
-
-Suppose Alice (person_id=1) wants to create a “Task” entity for personal use:
-
-```sql
--- Insert an entity type for "Task" if it doesn't exist already:
-INSERT INTO entity_types (type_name, description)
-VALUES ('Task', 'General to-do or action item');
-
--- Create the entity:
+-- Step 1: Create the request
 INSERT INTO entities (
-  owner_id, group_id, type_id, title, description
+  owner_id, group_id, type_id, title, extra_data
 )
 VALUES (
-  1,        -- Alice
-  NULL,     -- No group, purely personal
-  1,        -- Suppose type_id=1 is 'Task'
-  'Buy Groceries',
-  'Remember to buy milk and eggs'
+  1,       -- Alice
+  10,      -- Acme Corp
+  5,       -- Suppose type_id=5 => "Purchase Request"
+  'Laptop Purchase',
+  '{"approval_status":"Pending","cost":1500}'
 );
+
+-- Step 2: Manager or "Team Lead" updates it to Approved
+UPDATE entities
+SET extra_data = jsonb_set(extra_data, '{approval_status}', '"Approved"')
+WHERE entity_id = 123;
 ```
 
-For a **group** item (team meeting in Acme Corp):
+Alternatively, if using the `approvals` table, an approval record is inserted and updated as the item moves through the pipeline.
+
+## 4.4 Recurring Task Example
+
+A weekly staff meeting:
 
 ```sql
 INSERT INTO entities (
-  owner_id, group_id, type_id, title, description, start_at, end_at
+  owner_id, group_id, type_id, title, description, start_at, end_at, extra_data
 )
 VALUES (
-  1,    -- Alice created it
-  10,   -- Belongs to Acme Corp
-  2,    -- Suppose type_id=2 is 'Appointment'
-  'Weekly Team Sync',
-  'Discuss ongoing projects',
-  '2025-09-01 10:00:00',
-  '2025-09-01 11:00:00'
+  1,         -- Alice
+  10,        -- Acme Corp
+  2,         -- Suppose type_id=2 => "Appointment"
+  'Weekly Staff Meeting',
+  'Discuss project updates',
+  '2025-01-06 10:00:00',
+  '2025-01-06 10:30:00',
+  '{"recurrence_rule":"FREQ=WEEKLY;BYDAY=MO"}'
 );
 ```
 
-## **4.4 Fine-Grained Permissions**
+A **background job** or **cron** script sees the `recurrence_rule` and auto-creates future events or regenerates them each week.
 
-If the entire group can see it, you might not need a separate `entity_permissions` record—**unless** you want to limit it to certain subsets.
+## 4.5 Analytics & Dashboards
 
-- Example: Only the “Marketing Team” can see entity #50:
+1. **Widgets**: Insert a “TaskBoardWidget” in `widgets`.
 
-```sql
-INSERT INTO entity_permissions (
-  entity_id, subject_type, subject_id, access_level
-)
-VALUES (
-  50, 'Team',  7, 'view'
-);
+   ```sql
+   INSERT INTO widgets (widget_name, widget_config)
+   VALUES ('TaskBoardWidget', '{"default_filter":"group"}');
+   ```
+
+2. **Group Dashboard**:
+
+   ```sql
+   INSERT INTO group_widgets (group_id, widget_id, config, position)
+   VALUES (
+       10,
+       (SELECT widget_id FROM widgets WHERE widget_name='TaskBoardWidget'),
+       '{"filter":"open_tasks"}',
+       1
+   );
+   ```
+
+   - All members of “Acme Corp” see this board by default (if the UI loads group widgets).
+
+3. **Reports**: A “Monthly Performance Report” entity might store date ranges, department filters, etc., in `extra_data`. Then a “ReportWidget” fetches data accordingly.
+
+---
+
+# **5. Diagram & Reference**
+
+Below is an **integrated ER Diagram** capturing **all** key tables:
+
 ```
-
-(Where “7” is the ID of the marketing team.)
-
----
-
-# **5. Widgets & Dashboards**
-
-1. **Widgets** are pre-built components for tasks, calendars, analytics, etc.
-2. **People** can select or reorder these via a table like `person_widgets`.
-
-**Example**:
-
-```sql
-INSERT INTO widgets (widget_name, widget_config)
-VALUES ('CalendarWidget', '{"default_view":"month"}'),
-       ('RevenueChart', '{"chart_type":"bar"}');
-
-INSERT INTO person_widgets (person_id, widget_id, user_config, position)
-VALUES (1, 1, '{"color":"blue"}', 1),
-       (1, 2, '{"color":"red"}', 2);
-```
-
-Now **Alice** sees two widgets: a calendar (position 1) and a revenue chart (position 2).
-
----
-
-# **6. Production Considerations**
-
-1. **Scalability**
-
-   - **Indexes** on `person_id`, `group_id`, `type_id`, and `entity_id` are crucial.
-   - For larger deployments, consider **partitioning** or sharding if data sets become massive.
-
-2. **Row-Level Security vs. Permissions Table**
-
-   - If you prefer **Row-Level Security** (RLS) in Postgres, you can skip the `entity_permissions` table or use it purely for app logic. RLS automatically enforces constraints at the database level.
-
-3. **AI and pgVector**
-
-   - The `vector_embed` column in `entities` supports natural language or semantic searches.
-   - Always apply **permission checks** when running similarity queries so that sensitive data doesn’t leak.
-
-4. **Metadata / `extra_data`**
-
-   - Keep it minimal to avoid unbounded JSON growth. For repeated fields, consider more structured columns.
-
-5. **Auditing & Compliance**
-   - For healthcare, finance, or enterprise scenarios, you may need an **audit log** table capturing who accessed or changed records.
-
----
-
-# **7. Sample Use Case & Flow**
-
-### **Scenario**: A Doctor (Alice) at “Sunrise Health” needs to manage personal tasks and hospital appointments.
-
-1. **Person**: Insert Alice in `people` with ID=1.
-2. **Group**: Insert “Sunrise Health” in `groups` with ID=20.
-3. **Membership**: Insert `(person_id=1, group_id=20, role_id=3)` to indicate she is an “Employee” or “Doctor.”
-4. **Entity Types**: “Task” (#1), “Appointment” (#2).
-5. **Create** a personal “Task” entity with `group_id=NULL` for “Buy groceries.”
-6. **Create** a hospital appointment entity with `group_id=20` for “Patient X Checkup, Monday 9 AM.”
-7. **Widgets**:
-   - “CalendarWidget” shows all items with a `start_at` for Alice, merging personal + hospital events in one timeline.
-   - She can filter by group in the UI if she only wants to see the hospital schedule.
-
----
-
-# **8. Conclusion**
-
-This **production-grade architecture** provides:
-
-1. **A unified data model** that merges personal tasks/notes with organizational items and roles.
-2. **Flexible identity management** so individuals can hold multiple “personas” or identities.
-3. **Team or group-based** data sharing with granular permissions.
-4. **Extendable** design for advanced features like AI-based search (`pgvector`), custom dashboards, and domain-specific expansions (healthcare, finance, etc.).
-
-Adopting these schemas and design patterns will ensure your software remains **scalable**, **extensible**, and **user-friendly**, no matter how your product grows.
-
----
-
-## **Appendix: Quick Reference Diagram**
-
-```plaintext
  ┌───────────┐          ┌───────────────────┐          ┌─────────────────┐
  │   people  │ 1 ---- * │ person_identities │ * ---- 1 │   identities    │
  └───────────┘          └───────────────────┘          └─────────────────┘
 
- ┌───────────┐          ┌───────────────────┐          ┌─────────────────┐
- │   groups  │ 1 ---- * │ group_memberships │ * ---- 1 │  group_roles    │
- └───────────┘          └───────────────────┘          └─────────────────┘
+ ┌───────────┐                                     ┌─────────────────┐
+ │   groups  │ 1 ---- * (child)   parent_group_id   │   groups        │
+ └───────────┘                                     └─────────────────┘
+         |
+         | 1 ---- *
+ ┌───────────────────┐          ┌─────────────────┐
+ │ group_memberships │ * ---- 1 │  group_roles    │
+ └───────────────────┘          └─────────────────┘
 
  ┌─────────────────┐
  │  entity_types   │
@@ -445,24 +514,99 @@ Adopting these schemas and design patterns will ensure your software remains **s
             │
  ┌─────────────────────────────────────────────────────────────────────┐
  │                            entities                                 │
- │ (entity_id, owner_id, group_id, type_id, title, ... , vector_embed) │
+ │ (entity_id, owner_id, group_id, type_id, title, extra_data, etc.)   │
  └─────────────────────────────────────────────────────────────────────┘
             |
-            | (Optional Permissions)
+            ├────────────────────────┐
+            │                        v
+            │                ┌────────────────────────┐
+            │                │   entity_permissions   │ (optional)
+            │                └────────────────────────┘
             v
- ┌────────────────────────┐
- │   entity_permissions   │
- └────────────────────────┘
+   (child via entity_id)
+ ┌─────────────┐
+ │  comments   │
+ └─────────────┘
 
- ┌────────────────────┐
- │     widgets        │  <--- Admin config
- └────────────────────┘
+ ┌─────────────────────┐
+ │   activity_logs     │
+ └─────────────────────┘
+
+ ┌────────────────────┐         ┌───────────────────────┐
+ │     widgets        │  <---   │     group_widgets     │
+ └────────────────────┘         └───────────────────────┘
             ^
             │ (FK)
             │
  ┌────────────────────────┐
- │     person_widgets     │  <--- User-specific widget overrides
+ │     person_widgets     │
  └────────────────────────┘
 ```
 
-Use this as the **foundational blueprint** for all development teams to reference. Feel free to add indexes, triggers, or extra fields as your product evolves.
+**Notes**:
+
+- `groups.parent_group_id` allows hierarchical nesting.
+- `entities` are always central.
+- `comments` & `activity_logs` are linked to `entities(entity_id)`.
+- `widgets` tie into both individuals (`person_widgets`) and groups (`group_widgets`).
+
+---
+
+# **6. Production Considerations**
+
+1. **Scalability & Indexing**
+
+   - Index all FK columns (e.g. `person_id`, `group_id`, `entity_id`).
+   - Large organizations: consider partitioning or sharding.
+
+2. **Permissions & Security**
+
+   - For **simple** scenarios, rely on `group_memberships` + roles.
+   - For **complex** or partial sharing, use `entity_permissions` or **Row-Level Security** (RLS).
+
+3. **Performance**
+
+   - `extra_data` in `JSONB` is flexible but can become large. Evaluate separate tables if you have repeated, structured fields.
+
+4. **AI Integration**
+
+   - The `vector_embed` column can store embeddings for tasks/notes to enable semantic search. Always apply **permission checks** when returning results.
+
+5. **Auditing & Compliance**
+
+   - If your domain is healthcare or finance, logs of user actions (`activity_logs`) and `comments` may require encryption or advanced auditing.
+
+6. **Automation**
+   - For recurring tasks, a background scheduler or CRON job is crucial. It parses `extra_data.recurrence_rule` and spawns new items.
+
+---
+
+# **7. Conclusion**
+
+This **unified architecture** empowers BYRAW to scale from personal productivity to complex organizational workflows. By combining:
+
+- **Hierarchical groups** (with roles and memberships),
+- **Entities** as the universal container for tasks, notes, appointments, etc.,
+- **Collaboration** (comments, mentions, activity logs),
+- **Workflow automation** (approvals, recurring tasks),
+- **Analytics & dashboards** (widgets for individuals and groups),
+
+…we enable **multiple use cases** (personal, team, or enterprise) under **one** cohesive platform.
+
+---
+
+## **Appendix: Implementation Checklist**
+
+1. **Set Up Core Tables**: `people`, `groups`, `group_memberships`, `entities`, `entity_types`.
+2. **Enable Hierarchy**: `parent_group_id` in `groups`.
+3. **Enable Collaboration**: `comments`, `activity_logs`.
+4. **Enable Automation**: Manage `approval_status` or create an `approvals` table, handle `recurrence_rule`.
+5. **Enable Dashboards**: `widgets`, `person_widgets`, `group_widgets`.
+6. **Build Services** (API endpoints) around each major feature:
+   - **Task Service**: CRUD on `entities` with type “Task.”
+   - **Collaboration Service**: Create/read comments, logs, mentions.
+   - **Workflow Service**: Manage approvals, statuses, recurrences.
+   - **Analytics Service**: Aggregate data for dashboards, generate custom reports.
+7. **Security & Permissions**: Enforce `group_memberships` or `entity_permissions` (or RLS).
+
+Following these guidelines ensures all teams—**from front-end developers** to **database administrators**—build features consistently and safely in the “One Brain” ecosystem.

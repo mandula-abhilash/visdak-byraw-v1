@@ -33,11 +33,12 @@ erDiagram
     }
 
     %% ==========================================
-    %% GROUPS
+    %% GROUPS (Now includes parent_group_id for hierarchy)
     %% ==========================================
     groups {
         int       group_id PK
         string    group_name
+        int       parent_group_id FK
         timestamp created_on
         timestamp updated_on
     }
@@ -65,7 +66,30 @@ erDiagram
     }
 
     %% ==========================================
-    %% ENTITY_TYPES (e.g., Task, Appointment)
+    %% TEAMS (Optional sub-group under a group)
+    %% ==========================================
+    teams {
+        int       team_id PK
+        int       group_id FK
+        string    team_name
+        text      details
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% TEAM MEMBERS
+    %% (Links people to teams, possibly with role_name)
+    %% ==========================================
+    team_members {
+        int       team_id PK, FK
+        int       person_id PK, FK
+        string    role_name
+        timestamp joined_on
+    }
+
+    %% ==========================================
+    %% ENTITY_TYPES (e.g., Task, Appointment, Note, etc.)
     %% ==========================================
     entity_types {
         int       type_id PK
@@ -109,7 +133,54 @@ erDiagram
     }
 
     %% ==========================================
-    %% WIDGETS
+    %% COMMENTS (collaboration on entities)
+    %% ==========================================
+    comments {
+        int       comment_id PK
+        int       entity_id FK
+        int       author_id FK
+        text      content
+        timestamp created_on
+    }
+
+    %% ==========================================
+    %% ACTIVITY_LOGS (audit / change history)
+    %% ==========================================
+    activity_logs {
+        int       activity_id PK
+        int       entity_id FK
+        int       actor_id FK
+        string    action_type
+        jsonb     details
+        timestamp created_on
+    }
+
+    %% ==========================================
+    %% APPROVALS (optional multi-step workflows)
+    %% ==========================================
+    approvals {
+        int       approval_id PK
+        int       entity_id FK
+        int       approver_id FK
+        string    status
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% RECURRING_TASKS (optional automation)
+    %% ==========================================
+    recurring_tasks {
+        int       recurring_id PK
+        int       entity_id FK
+        string    rule
+        timestamp next_run
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% WIDGETS (global definitions)
     %% ==========================================
     widgets {
         int       widget_id PK
@@ -129,51 +200,104 @@ erDiagram
         jsonb     user_config
         int       position
         boolean   enabled
+        timestamp created_on
+        timestamp updated_on
+    }
+
+    %% ==========================================
+    %% GROUP_WIDGETS (Shared Dashboards)
+    %% ==========================================
+    group_widgets {
+        int       group_widget_id PK
+        int       group_id FK
+        int       widget_id FK
+        jsonb     config
+        int       position
+        boolean   enabled
+        timestamp created_on
+        timestamp updated_on
     }
 
     %% ==========================================
     %% RELATIONSHIPS
     %% ==========================================
 
-    %% 1) people <--> person_identities <--> identities
+    %% -- 1) people <--> person_identities <--> identities
     people ||--|{ person_identities : "can have many identities"
     identities ||--|{ person_identities : "can belong to many people"
-
     person_identities }|..|| people : "FK: person_id"
     person_identities }|..|| identities : "FK: identity_id"
 
-    %% 2) people <--> group_memberships <--> groups
+    %% -- 2) people <--> group_memberships <--> groups
     people ||--|{ group_memberships : "can be in many groups"
     groups ||--|{ group_memberships : "has many members"
-
     group_memberships }|..|| people : "FK: person_id"
     group_memberships }|..|| groups : "FK: group_id"
 
-    %% 3) group_roles <--> group_memberships
+    %% -- 3) group_roles <--> group_memberships
     group_roles ||--|{ group_memberships : "assigned role"
-
     group_memberships }|..|| group_roles : "FK: role_id"
 
-    %% 4) entity_types <--> entities
-    entity_types ||--|{ entities : "defines the type of"
+    %% -- 4) parent_group_id (self-reference)
+    groups ||--|| groups : "parent-child hierarchy"
+    groups }|..|| groups : "FK: parent_group_id"
 
+    %% -- 5) teams <--> groups
+    groups ||--|{ teams : "each group can have many teams"
+    teams }|..|| groups : "FK: group_id"
+
+    %% -- 6) team_members <--> teams <--> people
+    teams ||--|{ team_members : "has many team_members"
+    people ||--|{ team_members : "can join many teams"
+    team_members }|..|| teams : "FK: team_id"
+    team_members }|..|| people : "FK: person_id"
+
+    %% -- 7) entity_types <--> entities
+    entity_types ||--|{ entities : "defines the type of"
     entities }|..|| entity_types : "FK: type_id"
 
-    %% 5) people (owner) <--> entities
-    people ||--|{ entities : "can own many entities"
+    %% -- 8) people (owner) <--> entities
+    people ||--|{ entities : "1 person can own many entities"
     entities }|..|| people : "FK: owner_id"
 
-    %% 6) groups <--> entities
-    groups ||--|{ entities : "optional group association"
+    %% -- 9) groups <--> entities (optional association)
+    groups ||--|{ entities : "a group can have many entities"
     entities }|..|| groups : "FK: group_id"
 
-    %% 7) entities <--> entity_permissions
-    entities ||--|{ entity_permissions : "can have permissions"
+    %% -- 10) entities <--> entity_permissions
+    entities ||--|{ entity_permissions : "an entity can have multiple permissions"
     entity_permissions }|..|| entities : "FK: entity_id"
 
-    %% 8) people <--> person_widgets <--> widgets
-    people ||--|{ person_widgets : "personal widget config"
-    widgets ||--|{ person_widgets : "can be reused by many people"
+    %% -- 11) comments <--> entities & people
+    entities ||--|{ comments : "can have many comments"
+    people ||--|{ comments : "people can author comments"
+    comments }|..|| entities : "FK: entity_id"
+    comments }|..|| people : "FK: author_id"
 
+    %% -- 12) activity_logs <--> entities & people
+    entities ||--|{ activity_logs : "track changes"
+    people ||--|{ activity_logs : "actions by people"
+    activity_logs }|..|| entities : "FK: entity_id"
+    activity_logs }|..|| people : "FK: actor_id"
+
+    %% -- 13) approvals <--> entities & people
+    entities ||--|{ approvals : "can require approvals"
+    people ||--|{ approvals : "people can approve or reject"
+    approvals }|..|| entities : "FK: entity_id"
+    approvals }|..|| people : "FK: approver_id"
+
+    %% -- 14) recurring_tasks <--> entities
+    entities ||--|{ recurring_tasks : "template entity for repeated tasks"
+    recurring_tasks }|..|| entities : "FK: entity_id"
+
+    %% -- 15) widgets <--> person_widgets <--> people
+    people ||--|{ person_widgets : "personal widget configs"
+    widgets ||--|{ person_widgets : "base widget can be used by many"
     person_widgets }|..|| people : "FK: person_id"
     person_widgets }|..|| widgets : "FK: widget_id"
+
+    %% -- 16) group_widgets <--> widgets <--> groups
+    groups ||--|{ group_widgets : "shared group dashboard"
+    widgets ||--|{ group_widgets : "widgets used by groups"
+    group_widgets }|..|| groups : "FK: group_id"
+    group_widgets }|..|| widgets : "FK: widget_id"

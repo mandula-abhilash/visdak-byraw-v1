@@ -1,360 +1,430 @@
-# **Developer Forms Guide (Using New Names)**
-
-This guide covers the **sequential forms** or “screens” developers need to **build** so that the data model (people, identities, groups, roles, etc.) is correctly populated.
+Below is a **step-by-step developer task guide** that shows the **exact sequence** in which forms, endpoints, and sample data should be created so your new **BYRAW** schema (with `people`, `identities`, `groups`, `roles`, etc.) can be properly populated. This document is **very detailed**—each step covers **what** to build, **why** it matters, **sample data**, and **any dependencies** on prior steps.
 
 ---
 
-## **1. Create Person**
+# **Developer Task Sequence: Final Guide**
 
-### **Purpose**
+## **1. Overview**
 
-- Let an admin (or super-admin) create a new “person” record in the `people` table.
+This guide helps developers **organize** their work in a **logical order**, ensuring that:
 
-### **Form Fields**
+1. **People** are created before they can be assigned anything else.
+2. **Identities** exist before we link them to people.
+3. **Groups** and **group roles** exist before we add members.
+4. **(Optional) Teams**, if needed, come after the groups that contain them.
 
-1. **Full Name** (string)
-2. **Email Address** (string)
+By following these steps sequentially, you avoid referencing **non-existent** records and ensure a smooth data flow.
 
-**Example JSON** (frontend -> backend):
+---
 
-```json
-{
-  "full_name": "Alice Baker",
-  "email_address": "alice@example.com"
-}
-```
+## **2. Step-by-Step Development Tasks**
 
-### **Backend Actions**
+### **Step 1: Create Person**
 
-1. **POST** request to `/api/people` (example endpoint).
-2. **Check** if `email_address` already exists:
-   - If yes, **return** an error (409 Conflict or 400 Bad Request).
-   - If no, **insert** into `people`:
+**Goal**: Provide a form (or endpoint) to insert a new row into the `people` table.
+
+1. **Form Fields**
+
+   - **Full Name** (string, required)
+   - **Email Address** (string, unique, required)
+   - **Placeholder** (boolean, optional) if you want to mark “guest” or “temp” users
+
+2. **Backend**
+   - `POST /api/people`
+   - Sample DB insert:
      ```sql
-     INSERT INTO people (full_name, email_address)
-     VALUES ($1, $2)
+     INSERT INTO people (full_name, email_address, placeholder)
+     VALUES ($full_name, $email_address, $placeholder)
      RETURNING person_id;
      ```
-3. **Return** the new `person_id` (and the record) to the frontend.
-
-### **Validation** & **Edge Cases**
-
-- **Empty Name**: Return 400 “Name is required.”
-- **Duplicate Email**: Return 409 “Email in use.”
-- **Invalid Email**: Return 400 “Invalid email format.”
-
-### **Dependencies**
-
-- Generally **none**—this is often your very first step.
-
----
-
-## **2. (Optional) Create Person Config**
-
-### **Purpose**
-
-- Some systems want a **user-level config** (e.g., default widgets, dashboard layout) right away.
-
-### **Form Fields**
-
-- **Person ID** (select from a list of people).
-- **JSON Configuration** (text area or editor).
-
-**Example JSON** (frontend -> backend):
-
-```json
-{
-  "person_id": 123,
-  "config_data": {
-    "theme": "light",
-    "widgets": ["Calendar", "TaskList"]
-  }
-}
-```
-
-### **Backend Actions**
-
-1. **POST** request to `/api/person-configs` (example endpoint).
-2. **Check** if the person exists (person_id is valid).
-3. **Insert** config into something like `person_configurations` or `user_configurations` table:
-   ```sql
-   INSERT INTO person_configurations (person_id, config_data)
-   VALUES ($1, $2);
+3. **Sample Request**
+   ```json
+   {
+     "full_name": "Alice Baker",
+     "email_address": "alice@example.com",
+     "placeholder": false
+   }
    ```
-4. **Return** success or newly inserted ID.
+4. **Checks**
 
-### **Edge Cases**
+   - **Duplicate email** → Return 409 Conflict or 400 Bad Request.
+   - **Empty or invalid fields** → Return 400.
 
-- **Missing Person**: Return 404 “Person not found.”
-- **Duplicate Config**: Decide if you overwrite or block if a config already exists.
+5. **Result**
+   - Returns the new `person_id` and maybe the entire new record.
 
-### **Dependencies**
-
-- **Must** have a `person_id` from Step 1.
-
----
-
-## **3. Invite Person**
-
-### **Purpose**
-
-- Send an email or link for the new person to log in or set up their password.
-
-### **Form / Trigger**
-
-- Could be a button “Invite Person” in the UI next to a newly created person.
-
-### **Backend Actions**
-
-1. **Send** a token to the user’s email.
-2. Possibly create an “Invitation” row in a table for tracking.
-3. The user eventually clicks the invitation link, hits an endpoint (like `/api/invites/accept`), and sets their password.
-
-### **Edge Cases**
-
-- **Email Failure**: Log the error, maybe show “Could not send invite.”
-- **Already Invited**: Might do a “resend invite.”
-
-### **Dependencies**
-
-- Must have a **valid `person_id`** (someone in the `people` table) and an email.
+**Why**: A person **must** exist before we can assign them identities, group memberships, or advanced features.
 
 ---
 
-## **4. Create Identity**
+### **Step 2: (Optional) Person Configuration**
 
-### **Purpose**
+**Goal**: Some projects want a **user-level config** right after creation—e.g., default widgets or theme preferences.
 
-- Developers implement a form to **add** a new row to the `identities` table (like “Doctor,” “Freelancer,” etc.).
+1. **Form Fields**
 
-### **Form Fields**
+   - **Person ID** (dropdown or hidden from Step 1)
+   - **JSON Config** (text area or JSON editor)
 
-1. **Label** (string, required)
-2. **Details** (text, optional)
+2. **Backend**
 
-**Example**:
+   - `POST /api/person-configs` (or similar)
+   - Insert into a table like `person_configurations (person_id, config_data)`
 
-```json
-{
-  "label": "Doctor",
-  "details": "Medical professional identity."
-}
-```
+3. **Sample Request**
+   ```json
+   {
+     "person_id": 123,
+     "config_data": {
+       "theme": "dark",
+       "default_widgets": ["Calendar", "TaskList"]
+     }
+   }
+   ```
+4. **Checks**
 
-### **Backend Actions**
+   - If `person_id` doesn’t exist → 404.
+   - If a config already exists → decide to overwrite or block.
 
-1. **POST** `/api/identities`.
-2. **Insert** into `identities(label, details)`.
-3. Return the new `identity_id`.
-
-### **Edge Cases**
-
-- **Duplicate Label**: If you require unique labels, return an error.
-- **Empty Label**: Return 400.
-
-### **Dependencies**
-
-- None, you can create identities anytime.
+5. **Why**: This is **optional**. If you plan to manage configurations at the **role** level only, skip.
 
 ---
 
-## **5. Assign Identity to Person**
+### **Step 3: Invite Person (Optional)**
 
-### **Purpose**
+**Goal**: Send an **invite** email to the newly created person, so they can set a password or login.
 
-- If your system allows multiple “identities” per person, we build a form to link them via `person_identities`.
+1. **Trigger**: A button or action, “Invite Person,” on the admin side.
+2. **Backend**:
+   - Possibly `POST /api/invites` with a `person_id`.
+   - Create an “Invitation” record, generate a token, send an email.
+3. **User Flow**:
+   - The user clicks a link in the email → visits your site → sets up credentials.
+4. **Why**: The user can’t log in until invited (if that’s your policy).
 
-### **Form Fields**
-
-1. **Person ID** (select from a dropdown).
-2. **Identity ID** (select from a dropdown).
-
-**Example**:
-
-```json
-{
-  "person_id": 123,
-  "identity_id": 4
-}
-```
-
-### **Backend Actions**
-
-1. **POST** `/api/person-identities`.
-2. Check if the row `(person_id, identity_id)` already exists.
-   - If so, return a 409 or simply do nothing.
-3. If not, insert into `person_identities`.
-
-### **Edge Cases**
-
-- **Missing Person** or **Missing Identity**: Return 404 “Not Found.”
-- **Already Assigned**: Return a conflict or ignore duplication.
-
-### **Dependencies**
-
-- A valid **person** from Step 1, a valid **identity** from Step 4.
+> **Note**: Some systems do all user creation + invite in one step. The approach varies.
 
 ---
 
-## **6. (Optional) Create Group**
+### **Step 4: Create Identity**
 
-### **Purpose**
+**Goal**: Provide a **form** to add a new row into `identities` table (e.g., “Doctor,” “Freelancer,” “Student”).
 
-- A “group” might represent an organization or team. Developers build a form to create a new row in the `groups` table.
+1. **Form Fields**
 
-### **Form Fields**
+   - **Label** (string, required, must be unique)
+   - **Details** (text, optional)
 
-- **Group Name** (string)
+2. **Backend**
+   - `POST /api/identities`
+   - Sample insert:
+     ```sql
+     INSERT INTO identities (label, details)
+     VALUES ($label, $details)
+     RETURNING identity_id;
+     ```
+3. **Checks**
 
-**Example**:
+   - **Duplicate label** → Return 409 or 400.
+   - **Empty label** → 400.
 
-```json
-{
-  "group_name": "Sunrise Hospital"
-}
-```
-
-### **Backend Actions**
-
-1. **POST** `/api/groups`.
-2. Insert into `groups (group_name)`.
-3. Return the new `group_id`.
-
-### **Edge Cases**
-
-- **Duplicate Group Name**: Possibly block or allow, depending on business rules.
-
-### **Dependencies**
-
-- None (can create groups at any time).
+4. **Why**: We need these “identity labels” ready before we assign them to people.
 
 ---
 
-## **7. Create Group Role**
+### **Step 5: Assign Identity to Person**
 
-### **Purpose**
+**Goal**: Connect an existing **person** to an existing **identity** via `person_identities`.
 
-- Inside each group, you might have roles (like “Owner,” “Doctor,” “Nurse”).
+1. **Form Fields**
 
-### **Form Fields**
+   - **Person ID** (dropdown from existing `people`)
+   - **Identity ID** (dropdown from existing `identities`)
 
-1. **Group ID** (select which group this role belongs to)
-2. **Role Name** (string)
-3. **Description** (optional)
+2. **Backend**
 
-**Example**:
+   - `POST /api/person-identities`
+   - Insert into `person_identities (person_id, identity_id)`
 
-```json
-{
-  "group_id": 10,
-  "role_name": "Doctor",
-  "description": "A medical role within the hospital."
-}
-```
+3. **Sample Request**
+   ```json
+   {
+     "person_id": 123,
+     "identity_id": 4
+   }
+   ```
+4. **Checks**
 
-### **Backend Actions**
+   - Both IDs exist? If not, 404.
+   - Already assigned? If so, 409 or ignore.
 
-1. **POST** `/api/group-roles`.
-2. Check if the group exists (`group_id` is valid).
-3. Insert into `group_roles (group_id, role_name, description)` or a similar table design.
-4. Return the new `role_id`.
-
-### **Edge Cases**
-
-- **Group Not Found**: Return 404.
-- **Duplicate Role** in the same group: block or allow, depending on business rules.
-
-### **Dependencies**
-
-- Must have a **group** (Step 6).
+5. **Why**: This step is needed if a user can have multiple “persona” contexts.
 
 ---
 
-## **8. Assign Person to Group with a Role**
+### **Step 6: Create Group**
 
-### **Purpose**
+**Goal**: Provide a form to create a new row in the `groups` table, representing a company or department (e.g., “Acme Corp”).
 
-- Now we link a **person** to a **group** with a **role**. This typically goes in a `group_memberships` table.
+1. **Form Fields**
 
-### **Form Fields**
+   - **Group Name** (string, required)
+   - **Parent Group ID** (optional, if hierarchical groups apply)
 
-1. **Person ID**
-2. **Group ID**
-3. **Role ID** (the role that belongs to that group)
+2. **Backend**
+   - `POST /api/groups`
+   - Sample:
+     ```sql
+     INSERT INTO groups (group_name, parent_group_id)
+     VALUES ($group_name, $parent_group_id)
+     RETURNING group_id;
+     ```
+3. **Checks**
 
-**Example**:
+   - If `parent_group_id` is provided, confirm it’s valid.
 
-```json
-{
-  "person_id": 123,
-  "group_id": 10,
-  "role_id": 5
-}
-```
-
-### **Backend Actions**
-
-1. **POST** `/api/group-memberships`.
-2. Validate all three IDs are valid; ensure `role_id` belongs to the same `group_id`.
-3. Insert into `group_memberships (person_id, group_id, role_id)`.
-4. Return success.
-
-### **Edge Cases**
-
-- **Already in group**: Possibly a conflict or allow multiple roles if that’s your design.
-- **Role Not From This Group**: Return an error (mismatch).
-
-### **Dependencies**
-
-- Person (Step 1), Group (Step 6), Group Role (Step 7).
+4. **Why**: Groups define organizational units. Must exist before we assign people to them.
 
 ---
 
-# **Additional Considerations**
+### **Step 7: Create Group Role**
 
-## **A. Merging or Overwriting Data**
+**Goal**: In each group, define roles like “Owner,” “Admin,” “Doctor,” etc.  
+(This might be in a single `group_roles` table or a more flexible approach.)
 
-- For things like **config** or **role-based** overrides, you need a strategy:
-  - Overwrite?
-  - Merge JSON?
-  - If a config entry exists, do you block a second insertion?
+1. **Form Fields**
 
-## **B. Deletion Flows**
+   - **Group ID** (select from step 6)
+   - **Role Name** (string, e.g., “Admin”)
+   - **Description** (text, optional)
 
-- If you delete a **person**, what happens to their group memberships or identities? Typically, you set `ON DELETE CASCADE` or handle it in code.
-- If you delete a **group**, do you also remove group roles and memberships?
+2. **Backend**
 
-## **C. Invites vs. Edits**
+   - `POST /api/group-roles`
+   - Insert into your roles table:
+     ```sql
+     INSERT INTO group_roles (role_name, description)
+     VALUES ($role_name, $description)
+     RETURNING role_id;
+     ```
+   - If storing the `group_id` in a separate link table or within `group_roles`, ensure consistency.
 
-- Some systems prefer to create “people” with **placeholder** data, then send an **invite** so the user completes their info.
-- Others want a fully detailed record before sending invites.
+3. **Checks**
 
-## **D. Validation & Error Handling**
+   - If your design requires roles to be unique within that group, check before insert.
 
-- For each endpoint, return consistent HTTP codes:
-  - **400** if the request is malformed (missing fields).
-  - **404** if referencing non-existent IDs.
-  - **409** if conflict (duplicate, already exists).
-  - **200** or **201** if success.
+4. **Why**: A group can’t have members with roles if roles don’t exist.
 
 ---
 
-# **Sequential Workflow Example**
+### **Step 8: Assign Person to Group with Role**
 
-1. **Create a Person** (`POST /api/people`) → get back `person_id = 123`.
-2. **(Optional) Create Config** for that person → store some default layout (`POST /api/person-configs`).
-3. **Invite Person** → system sends email link.
-4. **Create Identity** “Doctor” → get `identity_id = 4`.
-5. **Assign Identity** → `(person_id=123, identity_id=4)`.
-6. **Create Group** “Sunrise Hospital” → get `group_id = 10`.
-7. **Create Group Role** “Doctor” for group 10 → get `role_id = 5`.
-8. **Assign Person** → `(person_id=123, group_id=10, role_id=5)`.
+**Goal**: Insert a row into `group_memberships`, linking `(person_id, group_id, role_id)`.
 
-At the end of these steps, you have:
+1. **Form Fields**
 
-- A **Person** named Alice with an email.
-- An **Identity** labeled “Doctor.”
-- A **Group** named “Sunrise Hospital.”
-- A **Role** in that group also called “Doctor.”
-- The person is now **linked** to that group in that role.
-- Alice might also have a **config** (Step 2) for personal layouts.
+   - **Person ID**
+   - **Group ID**
+   - **Role ID** (the role that belongs to that group)
+
+2. **Backend**
+   - `POST /api/group-memberships`
+   - Insert:
+     ```sql
+     INSERT INTO group_memberships (person_id, group_id, role_id)
+     VALUES ($person_id, $group_id, $role_id)
+     ```
+3. **Checks**
+
+   - Person, group, role must all exist.
+   - The `role_id` should correspond to a role valid for that group (depending on your design).
+
+4. **Why**: Now the person is officially a “Member” or “Admin” in that group. They can see or do tasks accordingly.
+
+---
+
+### **(Optional) Step 9: Teams & Team Members**
+
+If your project uses **teams** within groups:
+
+1. **Create Team** (`POST /api/teams`)
+   - Requires a `group_id`.
+2. **Add Person to Team** (`POST /api/team-members`)
+   - `(team_id, person_id, role_name)`.
+
+This is only **needed** if you have sub-groups or specialized project teams.
+
+---
+
+### **(Optional) Step 10: Role Configurations**
+
+If you’re implementing role-based or group-role-based **JSON configs** (for dashboards, widgets, etc.):
+
+1. **Create Role Config**
+   - e.g. `POST /api/role-configs`, storing `{"layout":["Calendar","TaskList"], "theme":"dark"}`.
+   - Must link to a specific group role or a global role ID.
+2. **Edit Role Config**
+   - Load existing JSON, let admin edit in a form or code editor.
+3. **Apply**
+   - When a user with that role logs in, the system merges or loads this config for their dashboard.
+
+---
+
+### **(Optional) Step 11: Person Overrides**
+
+If a single user wants a custom layout, you can have:
+
+1. **Create Person Override**
+   - e.g. `POST /api/person-overrides`, storing user-specific JSON.
+2. **Use**
+   - The system checks if a user has an override. If so, it merges or replaces the role config.
+
+---
+
+## **3. Sample Data Sequence**
+
+Below is a hypothetical sample data insertion sequence to illustrate everything:
+
+1. **Create Person**:
+
+   - `POST /api/people`
+     ```json
+     {
+       "full_name": "Alice Baker",
+       "email_address": "alice@example.com"
+     }
+     ```
+   - Returns `person_id = 1`.
+
+2. **Create Identity**: “Doctor”
+
+   - `POST /api/identities`
+     ```json
+     {
+       "label": "Doctor",
+       "details": "Medical specialization"
+     }
+     ```
+   - Returns `identity_id = 2`.
+
+3. **Assign Identity** `(person_id=1, identity_id=2)`
+
+   - `POST /api/person-identities`
+     ```json
+     {
+       "person_id": 1,
+       "identity_id": 2
+     }
+     ```
+
+4. **Create Group**: “Sunrise Hospital”
+
+   - `POST /api/groups`
+     ```json
+     { "group_name": "Sunrise Hospital" }
+     ```
+   - Returns `group_id = 10`.
+
+5. **Create Group Role**: “Admin” for “Sunrise Hospital”
+
+   - `POST /api/group-roles`
+     ```json
+     {
+       "group_id": 10,
+       "role_name": "Admin",
+       "description": "Full access to hospital data"
+     }
+     ```
+   - Returns `role_id = 5`.
+
+6. **Assign Person to Group**: `(person_id=1, group_id=10, role_id=5)`
+
+   - `POST /api/group-memberships`
+     ```json
+     {
+       "person_id": 1,
+       "group_id": 10,
+       "role_id": 5
+     }
+     ```
+
+7. **(Optional) Person Config**:
+
+   - `POST /api/person-configs`
+     ```json
+     {
+       "person_id": 1,
+       "config_data": {
+         "theme": "dark",
+         "favorite_widgets": ["Calendar", "Notes"]
+       }
+     }
+     ```
+
+8. **(Optional) Teams**: “Pediatrics Team” under group_id=10
+
+   - `POST /api/teams`
+     ```json
+     {
+       "group_id": 10,
+       "team_name": "Pediatrics Team",
+       "details": "Focus on child patients"
+     }
+     ```
+   - Returns `team_id = 20`.
+
+9. **(Optional) Add Person to Team**:
+   - `POST /api/team-members`
+     ```json
+     {
+       "team_id": 20,
+       "person_id": 1,
+       "role_name": "Lead Pediatrician"
+     }
+     ```
+
+At this point, **Alice** is an **Admin** in **Sunrise Hospital**, has an **Identity** of “Doctor,” and possibly leads a “Pediatrics Team” if your organization requires it.
+
+---
+
+## **4. Developer Tips & Best Practices**
+
+1. **Front-End**:
+
+   - **Form** validations (e.g. name/email not empty).
+   - **Success** modals or toast messages (like “Person created successfully!”).
+   - **Error** handling: show user-friendly messages for 400/404/409 statuses.
+
+2. **Back-End**:
+
+   - Ensure **transaction safety** if you do multi-step inserts (like creating a person and also an invite).
+   - Return **meaningful HTTP codes** (400 for invalid data, 404 if resource not found, 409 if conflict, 201 or 200 for success).
+   - Use consistent **naming** for endpoints: e.g. `/api/people`, `/api/groups`, etc.
+
+3. **Database Constraints**:
+
+   - Consider adding unique constraints on emails or role names (if needed).
+   - `ON DELETE CASCADE` or `SET NULL` for foreign keys, depending on your design for user removal or group removal.
+
+4. **Testing**:
+
+   - **Integration tests** to ensure each step can talk to the next.
+   - **Mock data** in dev environment to confirm the UI flows:
+     - Create “Alice,” “Bob,” “Acme Corp,” “Marketing Dept,” etc.
+
+5. **Security**:
+   - Restrict these admin endpoints to authorized staff only.
+   - If you have row-level permissions or advanced security, ensure your code checks them.
+
+---
+
+## **5. Final Summary**
+
+By following this **sequential approach**, developers will:
+
+1. **Implement** each form and endpoint in the correct order (people → identities → groups → roles → memberships).
+2. **Test** each component with sample data to ensure smooth interplay.
+3. **Extend** with optional steps (teams, person overrides, invites) as needed.
+4. **Deliver** a stable platform where admins can manage the new schema without confusion.
+
+This **structured** approach ensures the **BYRAW** architecture is **populated** with correct references and minimal errors, giving you a robust foundation for later enhancements (e.g., comments, activity logs, recurring tasks, or advanced permissions).

@@ -1,272 +1,277 @@
-# **Admin Dashboard: Phase 1 Requirements (Using New Names)**
+# **Admin Dashboard: Phase 1 Requirements (New Schema Edition)**
 
 ## **1. Overview**
 
-We are building an **Admin Dashboard** to help **administrators** manage:
+We aim to create an **Admin Dashboard** that allows administrators to manage:
 
-1. **People** and their **identities** (like “Doctor” or “Freelancer”).
-2. **Groups** (e.g., “Sunrise Hospital,” “Acme Corp”) and the **roles** in those groups.
-3. **Entity Types** (like “Task,” “Appointment,” “Note”) and **Entities** themselves (the individual records).
-4. **Permissions** or **Configurations** so that each role or person has the correct dashboard layout.
+1. **People** and their **identities** (like “Doctor,” “Freelancer,” “Student”).
+2. **Groups** (e.g., “Sunrise Hospital,” “Acme Corp”) and **roles** within those groups.
+3. **Entity Types** (like “Task,” “Appointment,” “Note”) and the **Entities** themselves (individual records).
+4. **Permissions** and **Configurations** so each role or person gets the correct **widgets** or **panels** on their dashboard.
 
-This **Phase 1** focuses on:
-
-1. **Basic CRUD (Create, Read, Update, Delete)** of people, identities, groups, roles, etc.
-2. **Role-based configurations** to specify **which panels** or **widgets** show up for a given role.
-3. **(Optional) Person-level overrides** for customized dashboards.
+This **Phase 1** focuses on providing **straightforward CRUD** (Create, Read, Update, Delete) functionality for the essential tables, plus a **configuration** mechanism so roles or people can have **predefined** or **custom** dashboard layouts.
 
 ---
 
 ## **2. Core Concepts to Manage**
 
-### **2.1 People & Identities**
+### 2.1 **People & Identities**
 
-- **People**: The main table storing each user’s name, email, etc.
-- **Identities**: Labels like “Doctor,” “Freelancer,” or “Student.” A person can have multiple identities.
+- **People**: The main table storing user info (name, email, etc.). Each user is a “person.”
+- **Identities**: Labels for personas/roles in daily life (e.g., “Doctor,” “Freelancer,” “Engineer”).
+- **`person_identities`**: Junction table linking **people** and **identities** (many-to-many).
 
-### **2.2 Groups & Roles**
+### 2.2 **Groups & Roles**
 
-- **Groups**: Organizational structures (e.g., “Sunrise Hospital”).
-- **Group Roles**: “Owner,” “Admin,” “Member,” etc. Tied to a single group.
-- **Group Memberships**: Connect a person to a group in a specific role.
+- **Groups**: Organizational structures (companies, hospitals, etc.).
+- **Group Roles**: “Owner,” “Admin,” “Member,” etc. Each group can have multiple roles.
+- **Group Memberships**: Connect a person to a group **with** a specific role.
 
-### **2.3 Entity Types & Entities**
+### 2.3 **Entity Types & Entities**
 
-- **Entity Types**: Like “Task,” “Appointment,” or “Reminder.”
-- **Entities**: Actual items stored in the system. Could be tasks or notes. Each entity references one **type**.
+- **Entity Types**: Like “Task,” “Appointment,” “Note,” “File,” etc.
+- **Entities**: The actual items. Each one **references** a type (e.g., a `type_id` for “Task”), an owner, and optionally a group.
 
-### **2.4 Permissions & Configurations**
+### 2.4 **Permissions & Configurations**
 
-- **Entity Permissions**: Fine-grained sharing (e.g., only certain people or groups can see an entity).
-- **Role Configurations**: JSON-based layouts or widget settings for each role (or identity, if you prefer).
-- **Person Overrides**: If a specific user wants to override default settings.
+- **Entity Permissions**: Fine-grained sharing (e.g., certain people or groups see an entity).
+- **Role Configurations** (JSON-based): Decide **which widgets** or **panels** a role can use.
+- **Person Overrides**: If a specific user wants different widgets than their role’s default.
 
 ---
 
 ## **3. Phase 1 Admin Tasks**
 
-In **Phase 1**, admins need straightforward pages to do the following:
+In **Phase 1**, the Admin Dashboard must let administrators:
 
-1. **Create, View, Edit, Delete People**
-2. **Create, View, Edit, Delete Identities**
-3. **Assign Identities** to People
-4. **Create, View, Edit, Delete Groups**
-5. **Create, View, Edit, Delete Group Roles**
-6. **Assign People** to Groups with a specific Role
-7. **Create, View, Edit, Delete Role Configurations** (JSON-based)
-8. **(Optional) Manage Person Overrides** for specialized dashboards
+1. **Manage People & Identities**
 
-Each action typically involves a **form** (for creating/editing) and a **confirmation** prompt (for deleting).
+   - Create, read, update, delete **people**.
+   - Create, read, update, delete **identities** (e.g., “Doctor”).
+   - Assign or remove identities from a person.
+
+2. **Manage Groups & Roles**
+
+   - Create, read, update, delete **groups** (e.g., “Sunrise Hospital”).
+   - Create, read, update, delete **group roles** (e.g., “Doctor,” “Admin”).
+   - Assign people to groups with specific roles (group memberships).
+
+3. **(Optional) Manage Entity Types & Entities**
+
+   - Possibly let admins create/edit **entity types** (e.g., “Task,” “File”).
+   - Possibly let them view or create test **entities**.
+
+4. **Configure Dashboards**
+   - Create or edit **role-based** JSON configs.
+   - (Optional) Person-level overrides if a single user needs something special.
+
+Everything else (like `comments`, `activity_logs`, `approvals`, `recurring_tasks`) can be handled later or in specialized dashboards. **Phase 1** focuses on the main system tables for people, groups, roles, and basic configurations.
 
 ---
 
 ## **4. Detailed Requirements**
 
-### **4.1 Managing People & Identities**
+### **4.1 People & Identities**
 
 #### 4.1.1 People
 
 - **List People**
-  - An admin sees a table of all `people`.
+  - A table or grid showing all rows in the `people` table.
 - **Create Person**
-  - A form asking for **full_name** and **email_address**.
+  - A form collecting `full_name`, `email_address`, and optionally `placeholder`.
 - **Edit Person**
-  - A page or modal to change name, email, or placeholder flag.
+  - Update existing fields. Possibly show warnings if changing an email.
 - **Delete Person**
-  - Must confirm. If they belong to a group, you might ask if that’s okay or require a reassign.
+  - Confirmation. If the person belongs to any group, decide if you allow or block.
 
 #### 4.1.2 Identities
 
 - **List Identities**
-  - E.g., “Doctor,” “Freelancer,” “Student.”
+  - A table of “Doctor,” “Student,” “Freelancer,” etc.
 - **Create Identity**
-  - Just needs a **label** and **details**.
+  - Minimal form: `label` (unique) + optional `details`.
 - **Edit Identity**
-  - Update the label if needed.
+  - Update `label` or `details`.
 - **Delete Identity**
-  - Confirmation. If people are using this identity, you may block deletion or reassign them.
+  - Confirmation. If it’s in use by any `person_identities`, handle carefully.
 
 #### 4.1.3 Person-Identity Assignments
 
-- **Add Identity to Person**
-  - Choose a **person** and pick an **identity**.
-- **Remove Identity**
-  - Possibly remove the row in `person_identities`.
-- **UI Example**
-  - A dropdown of identities + a “+Add” button on the person’s page.
+- A sub-page or modal to **link** a person with one or more identities.
+- Example: Admin picks “Alice” → selects identity “Doctor” → clicks “Assign.”
 
 ---
 
-### **4.2 Managing Groups & Their Roles**
+### **4.2 Groups & Roles**
 
 #### 4.2.1 Groups
 
 - **List Groups**
-  - Example: “Sunrise Hospital,” “Acme Corp.”
+  - Show “Acme Corp,” “Sunrise Hospital,” etc.
 - **Create Group**
-  - Needs a **group_name**.
+  - Form with `group_name`. Possibly a `parent_group_id` if you want hierarchy in Phase 1.
 - **Edit Group**
-  - Change name if needed.
+  - Rename or set `parent_group_id`.
 - **Delete Group**
-  - Confirm. If it has members, you might block or require a plan to reassign them.
+  - Confirmation. If it has members or child groups, you might block or require reassignments.
 
 #### 4.2.2 Group Roles
 
-- **List Roles for a Group**
-  - E.g., for “Sunrise Hospital,” see “Doctor,” “Nurse,” “Admin.”
-- **Create Group Role**
-  - Form with **role_name** and **description**.
-- **Edit Group Role**
-  - Possibly rename the role or change description.
-- **Delete Group Role**
-  - If members have this role, decide on reassignment or block the deletion.
+- **List Roles** in a selected group
+  - e.g., “Owner,” “Admin,” “Member.”
+- **Create Role**
+  - Provide `role_name` and `description`.
+- **Edit Role**
+  - Possibly rename.
+- **Delete Role**
+  - If people are using it, confirm or block.
 
 #### 4.2.3 Group Membership
 
 - **Add Person to Group**
-  - Select a **person**, select the group, pick a role.
-- **View Members of a Group**
-  - See all who belong to “Sunrise Hospital,” for example.
-- **Remove Person** from a Group
-  - For example, they leave the hospital or are no longer staff.
+  - Choose `person_id`, `group_id`, `role_id`.
+- **View Members**
+  - Show a table of `(person, role)` for that group.
+- **Remove Member**
+  - Confirmation: “Remove Bob from ‘Sunrise Hospital’?”
 
 ---
 
-### **4.3 Entity Types & Entities** (Optional for Phase 1)
+### **4.3 Entity Types & Entities** (Optional in Phase 1)
 
-In some projects, you might let admins define **entity_types**. Or you might fix them (like “Task,” “Appointment”). If you do:
-
-1. **List Entity Types**
-   - E.g., “Task,” “Note,” “Appointment.”
-2. **Create, Edit, Delete** an Entity Type
-   - Possibly with a **type_name** and **description**.
-
-**Entities** (the actual tasks/notes) might not need direct admin management in Phase 1 unless you want to provide a test data panel:
-
-- **(Optional) Create Test Entities**: Let admin create sample tasks or notes.
+- **Entity Types**
+  - Let admin create new types, e.g. “Document,” “Invoice,” “CaseFile.”
+  - Or keep them fixed if your system doesn’t allow custom definitions.
+- **Entities**
+  - Admin might want to see existing items for debugging or testing.
+  - Possibly create “test tasks” or “test appointments” to confirm features work.
 
 ---
 
-### **4.4 Role Configurations (JSON-based)**
+### **4.4 Role Configurations (JSON)**
 
-This is where an admin decides **what widgets or panels** a role sees:
+- **Purpose**: Let the admin define **widget layouts** or **UI panels** for each role.
+- **Example** JSON:
+  ```json
+  {
+    "layout": ["CalendarPanel", "TaskListPanel"],
+    "theme": "light",
+    "defaultFilters": { "task_status": "open" }
+  }
+  ```
+- **Actions**:
+  - **Create** a new config: choose a role, paste JSON.
+  - **Edit** an existing config: load the JSON in a code editor or form.
+  - **Delete** a config: confirm before removing.
 
-- **List Configs**
-  - Possibly each row is “(Role ID: X, Config ID: Y).”
-- **Create Config**
-  - A form or JSON editor. For instance:
-    ```json
-    {
-      "dashboard_panels": ["Calendar", "TaskList"],
-      "theme": "dark"
-    }
-    ```
-- **Edit Config**
-  - Load existing JSON, let admin edit it.
-- **Delete Config**
-  - Confirmation needed. If a role has no config, they might fall back to defaults.
+#### 4.4.1 Storage
 
-#### 4.4.1 Where to Store?
-
-- You might have a table like `role_configurations` or `group_role_configs`. If it’s a “group role,” store it in something like `group_role_configs`.
-- Admins **must** create the **role** first, then link a configuration to that role.
+- Might go into a dedicated `group_role_configs` or `role_configurations` table.
+- Alternatively, store in `extra_data` in `group_roles`.
+- The Admin Dashboard should provide a simple JSON editor or key-value UI.
 
 ---
 
 ### **4.5 Person Overrides** (Optional)
 
-- **List Person Overrides**: A table showing each user who has a custom override.
-- **Create/Edit Override**: Let the admin set a custom JSON for a single user. For instance, `{"hidePanel": "RevenueChart"}`.
-- **Delete Override**: Revert the user back to their role-based config.
+- If a single user wants a unique layout, override the defaults.
+- **Actions**:
+  - Create override → store custom JSON for that user.
+  - Edit override → update JSON.
+  - Delete override → revert to role-based default.
 
 ---
 
-## **5. Workflow for Admins (Step by Step)**
+## **5. Workflow Scenarios**
 
-1. **Create or Edit People**
-   - Admin adds new staff or corrects spelling of a name.
-2. **Create Identities** (like “Doctor,” “Nurse,” “Freelancer”).
-3. **Assign Identities to People**
-   - If needed.
-4. **Create Groups** (like “Sunrise Hospital”).
-5. **Create Roles within the Group** (e.g., “Doctor,” “Admin”).
-6. **Add People to Groups** with the appropriate Role.
-7. **Create or Edit Role Config** to define the dashboard for each role.
-8. (Optional) **Person Overrides** if a special user needs a special layout.
-9. (Optional) **Test Entities**: Admin might create some “fake tasks” or “fake appointments” to see how things look on the user’s dashboard.
+1. **New Employee Onboarding**
+
+   1. Admin goes to **People** → **Create Person** (“Alice”, `alice@example.com`).
+   2. Optionally assigns **identities** (e.g., “Doctor”).
+   3. Admin goes to **Groups** → selects “Sunrise Hospital” → **Add Person** → picks “Alice,” role “Admin.”
+   4. If needed, admin sets a **role config** for “Admin” to see “ManagementPanel,” “StatisticsWidget,” etc.
+
+2. **Removing a User**
+
+   1. Admin finds “Bob” in the **People** listing.
+   2. Sees Bob is in “Sunrise Hospital” as a “Doctor.”
+   3. Removes Bob from that group membership.
+   4. Deletes Bob’s person record (if fully removing from the system).
+
+3. **Updating Role Config**
+   1. Admin edits the “Doctor” role config JSON to add a new “PatientListPanel.”
+   2. All members of “Doctor” role see that panel in their dashboard (unless they have an override).
 
 ---
 
-## **6. Frontend & Backend Examples**
+## **6. Frontend / UI Outline**
 
-### **6.1 Frontend Pages (Next.js)**
+1. **Navigation**:
 
-1. **`/admin/people`**
+   - **Dashboard Home** → Admin sees quick links to manage People, Groups, Roles, etc.
+   - **People** → Table of all persons.
+   - **Identities** → Table of identities (“Doctor,” “Freelancer”).
+   - **Groups** → List of groups; clicking a group shows its roles, members, etc.
+   - **Role Configs** → A list or grid of JSON configs for roles.
+   - **Person Overrides** → (Optional) A place to search for a user and see any custom override.
 
-   - List all people. “Create New Person” button.
-   - Each row has “Edit” or “Delete.”
-   - A link to “Assign Identities.”
+2. **Forms**
 
-2. **`/admin/identities`**
+   - Simple **Create** and **Edit** forms, each with fields for the relevant columns (`full_name`, `email_address`, etc.).
+   - **JSON Editor** for role configs, possibly with validation.
 
-   - Similar layout for listing, creating, and deleting.
+3. **Confirmation Dialogs**
 
-3. **`/admin/groups`**
+   - For **deletes** or major changes (like removing a user from a group).
 
-   - Show each group. “Create Group” button.
-   - Each group has “Manage Roles” and “View Members.”
+4. **Search / Filtering**
+   - If the system has many people or groups, provide quick search or filters.
 
-4. **`/admin/[groupId]/roles`**
+---
 
-   - List roles in that group.
-   - “Create Role,” “Edit,” “Delete,” “Link Config.”
+## **7. Backend / API Endpoints**
 
-5. **`/admin/role-configs`**
+Assuming a REST approach:
 
-   - List all role configs (global or group-based).
-   - “Create” or “Edit” with a JSON editor or simple form.
+- **`POST /api/admin/people`** → create a person
+- **`GET /api/admin/people`** → list all people
+- **`GET /api/admin/people/{id}`** → get details of a single person
+- **`PUT /api/admin/people/{id}`** → update
+- **`DELETE /api/admin/people/{id}`** → delete
 
-6. **`/admin/user-overrides`**
-   - Search for a user → “Edit override.”
-
-### **6.2 Backend Endpoints (Express.js)**
-
-1. **POST /api/admin/people** → Create a new person
-2. **GET /api/admin/people** → List people
-3. **PUT /api/admin/people/:personId** → Update a person
-4. **DELETE /api/admin/people/:personId** → Delete a person
-
-... and so on for:
+And similarly for:
 
 - **Identities**: `/api/admin/identities`
 - **Groups**: `/api/admin/groups`
-- **Group Roles**: `/api/admin/groups/:groupId/roles` (or just `/api/admin/group-roles`)
-- **Role Configs**: `/api/admin/role-configs`
-- **User Overrides**: `/api/admin/users/:personId/override`
+- **GroupRoles**: `/api/admin/group-roles` or nested under `/api/admin/groups/{groupId}/roles`
+- **Memberships**: `/api/admin/group-memberships`
+- **RoleConfigs**: `/api/admin/role-configs`
+- **PersonOverrides**: `/api/admin/person-overrides`
 
 ---
 
-## **7. Edge Cases & Deletion Rules**
+## **8. Edge Cases**
 
 1. **Deleting a Role**
-   - If people are using that role, you might force them to pick a new role or block deletion.
-2. **Deleting an Identity**
-   - If assigned to people, confirm first.
-3. **Deleting a Group**
-   - If it has members, reassign or block.
-4. **Deleting a Role Config**
-   - If it’s the only config for a popular role, you could break dashboards. Prompt a fallback or block.
+   - If any `group_memberships` references it, either block or require switching their role.
+2. **Deleting a Group**
+   - If it has child groups or members, handle carefully.
+3. **Deleting an Identity**
+   - If assigned to people in `person_identities`, block or unassign first.
+4. **Overriding Role Config**
+   - Person overrides might conflict with new role configs. Decide priority.
 
 ---
 
-## **8. Conclusion**
+## **9. Summary**
 
-Using **new names** like `people`, `identities`, `groups`, `entity_types`, and `entities`, your **Admin Dashboard** (Phase 1) will let administrators:
+**Phase 1** of the Admin Dashboard should let you:
 
-1. **Onboard** new people, give them identities.
-2. **Create** groups (like companies or hospitals).
-3. **Define** roles in those groups and assign people.
-4. **Write** JSON config to shape each role’s default dashboard.
-5. **Optionally** customize single-user overrides for special cases.
+1. **Easily manage People** (create/edit/delete, plus identities).
+2. **Create & organize Groups** with Roles.
+3. **Assign roles to people** so they have correct access.
+4. **Optionally define** new entity types or test data.
+5. **Configure role-based layouts** using JSON.
+6. **(Optional) Set user-specific overrides** to tweak a single person’s dashboard.
 
-This approach gives you a **clean** foundation, letting admins easily manage the system while staying consistent with your new **“Second Brain”** schema.
+By covering these areas, the admin team can maintain a consistent, flexible environment that matches your **“One Brain / Second Brain”** architecture—ensuring **roles, groups, and dashboards** remain well-structured without requiring deep developer intervention.

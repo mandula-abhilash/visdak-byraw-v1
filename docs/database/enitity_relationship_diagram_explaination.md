@@ -1,6 +1,16 @@
 # **1. Overview of the Diagram**
 
-The diagram shows **boxes** (tables) with **columns** inside, and **lines** between them indicating **relationships**. For example, **one table** might link to **another** if they need to share data (like a “Person” belonging to a “Group”).
+The diagram shows **tables** (the boxes) and their **columns** inside.  
+**Lines** between tables represent **relationships** (e.g., how one table references another).  
+Each table has a **primary key** (PK), often labeled, and possibly **foreign keys** (FK) pointing to columns in other tables.
+
+In a nutshell, the schema lets us:
+
+1. **Store people** (the end-users or system participants).
+2. **Organize** them into **groups**, **teams**, and **roles**.
+3. **Capture everything** users do (tasks, appointments, notes) as **entities**.
+4. **Control permissions**, comments, activity logs, approvals, recurring tasks.
+5. **Customize dashboards** (widgets) for individuals or entire groups.
 
 ---
 
@@ -8,39 +18,39 @@ The diagram shows **boxes** (tables) with **columns** inside, and **lines** betw
 
 ## **2.1 `people` Table**
 
-- This table **stores info about each person** in the system—like their **full name** and **email**.
-- Each row in `people` has a **`person_id`** (a unique number) to identify them.
+- **Purpose**: Holds **basic info** about each individual (name, email, etc.).
+- **Key Columns**:
+  - **`person_id`** (PK): a unique integer ID.
+  - **`full_name`**: e.g. “Alice Baker.”
+  - **`email_address`**: unique for each person.
+  - **`placeholder`**: indicates “guest” or “shell” account if `TRUE`.
 
-### **Why it Matters**
+### **Why It Matters**
 
-- If Alice is a user, her info (name, email) is here.
-- If Bob is another user, he also has a row here.
+Everyone in the system (employees, contractors, patients, etc.) will have a **row** here.
+
+---
 
 ## **2.2 `identities` Table**
 
-- This table **stores the different ‘personas’ or ‘roles’** a person can have on a day-to-day basis.
-- Example: “Doctor,” “Freelancer,” or “Student.”
+- **Purpose**: Defines **“persona” labels** that a user might assume.
+- **Examples**: “Doctor,” “Freelancer,” “Student.”
 
-### **Why it Matters**
+### **Key Columns**
 
-- Each identity (like “Doctor”) has its own **`identity_id`** and name.
+- **`identity_id`** (PK).
+- **`label`**: short descriptor (must be unique).
+- **`details`**: optional text for more info (e.g., “Surgeon specializing in orthopedics”).
+
+---
 
 ## **2.3 `person_identities` Table (Link)**
 
-- Because one **person** can have **many** identities, and one **identity** can be used by **many** different people, we have a **middle table**.
-- This table connects **which person** has **which identity**.
+- **Purpose**: **Merges** `people` and `identities` in a many-to-many relationship.
 
 ### **Example**
 
-- If Alice (person_id=1) is both a **Doctor** (identity_id=2) and a **Mother** (identity_id=3), we put **two** rows here:
-  1. `(person_id=1, identity_id=2)`
-  2. `(person_id=1, identity_id=3)`.
-
-### **What to Create First**
-
-1. Make sure **people** (like Alice) exist in `people`.
-2. Make sure the “Doctor” or “Mother” identity exists in `identities`.
-3. Then **link** them by adding a row to `person_identities`.
+- If “Alice” (person_id=1) has the “Doctor” identity (identity_id=2), we insert `(1,2)` here.
 
 ---
 
@@ -48,181 +58,285 @@ The diagram shows **boxes** (tables) with **columns** inside, and **lines** betw
 
 ## **3.1 `groups` Table**
 
-- This table represents **organizations** or **teams** (like **“Acme Corp”** or **“Sunrise Hospital”**).
-- Each group has a **`group_id`** (unique number) and a **name**.
+- **Purpose**: Represents **organizations** (e.g. “Acme Corp”) or **sub-divisions** (e.g. “Marketing Dept”).
+- **`parent_group_id`**: allows groups to nest under a **parent** group, forming a **hierarchy**.
 
-### **Why It Matters**
+### **Key Columns**
 
-- If your user belongs to a **company** or **hospital**, that gets a row in `groups`.
+- **`group_id`** (PK).
+- **`group_name`**: e.g. “Acme Corp,” “Marketing Dept.”
+- **`parent_group_id`** (FK to `groups.group_id`): references a **parent** group (or `NULL` if top-level).
+
+---
 
 ## **3.2 `group_roles` Table**
 
-- This stores **roles** people can have inside a group—like “Owner,” “Admin,” or “Member.”
-- Each row has a **`role_id`** and a **name** (e.g. “Manager”).
+- **Purpose**: Lists possible **roles** in a group, like “Owner,” “Admin,” “Team Lead,” “Member.”
 
-### **Why It Matters**
+### **Key Columns**
 
-- This defines what level of access or authority a person has in the group.
+- **`role_id`** (PK).
+- **`role_name`**: e.g. “Admin.”
+- **`description`**: What that role entails.
+
+---
 
 ## **3.3 `group_memberships` Table (Link)**
 
-- Because one **person** can belong to **many** groups, and each group can have **many** people, this table **links** them.
-- It also has a **`role_id`** so we know the person’s role in that group.
+- **Purpose**: Links a **person** to a **group**, along with their **role**.
+- **One person** can be in **many** groups, and **one group** can have **many** people.
 
 ### **Example**
 
-- If Bob (person_id=2) is part of “Acme Corp” (group_id=10) as a “Manager” (role_id=2), we add a row:
-  - `(person_id=2, group_id=10, role_id=2)`.
-
-### **What to Create First**
-
-1. Create entries in `people` for your users.
-2. Create an entry in `groups` (like “Acme Corp”).
-3. Create a “Manager” role in `group_roles`.
-4. Link them up in `group_memberships`.
+- If Bob (person_id=2) is an “Admin” (role_id=1) in “Acme Corp” (group_id=10), we insert:
+  - `(person_id=2, group_id=10, role_id=1)`.
 
 ---
 
-# **4. Entities & Permissions**
+# **4. Teams (Optional Sub-Group Layer)**
 
-## **4.1 `entity_types` Table**
+Some organizations might want a **finer breakdown** below the “group” level (for projects, squads, specialized teams). These two tables handle that scenario.
 
-- This table stores **categories** or **types** of items we can create, like **“Task,” “Appointment,” “Note,” “Widget”** etc.
-- Each row has a **`type_id`** and a **`type_name`**.
+## **4.1 `teams` Table**
+
+- **Purpose**: A **sub-entity** of a `group`. For instance, “Design Team” under “Marketing Dept.”
+- **Key Columns**:
+  - **`team_id`** (PK).
+  - **`group_id`** (FK): The **parent group**.
 
 ### **Why It Matters**
 
-- It helps us label each item we store—so the system knows if it’s a task, note, or appointment.
-
-## **4.2 `entities` Table**
-
-- This is the **main** table for **all items** or **“things”** in the system (like tasks, notes, appointments).
-- Important columns:
-  - **`owner_id`**: The **person** who created or “owns” the item.
-  - **`group_id`**: (Optional) The **group** that item might belong to.
-  - **`type_id`**: Ties back to `entity_types` to say what kind of item it is.
-  - **`title`** & **`description`**: Basic info.
-  - **`start_at`** & **`end_at`**: If it’s an appointment or event with a time.
-  - **`extra_data`**: A **jsonb** field (fancy flexible storage) for anything else (like location, tags, etc.).
-
-### **Example**
-
-- If Alice creates a “Doctor’s Appointment” for a patient, that is one row in `entities`.
-- If Bob creates a “Task” called “Buy Office Supplies,” that’s another row.
-
-### **What to Create First**
-
-1. Create some row(s) in `entity_types` to define “Task,” “Appointment,” etc.
-2. Then, when a user wants to add an item, add a row in `entities` referencing the correct **`type_id`**.
-
-## **4.3 `entity_permissions` Table (Optional)**
-
-- This table is for **fine-grained sharing**. If you want **only** certain people or certain teams to see an item, you create rows here.
-- **`subject_type`** could be “Person” or “Group.”
-- **`subject_id`** is the ID of that person or group.
-
-### **Example**
-
-- If you have entity #50 that only user #7 can see, you insert:
-  - `(entity_id=50, subject_type='Person', subject_id=7, access_level='view')`.
-
-### **When to Use**
-
-- If you want a **private** item or a **private** set of items for certain members.
-- Some systems skip this if they rely on each entity’s `group_id` to control sharing.
+If “Marketing Dept” is a group, they can have multiple **teams** (“Social Media Team,” “Product Launch Team”).
 
 ---
 
-# **5. Widgets (Optional)**
+## **4.2 `team_members` Table (Link)**
 
-## **5.1 `widgets` Table**
+- **Purpose**: Many-to-many link between `people` and `teams`.
+- **You can** store an extra `role_name` here if you want “Team Lead” vs. “Team Member.”
 
-- This table stores **pre-built** widget definitions, like “TaskListWidget,” “CalendarWidget,” etc.
-- Each widget has a **`widget_id`** and a **`widget_name`**.
+### **Example**
 
-## **5.2 `person_widgets` Table**
-
-- This table says which **person** is using which **widget** and how it’s configured.
-- For example, if Alice wants a **CalendarWidget** in position #1 on her dashboard, we add a row here with:
-  - `(person_id=1, widget_id=2, position=1)`.
+- If Alice (person_id=1) joins the “Design Team” (team_id=5) as “Lead,” you’d insert:
+  - `(team_id=5, person_id=1, role_name='Lead')`.
 
 ---
 
-# **6. Putting It All Together**
+# **5. Entities & Permissions**
 
-### **Step-by-Step Setup**
+## **5.1 `entity_types` Table**
+
+- **Purpose**: Defines **categories** of items (e.g., “Task,” “Note,” “Appointment,” “PurchaseRequest”).
+
+### **Key Columns**
+
+- **`type_name`**: e.g. “Task.”
+- **`description`**: A short explanation, if needed.
+
+---
+
+## **5.2 `entities` Table**
+
+- **Purpose**: **Central** table for **all items**. A row here could represent a:
+  - **Task** (“Finish report”)
+  - **Appointment** (“Doctor visit next Monday”)
+  - **Note** (“Project brainstorm ideas”)
+  - etc.
+- **Key Columns**:
+  - **`owner_id`** (FK to `people`): who owns or created it.
+  - **`group_id`** (FK to `groups`): which group it belongs to, if any.
+  - **`type_id`** (FK to `entity_types`): what kind of item it is.
+  - **`title`**, **`description`**: textual details.
+  - **`start_at`, `end_at`**: scheduling times.
+  - **`extra_data`**: flexible JSON field for custom attributes (e.g., “priority”: “High”).
+  - **`vector_embed`**: optional AI embedding.
+
+### **Why It Matters**
+
+Everything from personal tasks to corporate documents can be stored uniformly, making it easy to query or filter.
+
+---
+
+## **5.3 `entity_permissions` Table (Optional)**
+
+- **Purpose**: **Fine-grained** sharing.
+- If you want to specify exactly who can “view,” “edit,” or “admin” an entity, you add rows here.
+- **`subject_type`**: can be “Person,” “Group,” or “Team.”
+- **`subject_id`**: the actual ID of that person/group/team.
+
+### **Use Case**
+
+- “Only Person #7 can edit this entity,” or “Group #10 can view this entity.”
+
+---
+
+# **6. Collaboration & Workflow**
+
+These tables extend functionality for **comments**, **logs**, **approvals**, and **recurring tasks**.
+
+## **6.1 `comments` Table**
+
+- **Purpose**: Let people **comment** on an `entity` (like posting messages on a task).
+- **Key Columns**:
+  - **`entity_id`** (FK to `entities`): which item is being commented on.
+  - **`author_id`** (FK to `people`): who wrote the comment.
+  - **`content`**: the message text.
+  - **`created_on`**: timestamp of comment.
+
+### **Example**
+
+- “@Bob, can you finalize the report?” is stored as a row referencing the “report” entity.
+
+---
+
+## **6.2 `activity_logs` Table**
+
+- **Purpose**: **Audit trail** or **history** of events. Records changes in an entity or system actions.
+- **Key Columns**:
+  - **`entity_id`**: which entity changed.
+  - **`actor_id`**: who triggered the change.
+  - **`action_type`**: short label (e.g. “COMMENT_ADDED”, “STATUS_UPDATED”).
+  - **`details`**: JSON with extra info.
+
+### **Example**
+
+- If someone changes a task from “Open” to “Closed,” an **activity_logs** row can store that event.
+
+---
+
+## **6.3 `approvals` Table (Optional)**
+
+- **Purpose**: For **multi-step** or official approval processes (e.g., “Pending → Approved/Rejected”).
+- **Key Columns**:
+  - **`entity_id`**: which entity requires approval.
+  - **`approver_id`**: who can approve/reject.
+  - **`status`**: “Pending,” “Approved,” “Rejected.”
+
+### **Example**
+
+- A “Purchase Request” entity can have multiple `approvals` rows for different managers.
+
+---
+
+## **6.4 `recurring_tasks` Table (Optional)**
+
+- **Purpose**: Automate creation of repeated tasks/appointments (weekly, monthly, etc.).
+- **Key Columns**:
+  - **`entity_id`**: references a “template” entity.
+  - **`rule`**: e.g. “FREQ=WEEKLY;BYDAY=MO.”
+  - **`next_run`**: next date/time to spawn a new occurrence.
+
+### **Example**
+
+- “Team Meeting every Monday at 10 AM.” The system checks `recurring_tasks` to generate new entities on schedule.
+
+---
+
+# **7. Widgets & Dashboards**
+
+## **7.1 `widgets` Table**
+
+- **Purpose**: Holds the **global definition** of each widget type (e.g. “CalendarWidget,” “TaskBoardWidget”).
+- **Key Columns**:
+  - **`widget_name`**: unique label.
+  - **`widget_config`**: JSON for default settings.
+
+---
+
+## **7.2 `person_widgets` Table**
+
+- **Purpose**: Tracks which widgets a **person** uses, their ordering, and custom config.
+- **Key Columns**:
+  - **`person_id`** (FK): whose dashboard it is.
+  - **`widget_id`** (FK): which global widget they’re using.
+  - **`position`**: the widget’s order on their screen.
+
+### **Example**
+
+- If Alice wants a “CalendarWidget” at the top (position=1), we insert `(person_id=Alice, widget_id=Calendar, position=1)` here.
+
+---
+
+## **7.3 `group_widgets` Table**
+
+- **Purpose**: Let an **entire group** share a widget-based dashboard (e.g., a “Team Task Board”).
+- **Key Columns**:
+  - **`group_id`** (FK to `groups`).
+  - **`widget_id`** (FK to `widgets`).
+  - **`config`**: JSON overrides for group-wide settings.
+
+### **Example**
+
+- “Marketing Dept” (group_id=5) has a “TaskBoardWidget” (widget_id=2) showing only tasks under the marketing group. Insert `(group_id=5, widget_id=2, config={...})`.
+
+---
+
+# **8. Putting It All Together**
+
+## **8.1 Typical Setup Flow**
 
 1. **Create People**
-
-   - Fill in `people` with real user names and emails.
-   - Optional: Add “identities” (personas) in `identities`, then link them with `person_identities`.
-
-2. **Create Groups & Roles**
-
-   - In `groups`, add your organization (like “Acme Corp”).
-   - In `group_roles`, add roles (“Owner,” “Manager,” “Member”).
-   - In `group_memberships`, link each person to the right group with the right role.
-
-3. **Define Entity Types**
-
-   - For each kind of item your system supports—“Task,” “Appointment,” “Note”—create a row in `entity_types`.
-
-4. **Add Entities**
-
-   - Whenever someone creates a new task or appointment, add it to `entities` with the **correct** `owner_id`, `group_id` (if it belongs to a group), and `type_id`.
-
-5. **Use Entity Permissions** (If needed)
-
-   - If you want specific sharing, insert rows into `entity_permissions`. For example, `(entity_id=101, subject_type='Person', subject_id=2, access_level='edit')`.
-
+   - Insert rows in `people`.
+2. **Set Up Groups**
+   - Insert rows in `groups` (e.g., “Acme Corp,” “HR Dept”).
+   - If needed, nest them via `parent_group_id`.
+3. **Define Roles & Memberships**
+   - Insert `group_roles` (like “Owner,” “Admin,” “Member”).
+   - Add `group_memberships` to link each person to a group with a role.
+   - (Optionally) create `teams` within a group, then `team_members`.
+4. **Entity Types & Entities**
+   - Insert `entity_types` (“Task,” “Note,” etc.).
+   - Users create new items in `entities` referencing the appropriate `type_id`.
+   - If needed, set `entity_permissions` for custom sharing rules.
+5. **Collaboration & Workflow**
+   - Add `comments` for discussions on entities.
+   - Use `activity_logs` to record status changes or events.
+   - If multi-step sign-off is needed, create `approvals` rows.
+   - If repeating tasks, define them in `recurring_tasks`.
 6. **Widgets & Dashboards**
-   - If you need custom dashboards, create widget definitions in `widgets`.
-   - Then, assign them to a person by adding rows in `person_widgets`.
+   - Define global widgets in `widgets`.
+   - For personal dashboards, insert `person_widgets`.
+   - For shared group dashboards, insert `group_widgets`.
 
 ---
 
-# **7. Example Use Case: Setting Up a Dashboard for Bob**
+## **8.2 Example: A New Project Team**
 
-Let’s say Bob is a new employee at “Sunrise Hospital,” and we want him to see his personal tasks, hospital tasks, and a calendar widget.
+1. **Add People**
+   - “Alice” (person_id=1), “Bob” (person_id=2).
+2. **Create Group**
+   - “Marketing Dept” in `groups` (group_id=10).
+3. **Roles**
+   - “Team Lead” (role_id=2), “Member” (role_id=3) in `group_roles`.
+4. **Group Membership**
+   - Alice = Team Lead, so `(person_id=1, group_id=10, role_id=2)`.
+   - Bob = Member, so `(person_id=2, group_id=10, role_id=3)`.
+5. **Create a Team** (optional)
+   - “Design Squad” under `group_id=10` in `teams`.
+   - Alice and Bob join `team_members` with `(team_id=5, person_id=1, role_name='Lead')`, `(team_id=5, person_id=2, role_name='Member')`.
+6. **Entity Types**
+   - Insert “Task” (type_id=1), “Note” (type_id=2).
+7. **Entities**
+   - Alice creates a “Task” entity with `owner_id=1, group_id=10, type_id=1, title='Plan Marketing Campaign'`.
+8. **Collaboration**
+   - Bob comments in `comments`: `(entity_id=theTaskID, author_id=2, content='We need budget approval!')`.
+   - The system logs it in `activity_logs`.
+   - Optionally, create an approval process in `approvals` for a budget request.
+9. **Recurring**
+   - If they have a standing Monday meeting, define `recurring_tasks` with a rule “FREQ=WEEKLY;BYDAY=MO.”
+10. **Widgets**
 
-1. **Add Bob to `people`**:
-
-   - `(full_name='Bob Smith', email_address='bob@example.com')`.
-
-2. **Add “Sunrise Hospital” to `groups`**:
-
-   - `(group_name='Sunrise Hospital')`.
-
-3. **Add a role in `group_roles`**:
-
-   - `(role_name='Doctor')` or `(role_name='Nurse')` etc.
-
-4. **Link Bob to Sunrise Hospital**:
-
-   - In `group_memberships`, `(person_id=Bob, group_id=SunriseHospital, role_id=DoctorOrNurse)`.
-
-5. **Create widget definitions** (once, globally):
-
-   - `('CalendarWidget')`, `('TaskListWidget')`.
-
-6. **Add Bob’s personal widgets**:
-   - In `person_widgets`, `(person_id=Bob, widget_id=CalendarWidget, position=1, enabled=true)`
-   - Also `(person_id=Bob, widget_id=TaskListWidget, position=2, enabled=true)`
-
-Now, Bob will have a **dashboard** with a **calendar** and a **task list**.
-
-- If you want Bob to see a **hospital appointment** item, you can create an **entity** with `group_id` = Sunrise Hospital and `type_id` = Appointment.
+- `widgets`: “TaskBoardWidget.”
+- `group_widgets`: `(group_id=10, widget_id=TaskBoardWidget, config={filter:'Marketing'})`.
 
 ---
 
-# **8. Conclusion**
+# **9. Conclusion**
 
-This **diagram** and **step-by-step** explanation helps you see:
+1. **People & Identities**: Keep track of **who** is in the system and **what personas** they have.
+2. **Groups & Teams**: Organize those people into **companies**, **departments**, and **specialized teams**.
+3. **Entities & Permissions**: Everything (tasks, notes, appointments) goes in a single table, with optional **fine-grained** access control.
+4. **Collaboration & Workflow**: Use **comments**, **activity_logs**, **approvals**, and **recurring_tasks** to handle discussions, auditing, approvals, and repeating tasks.
+5. **Widgets & Dashboards**: Let individuals or entire groups configure their **UI** via **widgets**.
 
-- **What** each table is for.
-- **How** they link together.
-- **Why** you need them.
-
-By following the recommended **creation order** (people/groups first, then memberships and widgets), you’ll ensure the system is set up cleanly. The **entities** table is your “central hub” for tasks, appointments, notes, etc., and you can optionally extend **permissions** if you need advanced sharing rules.
-
-This approach gives you a **flexible, powerful** way to manage user data, group data, and custom dashboard widgets, without overwhelming your team.
+By **understanding** each table’s **purpose** and the **relationships** between them, your team (technicians, DB devs, QA testers, admins) can confidently **build, extend, and troubleshoot** the platform—whether for personal tasks or enterprise-scale organizational workflows.
