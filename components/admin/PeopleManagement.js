@@ -20,8 +20,8 @@ export const PeopleManagement = () => {
   const [people, setPeople] = useState([
     {
       id: "1",
-      full_name: "John Doe",
-      email_address: "john@example.com",
+      full_name: "Abhilash Mandula",
+      email_address: "mandula.abhilash@gmail.com",
     },
     {
       id: "2",

@@ -42,7 +42,20 @@ const COLORS = {
   muted: "hsl(var(--muted))",
 };
 
-export const TaskWidgetCharts = () => {
+const widthClasses = {
+  "1/4": "w-full md:w-1/4",
+  "1/3": "w-full md:w-1/3",
+  "1/2": "w-full md:w-1/2",
+  "2/3": "w-full md:w-2/3",
+  "3/4": "w-full md:w-3/4",
+  full: "w-full",
+};
+
+const getChartWidth = (width) => {
+  return widthClasses[width] || widthClasses["1/2"];
+};
+
+export const TaskWidgetCharts = ({ charts = [] }) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
   // Get all chart data
@@ -143,56 +156,77 @@ export const TaskWidgetCharts = () => {
     </ResponsiveContainer>
   );
 
+  // Default charts configuration if none provided
+  const defaultCharts = [
+    {
+      title: "Task Completion Status",
+      description: "Overview of tasks by their current status",
+      type: "pie",
+      data: completionStats,
+      width: "1/2",
+    },
+    {
+      title: "Task Priority Distribution",
+      description: "Distribution of tasks across different priority levels",
+      type: "bar",
+      data: priorityStats,
+      color: COLORS.chart2,
+      width: "1/2",
+    },
+    {
+      title: "Overdue Tasks",
+      description: "Tasks that are past their due date",
+      type: "bar",
+      data: overdueStats,
+      color: COLORS.destructive,
+      width: "1/3",
+    },
+    {
+      title: "Tasks Due Today",
+      description: "Tasks that need to be completed today",
+      type: "pie",
+      data: dueTodayStats,
+      width: "1/3",
+    },
+    {
+      title: "Completed Tasks by Priority",
+      description: "Analysis of completed tasks based on their priority",
+      type: "bar",
+      data: completedByPriority,
+      color: COLORS.chart3,
+      width: "1/3",
+    },
+    {
+      title: "Upcoming Tasks Timeline",
+      description: "Overview of tasks due in the next 7 days",
+      type: "line",
+      data: upcomingTimeline,
+      width: "1/3",
+    },
+    {
+      title: "High Priority Overview",
+      description: "Status distribution of high priority tasks",
+      type: "bar",
+      data: highPriorityOverview,
+      color: COLORS.chart4,
+      width: "1/3",
+    },
+  ];
+
+  const chartsToRender = charts.length > 0 ? charts : defaultCharts;
+
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <TaskChartCard
-        title="Task Completion Status"
-        description="Overview of tasks by their current status"
-      >
-        {renderPieChart(completionStats)}
-      </TaskChartCard>
-
-      <TaskChartCard
-        title="Task Priority Distribution"
-        description="Distribution of tasks across different priority levels"
-      >
-        {renderBarChart(priorityStats, COLORS.chart2)}
-      </TaskChartCard>
-
-      <TaskChartCard
-        title="Overdue Tasks"
-        description="Tasks that are past their due date"
-      >
-        {renderBarChart(overdueStats, COLORS.destructive)}
-      </TaskChartCard>
-
-      <TaskChartCard
-        title="Tasks Due Today"
-        description="Tasks that need to be completed today"
-      >
-        {renderPieChart(dueTodayStats)}
-      </TaskChartCard>
-
-      <TaskChartCard
-        title="Completed Tasks by Priority"
-        description="Analysis of completed tasks based on their priority"
-      >
-        {renderBarChart(completedByPriority, COLORS.chart3)}
-      </TaskChartCard>
-
-      <TaskChartCard
-        title="Upcoming Tasks Timeline"
-        description="Overview of tasks due in the next 7 days"
-      >
-        {renderLineChart(upcomingTimeline)}
-      </TaskChartCard>
-
-      <TaskChartCard
-        title="High Priority Overview"
-        description="Status distribution of high priority tasks"
-      >
-        {renderBarChart(highPriorityOverview, COLORS.chart4)}
-      </TaskChartCard>
+    <div className="flex flex-wrap -mx-3">
+      {chartsToRender.map((chart, index) => (
+        <div key={index} className={`${getChartWidth(chart.width)} px-3 mb-6`}>
+          <TaskChartCard title={chart.title} description={chart.description}>
+            {chart.type === "pie" && renderPieChart(chart.data)}
+            {chart.type === "bar" &&
+              renderBarChart(chart.data, chart.color || COLORS.primary)}
+            {chart.type === "line" && renderLineChart(chart.data)}
+          </TaskChartCard>
+        </div>
+      ))}
     </div>
   );
 };

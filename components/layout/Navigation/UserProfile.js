@@ -19,13 +19,13 @@ export const UserProfile = ({ collapsed }) => {
       >
         <Avatar>
           <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&q=80&fit=crop" />
-          <AvatarFallback>JD</AvatarFallback>
+          <AvatarFallback>AM</AvatarFallback>
         </Avatar>
         {!collapsed && (
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate">John Doe</p>
+            <p className="text-sm font-medium truncate">Abhilash Mandula</p>
             <p className="text-xs text-muted-foreground truncate">
-              john@example.com
+              mandula.abhilash@gmail.com
             </p>
           </div>
         )}

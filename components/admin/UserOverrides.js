@@ -16,8 +16,8 @@ export const UserOverrides = () => {
   const [users] = useState([
     {
       id: 1,
-      name: "John Doe",
-      email: "john@example.com",
+      name: "Abhilash Mandula",
+      email: "mandula.abhilash@gmail.com",
       overrides: ["Custom Dashboard Layout", "Additional Widgets"],
     },
     {
