@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaskWidgetVariants } from "./TaskWidgetVariants";
 import { TaskWidgetCharts } from "./TaskWidgetCharts";
+import { TaskWidgetMaps } from "./TaskWidgetMaps";
 
 export const TaskWidgetTabs = () => {
   return (
@@ -20,6 +21,12 @@ export const TaskWidgetTabs = () => {
         >
           Charts & Analytics
         </TabsTrigger>
+        <TabsTrigger
+          value="maps"
+          className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
+        >
+          Maps
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="widgets" className="space-y-4 mt-4">
@@ -28,6 +35,10 @@ export const TaskWidgetTabs = () => {
 
       <TabsContent value="charts" className="space-y-4 mt-4">
         <TaskWidgetCharts />
+      </TabsContent>
+
+      <TabsContent value="maps" className="space-y-4 mt-4">
+        <TaskWidgetMaps />
       </TabsContent>
     </Tabs>
   );
