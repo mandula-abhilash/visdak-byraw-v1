@@ -8,6 +8,7 @@ import { WIDGET_STYLES } from "@/lib/constants/widget-styles";
 
 export const CalendarWidget = ({
   title = "Calendar",
+  view = "month",
   showEventCount = false,
   showWeekNumbers = false,
   showEventDetails = false,
@@ -38,7 +39,7 @@ export const CalendarWidget = ({
         />
       </CardHeader>
       <CardContent
-        className="flex-1 p-4 overflow-y-auto"
+        className="flex-1 p-4 overflow-hidden"
         style={{
           minHeight: WIDGET_STYLES.MIN_HEIGHT,
           maxHeight: WIDGET_STYLES.MAX_HEIGHT,
@@ -52,6 +53,7 @@ export const CalendarWidget = ({
             showEventDetails={showEventDetails}
             showTimeSlots={showTimeSlots}
             limit={limit}
+            view={view}
           />
         </div>
       </CardContent>

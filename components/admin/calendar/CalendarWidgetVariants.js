@@ -27,36 +27,15 @@ export const CalendarWidgetVariants = () => {
     {
       title: "Weekly Schedule",
       view: "week",
-      width: "1/3",
+      width: "full",
       showEventDetails: true,
       showTimeSlots: true,
-    },
-    {
-      title: "Daily Agenda",
-      view: "day",
-      width: "1/2",
-      showEventDetails: true,
-      showTimeSlots: true,
-    },
-    {
-      title: "Upcoming Events",
-      view: "list",
-      width: "1/2",
-      limit: 5,
-      showEventDetails: true,
     },
     {
       title: "Mini Calendar",
       view: "mini",
       width: "1/3",
       showEventCount: true,
-    },
-    {
-      title: "Team Schedule",
-      view: "team",
-      width: "2/3",
-      showEventDetails: true,
-      showTimeSlots: true,
     },
   ];
 
