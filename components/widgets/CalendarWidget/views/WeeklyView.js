@@ -131,7 +131,7 @@ export const WeeklyView = ({
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-base lg:text-lg font-semibold">
             {formatMonthYear(currentDate)}
           </h2>
         </div>
@@ -142,12 +142,14 @@ export const WeeklyView = ({
         <div className="min-w-[800px]">
           {/* Days Header */}
           <div className="grid grid-cols-[100px_repeat(7,1fr)] border-b sticky top-0 bg-background z-10">
-            <div className="p-2 border-r text-sm font-medium">Time</div>
+            <div className="p-2 border-r text-xs lg:text-sm font-medium">
+              Time
+            </div>
             {weekDays.map((day, i) => (
               <div
                 key={i}
                 className={cn(
-                  "p-2 text-center text-sm font-medium border-r",
+                  "p-2 text-center text-xs lg:text-sm font-medium border-r",
                   day.getDate() === new Date().getDate() &&
                     day.getMonth() === new Date().getMonth()
                     ? "bg-accent"
@@ -163,7 +165,7 @@ export const WeeklyView = ({
           <div className="divide-y">
             {timeSlots.map((hour) => (
               <div key={hour} className="grid grid-cols-[100px_repeat(7,1fr)]">
-                <div className="p-2 border-r text-sm text-muted-foreground">
+                <div className="p-2 border-r text-xs lg:text-sm text-muted-foreground">
                   {formatTime(hour)}
                 </div>
                 {weekDays.map((day, dayIndex) => {
@@ -183,7 +185,7 @@ export const WeeklyView = ({
                         >
                           <div className="font-medium">{event.title}</div>
                           {event.location && (
-                            <div className="text-muted-foreground pt-1">
+                            <div className="text-muted-foreground pt-1 hidden lg:block">
                               📍 {event.location}
                             </div>
                           )}

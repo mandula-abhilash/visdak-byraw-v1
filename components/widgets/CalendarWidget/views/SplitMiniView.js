@@ -62,7 +62,7 @@ export const SplitMiniView = ({
   };
 
   return (
-    <div className="grid grid-cols-[1fr_1.5fr] gap-6 h-full">
+    <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-6 h-full">
       {/* Left Side - Date Display */}
       <div className="flex flex-col">
         {/* Navigation */}
@@ -102,15 +102,15 @@ export const SplitMiniView = ({
         {/* Large Date Display */}
         <div className="relative flex-1">
           <div className="absolute inset-0 bg-accent/50 rounded-lg blur-xl"></div>
-          <div className="relative bg-card border-2 rounded-lg px-8 py-12 shadow-lg h-full flex flex-col justify-center">
-            <div className="text-9xl font-bold tracking-tight mb-4">
+          <div className="relative bg-card border-2 rounded-lg px-4 lg:px-8 py-8 lg:py-12 shadow-lg h-full flex flex-col justify-center">
+            <div className="text-6xl lg:text-9xl font-bold tracking-tight mb-4">
               {currentDate.getDate()}
             </div>
             <div className="space-y-1">
-              <div className="text-2xl font-medium text-primary">
+              <div className="text-xl lg:text-2xl font-medium text-primary">
                 {formatDay(currentDate)}
               </div>
-              <div className="text-lg text-muted-foreground">
+              <div className="text-base lg:text-lg text-muted-foreground">
                 {formatMonth(currentDate)}
               </div>
             </div>
@@ -157,11 +157,6 @@ export const SplitMiniView = ({
                       {event.location && (
                         <div className="text-sm opacity-90 flex items-center gap-1">
                           <span className="text-base">📍</span> {event.location}
-                        </div>
-                      )}
-                      {event.description && (
-                        <div className="text-sm opacity-90 mt-2">
-                          {event.description}
                         </div>
                       )}
                     </div>

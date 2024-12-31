@@ -29,7 +29,7 @@ export const MonthlyView = ({
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1fr] gap-4 h-full min-h-[600px] lg:min-h-0">
-      <div className="w-full h-[400px] lg:h-full">
+      <div className="w-full h-[350px] lg:h-full">
         <Calendar
           mode="single"
           selected={selectedDate}
@@ -51,10 +51,10 @@ export const MonthlyView = ({
             table: "w-full border-collapse h-[calc(100%-3rem)]",
             head_row: "flex w-full",
             head_cell:
-              "text-center p-2 rounded-md font-normal text-[0.8rem] text-muted-foreground flex-1",
+              "text-center p-2 rounded-md font-normal text-[0.7rem] lg:text-[0.8rem] text-muted-foreground flex-1",
             row: "flex w-full mt-2",
-            cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 flex-1 m-0.5",
-            day: "h-9 w-9 p-0 mx-auto font-normal aria-selected:opacity-100 hover:bg-accent hover:rounded-full focus:bg-accent focus:rounded-full",
+            cell: "relative p-0 text-center text-xs lg:text-sm focus-within:relative focus-within:z-20 flex-1 m-0.5",
+            day: "h-7 w-7 lg:h-9 lg:w-9 p-0 mx-auto font-normal aria-selected:opacity-100 hover:bg-accent hover:rounded-full focus:bg-accent focus:rounded-full",
             day_today:
               "bg-accent text-accent-foreground rounded-full font-bold",
             day_selected:
@@ -78,7 +78,7 @@ export const MonthlyView = ({
         />
       </div>
 
-      <div className="rounded-md border p-4 h-[300px] lg:h-full overflow-y-auto">
+      <div className="rounded-md border p-4 h-[400px] lg:h-full overflow-y-auto">
         {selectedDate ? (
           <>
             <time
