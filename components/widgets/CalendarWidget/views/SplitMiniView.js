@@ -64,9 +64,9 @@ export const SplitMiniView = ({
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-6 h-full">
       {/* Left Side - Date Display */}
-      <div className="flex flex-col">
+      <div className="flex flex-col h-[300px] lg:h-auto">
         {/* Navigation */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <Button
             variant="outline"
             size="sm"
@@ -102,7 +102,7 @@ export const SplitMiniView = ({
         {/* Large Date Display */}
         <div className="relative flex-1">
           <div className="absolute inset-0 bg-accent/50 rounded-lg blur-xl"></div>
-          <div className="relative bg-card border-2 rounded-lg px-4 lg:px-8 py-8 lg:py-12 shadow-lg h-full flex flex-col justify-center">
+          <div className="relative bg-card border-2 rounded-lg px-4 lg:px-8 py-6 lg:py-12 shadow-lg h-full flex flex-col justify-center">
             <div className="text-6xl lg:text-9xl font-bold tracking-tight mb-4">
               {currentDate.getDate()}
             </div>
@@ -119,8 +119,8 @@ export const SplitMiniView = ({
       </div>
 
       {/* Right Side - Events List */}
-      <div className="flex flex-col">
-        <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col flex-1 min-h-[400px] lg:min-h-0">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="font-medium">Today's Events</h3>
           <span className="text-sm text-muted-foreground">
             {selectedDateEvents.length}{" "}
