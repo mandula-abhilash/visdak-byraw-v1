@@ -103,14 +103,14 @@ export const SplitMiniView = ({
         <div className="relative flex-1">
           <div className="absolute inset-0 bg-accent/50 rounded-lg blur-xl"></div>
           <div className="relative bg-card border-2 rounded-lg px-4 lg:px-8 py-6 lg:py-12 shadow-lg h-full flex flex-col justify-center">
-            <div className="text-6xl lg:text-9xl font-bold tracking-tight mb-4">
+            <div className="text-6xl lg:text-9xl font-bold text-center tracking-tight mb-4">
               {currentDate.getDate()}
             </div>
             <div className="space-y-1">
-              <div className="text-xl lg:text-2xl font-medium text-primary">
+              <div className="text-xl lg:text-2xl text-center font-medium text-primary">
                 {formatDay(currentDate)}
               </div>
-              <div className="text-base lg:text-lg text-muted-foreground">
+              <div className="text-base lg:text-lg text-center text-muted-foreground">
                 {formatMonth(currentDate)}
               </div>
             </div>
