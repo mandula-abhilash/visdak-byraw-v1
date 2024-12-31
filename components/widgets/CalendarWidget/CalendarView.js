@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 export const CalendarView = ({
   events = [],
   isLoading,
-  view,
   showWeekNumbers,
   showEventDetails,
   showTimeSlots,
@@ -70,62 +69,23 @@ export const CalendarView = ({
   const getEventStatusColor = (status) => {
     switch (status) {
       case "upcoming":
-        return "bg-primary text-primary-foreground";
+        return "bg-primary/20 text-primary";
       case "ongoing":
-        return "bg-chart-2 text-white";
+        return "bg-chart-2/20 text-chart-2";
       case "completed":
-        return "bg-chart-4 text-white";
+        return "bg-chart-4/20 text-chart-4";
       case "cancelled":
-        return "bg-destructive text-destructive-foreground";
+        return "bg-destructive/20 text-destructive";
       default:
         return "bg-muted text-muted-foreground";
     }
   };
 
-  if (view === "list") {
-    const limitedEvents = limit ? events.slice(0, limit) : events;
-    return (
-      <div className="space-y-2">
-        {limitedEvents.map((event) => (
-          <div
-            key={event.id}
-            className="flex items-start gap-3 rounded-lg border p-3 hover:bg-accent/50 transition-colors"
-          >
-            <div className="flex-1">
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <p className="text-sm font-medium">{event.title}</p>
-                <span
-                  className={cn(
-                    "px-2 py-0.5 text-xs rounded-full",
-                    getEventStatusColor(event.status)
-                  )}
-                >
-                  {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-                <span>
-                  {formatTime(event.start_time)} - {formatTime(event.end_time)}
-                </span>
-                {showEventDetails && event.location && (
-                  <span>📍 {event.location}</span>
-                )}
-                {showEventDetails && event.description && (
-                  <p className="mt-1">{event.description}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-4 h-full">
-      <div className="h-full">
+    <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1fr] gap-4 h-full min-h-[600px] lg:min-h-0">
+      <div className="w-full h-[400px] lg:h-full">
         <Calendar
           mode="single"
           selected={selectedDate}
@@ -133,11 +93,33 @@ export const CalendarView = ({
           month={month}
           onMonthChange={setMonth}
           showWeekNumber={showWeekNumbers}
-          className="rounded-md border h-full"
+          className="rounded-md border h-full w-full"
           classNames={{
-            day: "h-8 w-8 p-0 rounded-full font-normal aria-selected:font-medium hover:bg-accent hover:rounded-full focus:bg-accent focus:rounded-full",
-            day_today: "font-bold bg-accent rounded-full",
-            day_selected: "bg-primary text-primary-foreground rounded-full",
+            months: "w-full h-full flex flex-col",
+            month: "w-full h-full",
+            caption: "flex justify-center pt-1 relative items-center mb-4",
+            caption_label: "text-sm font-medium",
+            nav: "space-x-1 flex items-center",
+            nav_button:
+              "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+            nav_button_previous: "absolute left-1",
+            nav_button_next: "absolute right-1",
+            table: "w-full border-collapse h-[calc(100%-3rem)]",
+            head_row: "flex w-full",
+            head_cell:
+              "text-center p-2 rounded-md font-normal text-[0.8rem] text-muted-foreground flex-1",
+            row: "flex w-full mt-2",
+            cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 flex-1 m-0.5",
+            day: "h-9 w-9 p-0 mx-auto font-normal aria-selected:opacity-100 hover:bg-accent hover:rounded-full focus:bg-accent focus:rounded-full",
+            day_today:
+              "bg-accent text-accent-foreground rounded-full font-bold",
+            day_selected:
+              "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-full",
+            day_outside: "opacity-50",
+            day_disabled: "opacity-50",
+            day_range_middle:
+              "aria-selected:bg-accent aria-selected:text-accent-foreground",
+            day_hidden: "invisible",
           }}
           modifiers={{
             hasEvents: (date) => getEventsForDate(date).length > 0,
@@ -151,7 +133,7 @@ export const CalendarView = ({
           }}
         />
       </div>
-      <div className="rounded-md border p-4 h-full overflow-y-auto">
+      <div className="rounded-md border p-4 h-[300px] lg:h-full overflow-y-auto">
         {selectedDate ? (
           <>
             <time
@@ -179,7 +161,7 @@ export const CalendarView = ({
                       </div>
                       <span
                         className={cn(
-                          "px-2 py-0.5 text-xs rounded-full whitespace-nowrap",
+                          "px-3 py-1 text-xs rounded-full whitespace-nowrap",
                           getEventStatusColor(event.status)
                         )}
                       >

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CalendarView } from "./CalendarView";
 import { CalendarWidgetHeader } from "./CalendarWidgetHeader";
@@ -9,14 +8,12 @@ import { WIDGET_STYLES } from "@/lib/constants/widget-styles";
 
 export const CalendarWidget = ({
   title = "Calendar",
-  view = "month",
   showEventCount = false,
   showWeekNumbers = false,
   showEventDetails = false,
   showTimeSlots = false,
   limit = null,
 }) => {
-  const [selectedView, setSelectedView] = useState(view);
   const { events, isLoading, error } = useCalendarWidget();
 
   if (error) {
@@ -36,8 +33,6 @@ export const CalendarWidget = ({
       <CardHeader className="pb-3 flex-none border-b">
         <CalendarWidgetHeader
           title={title}
-          selectedView={selectedView}
-          onViewChange={setSelectedView}
           eventCount={events?.length || 0}
           showEventCount={showEventCount}
         />
@@ -53,7 +48,6 @@ export const CalendarWidget = ({
           <CalendarView
             events={events}
             isLoading={isLoading}
-            view={selectedView}
             showWeekNumbers={showWeekNumbers}
             showEventDetails={showEventDetails}
             showTimeSlots={showTimeSlots}
