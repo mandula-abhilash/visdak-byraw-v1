@@ -20,7 +20,7 @@ export const CalendarWidgetVariants = () => {
     {
       title: "Monthly Calendar",
       view: "month",
-      width: "1/3",
+      width: "2/3",
       showEventCount: true,
       showWeekNumbers: false,
     },
