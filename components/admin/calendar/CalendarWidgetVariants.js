@@ -18,6 +18,18 @@ const getWidgetWidth = (width) => {
 export const CalendarWidgetVariants = () => {
   const widgets = [
     {
+      title: "Mini Calendar",
+      view: "mini",
+      width: "1/3",
+      showEventCount: false,
+    },
+    {
+      title: "Split Mini Calendar",
+      view: "split-mini",
+      width: "2/3",
+      showEventCount: false,
+    },
+    {
       title: "Monthly Calendar",
       view: "month",
       width: "2/3",
@@ -30,18 +42,6 @@ export const CalendarWidgetVariants = () => {
       width: "full",
       showEventDetails: true,
       showTimeSlots: true,
-    },
-    {
-      title: "Mini Calendar",
-      view: "mini",
-      width: "1/3",
-      showEventCount: false,
-    },
-    {
-      title: "Split Mini Calendar",
-      view: "split-mini",
-      width: "2/3",
-      showEventCount: false,
     },
   ];
 

@@ -2,7 +2,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarWidgetVariants } from "./CalendarWidgetVariants";
-import { CalendarWidgetCharts } from "./CalendarWidgetCharts";
 import { CalendarWidgetTimeline } from "./CalendarWidgetTimeline";
 
 export const CalendarWidgetTabs = () => {
@@ -16,12 +15,6 @@ export const CalendarWidgetTabs = () => {
           Widgets
         </TabsTrigger>
         <TabsTrigger
-          value="charts"
-          className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
-        >
-          Charts & Analytics
-        </TabsTrigger>
-        <TabsTrigger
           value="timeline"
           className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
@@ -31,10 +24,6 @@ export const CalendarWidgetTabs = () => {
 
       <TabsContent value="widgets" className="space-y-4 mt-4">
         <CalendarWidgetVariants />
-      </TabsContent>
-
-      <TabsContent value="charts" className="space-y-4 mt-4">
-        <CalendarWidgetCharts />
       </TabsContent>
 
       <TabsContent value="timeline" className="space-y-4 mt-4">
