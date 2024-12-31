@@ -39,18 +39,22 @@ export const MiniView = ({
     onDateChange(new Date());
   };
 
-  const formatDate = (date) => {
+  const formatDay = (date) => {
     return date.toLocaleDateString("en-US", {
       weekday: "long",
+    });
+  };
+
+  const formatMonth = (date) => {
+    return date.toLocaleDateString("en-US", {
       month: "long",
-      day: "numeric",
     });
   };
 
   return (
     <div className="flex flex-col h-full">
-      {/* Date Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Navigation */}
+      <div className="flex items-center justify-between mb-4">
         <Button
           variant="outline"
           size="sm"
@@ -68,7 +72,6 @@ export const MiniView = ({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="text-xl font-bold">{currentDate.getDate()}</div>
           <Button
             variant="ghost"
             size="icon"
@@ -80,15 +83,18 @@ export const MiniView = ({
         </div>
       </div>
 
-      {/* Current Date Display */}
-      <div className="text-center mb-6">
+      {/* Large Date Display */}
+      <div className="text-center mb-8 border-2 w-40 mx-auto rounded-md px-2 py-4 shadow-lg">
+        <div className="text-4xl font-bold mb-2">{currentDate.getDate()}</div>
+        <div className="text-xl font-medium mb-1">{formatDay(currentDate)}</div>
         <div className="text-sm text-muted-foreground">
-          {formatDate(currentDate)}
+          {formatMonth(currentDate)}
         </div>
       </div>
 
       {/* Events List */}
       <div className="flex-1 overflow-auto">
+        <h3 className="font-medium mb-4">Today's Events</h3>
         {selectedDateEvents.length > 0 ? (
           <div className="space-y-2">
             {selectedDateEvents.map((event) => (
