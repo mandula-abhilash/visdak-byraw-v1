@@ -100,21 +100,25 @@ export const MiniView = ({
       {/* Large Date Display */}
       <div className="relative mb-8">
         <div className="absolute inset-0 bg-accent/50 rounded-lg blur-xl"></div>
-        <div className="relative bg-card border-2 rounded-lg px-3 py-4 shadow-lg text-center">
-          <div className="text-6xl font-bold mb-3 tracking-tight">
-            {currentDate.getDate()}
-          </div>
-          <div className="text-xl font-medium mb-1 text-primary">
-            {formatDay(currentDate)}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {formatMonth(currentDate)}
+        <div className="relative bg-card border-2 rounded-lg px-6 py-6 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="text-7xl font-bold tracking-tight">
+              {currentDate.getDate()}
+            </div>
+            <div className="text-right">
+              <div className="text-xl font-medium text-primary mb-1">
+                {formatDay(currentDate)}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {formatMonth(currentDate)}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Events List */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-medium">Today's Events</h3>
           <span className="text-sm text-muted-foreground">
@@ -174,7 +178,7 @@ export const MiniView = ({
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
+          <div className="text-center py-4">
             <div className="text-4xl mb-3">🌟</div>
             <p className="text-sm text-muted-foreground">
               No events scheduled for today
