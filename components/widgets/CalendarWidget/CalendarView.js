@@ -25,6 +25,15 @@ export const CalendarView = ({
     });
   };
 
+  const formatFullDate = (date) => {
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -125,9 +134,10 @@ export const CalendarView = ({
           onMonthChange={setMonth}
           showWeekNumber={showWeekNumbers}
           className="rounded-md border h-full"
-          modifiersClassNames={{
-            selected: "bg-primary text-primary-foreground",
-            today: "bg-accent text-accent-foreground",
+          classNames={{
+            day: "h-8 w-8 p-0 rounded-full font-normal aria-selected:font-medium hover:bg-accent hover:rounded-full focus:bg-accent focus:rounded-full",
+            day_today: "font-bold bg-accent rounded-full",
+            day_selected: "bg-primary text-primary-foreground rounded-full",
           }}
           modifiers={{
             hasEvents: (date) => getEventsForDate(date).length > 0,
@@ -136,7 +146,7 @@ export const CalendarView = ({
             hasEvents: {
               backgroundColor: "hsl(var(--primary))",
               color: "hsl(var(--primary-foreground))",
-              fontWeight: "500",
+              borderRadius: "100%",
             },
           }}
         />
@@ -148,11 +158,7 @@ export const CalendarView = ({
               dateTime={selectedDate.toISOString()}
               className="text-sm font-medium"
             >
-              {selectedDate.toLocaleDateString("en-US", {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-              })}
+              {formatFullDate(selectedDate)}
             </time>
             {selectedDateEvents.length > 0 ? (
               <div className="mt-3 space-y-2">
