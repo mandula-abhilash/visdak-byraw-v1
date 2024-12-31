@@ -66,6 +66,21 @@ export const CalendarView = ({
     });
   };
 
+  const getEventStatusColor = (status) => {
+    switch (status) {
+      case "upcoming":
+        return "bg-primary text-primary-foreground";
+      case "ongoing":
+        return "bg-chart-2 text-white";
+      case "completed":
+        return "bg-chart-4 text-white";
+      case "cancelled":
+        return "bg-destructive text-destructive-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
+
   if (view === "list") {
     const limitedEvents = limit ? events.slice(0, limit) : events;
     return (
@@ -75,27 +90,30 @@ export const CalendarView = ({
             key={event.id}
             className="flex items-start gap-3 rounded-lg border p-3 hover:bg-accent/50 transition-colors"
           >
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium leading-none">{event.title}</p>
-              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+            <div className="flex-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <p className="text-sm font-medium">{event.title}</p>
+                <span
+                  className={cn(
+                    "px-2 py-0.5 text-xs rounded-full",
+                    getEventStatusColor(event.status)
+                  )}
+                >
+                  {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 text-xs text-muted-foreground">
                 <span>
-                  {new Date(event.start_time).toLocaleDateString()}{" "}
-                  {showTimeSlots &&
-                    `${new Date(
-                      event.start_time
-                    ).toLocaleTimeString()} - ${new Date(
-                      event.end_time
-                    ).toLocaleTimeString()}`}
+                  {new Date(event.start_time).toLocaleTimeString()} -{" "}
+                  {new Date(event.end_time).toLocaleTimeString()}
                 </span>
                 {showEventDetails && event.location && (
                   <span>📍 {event.location}</span>
                 )}
+                {showEventDetails && event.description && (
+                  <p className="mt-1">{event.description}</p>
+                )}
               </div>
-              {showEventDetails && event.description && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {event.description}
-                </p>
-              )}
             </div>
           </div>
         ))}
@@ -104,79 +122,109 @@ export const CalendarView = ({
   }
 
   return (
-    <div className="space-y-4">
-      <Calendar
-        mode="single"
-        selected={date}
-        onSelect={setDate}
-        month={month}
-        onMonthChange={setMonth}
-        showWeekNumber={showWeekNumbers}
-        className="rounded-md border"
-        modifiers={{
-          hasEvent: (date) => hasEvents(date),
-        }}
-        modifiersStyles={{
-          hasEvent: {
-            backgroundColor: "hsl(var(--primary) / 0.1)",
-            color: "hsl(var(--primary))",
-          },
-        }}
-        components={{
-          Day: ({ date: dayDate, ...props }) => {
-            if (!dayDate) return null;
+    <Calendar
+      mode="single"
+      selected={date}
+      onSelect={setDate}
+      month={month}
+      onMonthChange={setMonth}
+      showWeekNumber={showWeekNumbers}
+      className="rounded-md border w-full h-full"
+      components={{
+        Day: ({ date: dayDate, ...props }) => {
+          if (!dayDate) return null;
 
-            const dayEvents = getEventsForDate(dayDate);
-            const hasEventsToday = hasEvents(dayDate);
+          const dayEvents = getEventsForDate(dayDate);
+          const hasEventsToday = dayEvents.length > 0;
+          const isToday = new Date().toDateString() === dayDate.toDateString();
 
-            return (
-              <HoverCard openDelay={200}>
-                <HoverCardTrigger asChild>
-                  <div
-                    {...props}
-                    className={cn(
-                      "relative",
-                      hasEventsToday &&
-                        "bg-primary/10 text-primary hover:bg-primary/20 focus:bg-primary/20"
-                    )}
+          return (
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <div
+                  {...props}
+                  className={cn(
+                    props.className,
+                    "relative h-8 w-8 p-0 font-normal",
+                    hasEventsToday &&
+                      "bg-primary rounded-full text-primary-foreground font-medium",
+                    isToday && !hasEventsToday && "bg-accent"
+                  )}
+                >
+                  <time
+                    dateTime={dayDate.toISOString()}
+                    className="absolute inset-0 flex items-center justify-center"
                   >
-                    <time dateTime={dayDate.toISOString()}>
-                      {dayDate.getDate()}
+                    {dayDate.getDate()}
+                  </time>
+                </div>
+              </HoverCardTrigger>
+              {hasEventsToday && (
+                <HoverCardContent
+                  align="start"
+                  className="w-80 p-0"
+                  side="right"
+                >
+                  <div className="p-4">
+                    <time
+                      dateTime={dayDate.toISOString()}
+                      className="text-sm font-medium"
+                    >
+                      {dayDate.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </time>
-                    {hasEventsToday && (
-                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
-                    )}
-                  </div>
-                </HoverCardTrigger>
-                {hasEventsToday && (
-                  <HoverCardContent
-                    align="start"
-                    className="w-80 p-0"
-                    side="right"
-                  >
-                    <div className="p-4 space-y-2">
-                      <p className="text-sm font-medium">
-                        {dayEvents.length} event{dayEvents.length !== 1 && "s"}
-                      </p>
-                      <div className="space-y-1">
-                        {dayEvents.map((event) => (
-                          <div key={event.id} className="text-sm">
-                            <p className="font-medium">{event.title}</p>
-                            <p className="text-muted-foreground">
-                              {new Date(event.start_time).toLocaleTimeString()}{" "}
-                              - {new Date(event.end_time).toLocaleTimeString()}
-                            </p>
+                    <div className="mt-3 space-y-2">
+                      {dayEvents.map((event) => (
+                        <div
+                          key={event.id}
+                          className="flex flex-col gap-2 rounded-lg border p-3 hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">
+                                {event.title}
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                                <span>
+                                  {new Date(
+                                    event.start_time
+                                  ).toLocaleTimeString()}{" "}
+                                  -{" "}
+                                  {new Date(
+                                    event.end_time
+                                  ).toLocaleTimeString()}
+                                </span>
+                              </div>
+                            </div>
+                            <span
+                              className={cn(
+                                "px-2 py-0.5 text-xs rounded-full whitespace-nowrap",
+                                getEventStatusColor(event.status)
+                              )}
+                            >
+                              {event.status.charAt(0).toUpperCase() +
+                                event.status.slice(1)}
+                            </span>
                           </div>
-                        ))}
-                      </div>
+                          {(event.location || event.description) && (
+                            <div className="text-xs text-muted-foreground space-y-1">
+                              {event.location && <p>📍 {event.location}</p>}
+                              {event.description && <p>{event.description}</p>}
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  </HoverCardContent>
-                )}
-              </HoverCard>
-            );
-          },
-        }}
-      />
-    </div>
+                  </div>
+                </HoverCardContent>
+              )}
+            </HoverCard>
+          );
+        },
+      }}
+    />
   );
 };
