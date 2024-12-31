@@ -62,7 +62,7 @@ export const MiniView = ({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-y-auto lg:overflow-y-hidden overflow-x-hidden">
       {/* Navigation */}
       <div className="flex items-center justify-between mb-6">
         <Button
@@ -118,7 +118,7 @@ export const MiniView = ({
       </div>
 
       {/* Events List */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+      <div className="flex-1 min-h-[400px] lg:min-h-0 lg:overflow-y-auto overflow-x-hidden">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-medium">Today's Events</h3>
           <span className="text-sm text-muted-foreground">

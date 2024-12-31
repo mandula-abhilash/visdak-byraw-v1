@@ -62,7 +62,7 @@ export const SplitMiniView = ({
   };
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-6 h-full">
+    <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-6 h-full overflow-y-auto overflow-x-hidden">
       {/* Left Side - Date Display */}
       <div className="flex flex-col h-[300px] lg:h-auto">
         {/* Navigation */}
