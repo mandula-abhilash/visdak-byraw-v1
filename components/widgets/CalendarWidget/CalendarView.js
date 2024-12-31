@@ -1,6 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 export const CalendarView = ({
   events = [],
@@ -11,6 +20,8 @@ export const CalendarView = ({
   showTimeSlots,
   limit,
 }) => {
+  const [date, setDate] = useState(new Date());
+
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -31,6 +42,32 @@ export const CalendarView = ({
       </div>
     );
   }
+
+  // Helper function to check if a date has events
+  const hasEvents = (date) => {
+    if (!date) return false;
+    return events.some((event) => {
+      const eventDate = new Date(event.start_time);
+      return (
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear()
+      );
+    });
+  };
+
+  // Get events for a specific date
+  const getEventsForDate = (date) => {
+    if (!date) return [];
+    return events.filter((event) => {
+      const eventDate = new Date(event.start_time);
+      return (
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear()
+      );
+    });
+  };
 
   if (view === "list") {
     const limitedEvents = limit ? events.slice(0, limit) : events;
@@ -71,10 +108,103 @@ export const CalendarView = ({
 
   // Month view (default)
   return (
-    <Calendar
-      mode="single"
-      showWeekNumber={showWeekNumbers}
-      className="rounded-md border"
-    />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          onClick={() => {
+            const newDate = new Date(date);
+            newDate.setMonth(date.getMonth() - 1);
+            setDate(newDate);
+          }}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <h2 className="font-semibold">
+          {date.toLocaleString("default", { month: "long", year: "numeric" })}
+        </h2>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            const newDate = new Date(date);
+            newDate.setMonth(date.getMonth() + 1);
+            setDate(newDate);
+          }}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        month={date}
+        showWeekNumber={showWeekNumbers}
+        className="rounded-md border"
+        modifiers={{
+          hasEvent: (date) => hasEvents(date),
+        }}
+        modifiersStyles={{
+          hasEvent: {
+            backgroundColor: "hsl(var(--primary) / 0.1)",
+            color: "hsl(var(--primary))",
+          },
+        }}
+        components={{
+          Day: ({ date: dayDate, ...props }) => {
+            if (!dayDate) return null;
+
+            const dayEvents = getEventsForDate(dayDate);
+            const hasEventsToday = hasEvents(dayDate);
+
+            return (
+              <HoverCard openDelay={200}>
+                <HoverCardTrigger asChild>
+                  <div
+                    {...props}
+                    className={cn(
+                      "relative",
+                      hasEventsToday &&
+                        "bg-primary/10 text-primary hover:bg-primary/20 focus:bg-primary/20"
+                    )}
+                  >
+                    <time dateTime={dayDate.toISOString()}>
+                      {dayDate.getDate()}
+                    </time>
+                    {hasEventsToday && (
+                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                    )}
+                  </div>
+                </HoverCardTrigger>
+                {hasEventsToday && (
+                  <HoverCardContent
+                    align="start"
+                    className="w-80 p-0"
+                    side="right"
+                  >
+                    <div className="p-4 space-y-2">
+                      <p className="text-sm font-medium">
+                        {dayEvents.length} event{dayEvents.length !== 1 && "s"}
+                      </p>
+                      <div className="space-y-1">
+                        {dayEvents.map((event) => (
+                          <div key={event.id} className="text-sm">
+                            <p className="font-medium">{event.title}</p>
+                            <p className="text-muted-foreground">
+                              {new Date(event.start_time).toLocaleTimeString()}{" "}
+                              - {new Date(event.end_time).toLocaleTimeString()}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </HoverCardContent>
+                )}
+              </HoverCard>
+            );
+          },
+        }}
+      />
+    </div>
   );
 };
