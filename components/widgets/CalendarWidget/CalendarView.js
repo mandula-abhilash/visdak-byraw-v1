@@ -13,8 +13,7 @@ export const CalendarView = ({
   limit,
   view = "month",
 }) => {
-  const [date, setDate] = useState(new Date());
-  const [month, setMonth] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
 
   const formatTime = (dateString) => {
@@ -57,7 +56,11 @@ export const CalendarView = ({
 
   if (view === "week") {
     return (
-      <WeeklyView events={events} selectedDate={selectedDate || new Date()} />
+      <WeeklyView
+        events={events}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+      />
     );
   }
 
@@ -66,8 +69,8 @@ export const CalendarView = ({
       events={events}
       selectedDate={selectedDate}
       setSelectedDate={setSelectedDate}
-      month={month}
-      setMonth={setMonth}
+      month={currentDate}
+      setMonth={setCurrentDate}
       showWeekNumbers={showWeekNumbers}
       formatTime={formatTime}
       formatFullDate={formatFullDate}

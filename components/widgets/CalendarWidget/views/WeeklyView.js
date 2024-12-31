@@ -5,13 +5,16 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export const WeeklyView = ({ events = [], selectedDate = new Date() }) => {
+export const WeeklyView = ({
+  events = [],
+  currentDate = new Date(),
+  onDateChange,
+}) => {
   const [weekDays, setWeekDays] = useState([]);
-  const [currentDate, setCurrentDate] = useState(selectedDate);
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const scrollContainerRef = useRef(null);
 
-  // Get week days based on selected date
+  // Get week days based on current date
   useEffect(() => {
     const days = [];
     const start = new Date(currentDate);
@@ -37,26 +40,38 @@ export const WeeklyView = ({ events = [], selectedDate = new Date() }) => {
   };
 
   const formatMonthYear = (date) => {
-    return date.toLocaleDateString("en-US", {
-      month: "long",
+    const start = weekDays[0];
+    const end = weekDays[6];
+
+    if (start?.getMonth() === end?.getMonth()) {
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      });
+    }
+
+    return `${start?.toLocaleDateString("en-US", {
+      month: "short",
+    })} - ${end?.toLocaleDateString("en-US", {
+      month: "short",
       year: "numeric",
-    });
+    })}`;
   };
 
-  const scrollToPreviousDay = () => {
+  const scrollToPreviousWeek = () => {
     const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() - 1);
-    setCurrentDate(newDate);
+    newDate.setDate(currentDate.getDate() - 7);
+    onDateChange(newDate);
   };
 
-  const scrollToNextDay = () => {
+  const scrollToNextWeek = () => {
     const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() + 1);
-    setCurrentDate(newDate);
+    newDate.setDate(currentDate.getDate() + 7);
+    onDateChange(newDate);
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
+    onDateChange(new Date());
   };
 
   const getEventsForSlot = (day, hour) => {
@@ -102,7 +117,7 @@ export const WeeklyView = ({ events = [], selectedDate = new Date() }) => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={scrollToPreviousDay}
+              onClick={scrollToPreviousWeek}
               className="h-8 w-8"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -110,7 +125,7 @@ export const WeeklyView = ({ events = [], selectedDate = new Date() }) => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={scrollToNextDay}
+              onClick={scrollToNextWeek}
               className="h-8 w-8"
             >
               <ChevronRight className="h-4 w-4" />
