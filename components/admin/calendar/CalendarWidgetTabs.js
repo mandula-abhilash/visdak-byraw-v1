@@ -34,9 +34,9 @@ export const CalendarWidgetTabs = () => {
             <SelectItem value="widgets" className="py-2 focus:bg-primary/10">
               Widgets
             </SelectItem>
-            <SelectItem value="timeline" className="py-2 focus:bg-primary/10">
+            {/* <SelectItem value="timeline" className="py-2 focus:bg-primary/10">
               Timeline
-            </SelectItem>
+            </SelectItem> */}
           </SelectContent>
         </Select>
       </div>
@@ -49,21 +49,21 @@ export const CalendarWidgetTabs = () => {
         >
           Widgets
         </TabsTrigger>
-        <TabsTrigger
+        {/* <TabsTrigger
           value="timeline"
           className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
           Timeline
-        </TabsTrigger>
+        </TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="widgets" className="space-y-4 mt-4">
         <CalendarWidgetVariants />
       </TabsContent>
 
-      <TabsContent value="timeline" className="space-y-4 mt-4">
+      {/* <TabsContent value="timeline" className="space-y-4 mt-4">
         <CalendarWidgetTimeline />
-      </TabsContent>
+      </TabsContent> */}
     </Tabs>
   );
 };
