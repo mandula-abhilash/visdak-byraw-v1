@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -21,6 +19,7 @@ export const CalendarView = ({
   limit,
 }) => {
   const [date, setDate] = useState(new Date());
+  const [month, setMonth] = useState(new Date());
 
   if (isLoading) {
     return (
@@ -43,7 +42,6 @@ export const CalendarView = ({
     );
   }
 
-  // Helper function to check if a date has events
   const hasEvents = (date) => {
     if (!date) return false;
     return events.some((event) => {
@@ -56,7 +54,6 @@ export const CalendarView = ({
     });
   };
 
-  // Get events for a specific date
   const getEventsForDate = (date) => {
     if (!date) return [];
     return events.filter((event) => {
@@ -106,39 +103,14 @@ export const CalendarView = ({
     );
   }
 
-  // Month view (default)
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          onClick={() => {
-            const newDate = new Date(date);
-            newDate.setMonth(date.getMonth() - 1);
-            setDate(newDate);
-          }}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <h2 className="font-semibold">
-          {date.toLocaleString("default", { month: "long", year: "numeric" })}
-        </h2>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            const newDate = new Date(date);
-            newDate.setMonth(date.getMonth() + 1);
-            setDate(newDate);
-          }}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
       <Calendar
         mode="single"
         selected={date}
         onSelect={setDate}
-        month={date}
+        month={month}
+        onMonthChange={setMonth}
         showWeekNumber={showWeekNumbers}
         className="rounded-md border"
         modifiers={{
