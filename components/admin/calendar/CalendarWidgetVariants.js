@@ -35,7 +35,13 @@ export const CalendarWidgetVariants = () => {
       title: "Mini Calendar",
       view: "mini",
       width: "1/3",
-      showEventCount: true,
+      showEventCount: false,
+    },
+    {
+      title: "Split Mini Calendar",
+      view: "split-mini",
+      width: "2/3",
+      showEventCount: false,
     },
   ];
 

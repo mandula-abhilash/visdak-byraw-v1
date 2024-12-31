@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MonthlyView } from "./views/MonthlyView";
 import { WeeklyView } from "./views/WeeklyView";
 import { MiniView } from "./views/MiniView";
+import { SplitMiniView } from "./views/SplitMiniView";
 
 export const CalendarView = ({
   events = [],
@@ -67,6 +68,14 @@ export const CalendarView = ({
     case "mini":
       return (
         <MiniView
+          events={events}
+          currentDate={currentDate}
+          onDateChange={setCurrentDate}
+        />
+      );
+    case "split-mini":
+      return (
+        <SplitMiniView
           events={events}
           currentDate={currentDate}
           onDateChange={setCurrentDate}
