@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MonthlyView } from "./views/MonthlyView";
 import { WeeklyView } from "./views/WeeklyView";
+import { MiniView } from "./views/MiniView";
 
 export const CalendarView = ({
   events = [],
@@ -54,26 +55,35 @@ export const CalendarView = ({
     );
   }
 
-  if (view === "week") {
-    return (
-      <WeeklyView
-        events={events}
-        currentDate={currentDate}
-        onDateChange={setCurrentDate}
-      />
-    );
+  switch (view) {
+    case "week":
+      return (
+        <WeeklyView
+          events={events}
+          currentDate={currentDate}
+          onDateChange={setCurrentDate}
+        />
+      );
+    case "mini":
+      return (
+        <MiniView
+          events={events}
+          currentDate={currentDate}
+          onDateChange={setCurrentDate}
+        />
+      );
+    default:
+      return (
+        <MonthlyView
+          events={events}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          month={currentDate}
+          setMonth={setCurrentDate}
+          showWeekNumbers={showWeekNumbers}
+          formatTime={formatTime}
+          formatFullDate={formatFullDate}
+        />
+      );
   }
-
-  return (
-    <MonthlyView
-      events={events}
-      selectedDate={selectedDate}
-      setSelectedDate={setSelectedDate}
-      month={currentDate}
-      setMonth={setCurrentDate}
-      showWeekNumbers={showWeekNumbers}
-      formatTime={formatTime}
-      formatFullDate={formatFullDate}
-    />
-  );
 };
