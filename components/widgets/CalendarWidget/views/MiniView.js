@@ -48,18 +48,32 @@ export const MiniView = ({
   const formatMonth = (date) => {
     return date.toLocaleDateString("en-US", {
       month: "long",
+      year: "numeric",
     });
+  };
+
+  const isToday = (date) => {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
   };
 
   return (
     <div className="flex flex-col h-full">
       {/* Navigation */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={goToToday}
-          className="text-xs"
+          className={cn(
+            "text-xs font-medium",
+            isToday(currentDate) &&
+              "bg-primary text-primary-foreground hover:bg-primary/90"
+          )}
         >
           Today
         </Button>
@@ -68,7 +82,7 @@ export const MiniView = ({
             variant="ghost"
             size="icon"
             onClick={goToPreviousDay}
-            className="h-8 w-8"
+            className="h-8 w-8 hover:bg-accent"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -76,7 +90,7 @@ export const MiniView = ({
             variant="ghost"
             size="icon"
             onClick={goToNextDay}
-            className="h-8 w-8"
+            className="h-8 w-8 hover:bg-accent"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -84,49 +98,87 @@ export const MiniView = ({
       </div>
 
       {/* Large Date Display */}
-      <div className="text-center mb-8 border-2 w-40 mx-auto rounded-md px-2 py-4 shadow-lg">
-        <div className="text-4xl font-bold mb-2">{currentDate.getDate()}</div>
-        <div className="text-xl font-medium mb-1">{formatDay(currentDate)}</div>
-        <div className="text-sm text-muted-foreground">
-          {formatMonth(currentDate)}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-accent/50 rounded-lg blur-xl"></div>
+        <div className="relative bg-card border-2 rounded-lg px-3 py-4 shadow-lg text-center">
+          <div className="text-6xl font-bold mb-3 tracking-tight">
+            {currentDate.getDate()}
+          </div>
+          <div className="text-xl font-medium mb-1 text-primary">
+            {formatDay(currentDate)}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {formatMonth(currentDate)}
+          </div>
         </div>
       </div>
 
       {/* Events List */}
       <div className="flex-1 overflow-auto">
-        <h3 className="font-medium mb-4">Today's Events</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-medium">Today's Events</h3>
+          <span className="text-sm text-muted-foreground">
+            {selectedDateEvents.length}{" "}
+            {selectedDateEvents.length === 1 ? "event" : "events"}
+          </span>
+        </div>
+
         {selectedDateEvents.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {selectedDateEvents.map((event) => (
               <div
                 key={event.id}
                 className={cn(
-                  "p-3 rounded-lg border",
+                  "p-4 rounded-lg border transition-all hover:scale-[1.02]",
                   event.status === "upcoming"
-                    ? "bg-primary/10 text-primary border-primary/20"
+                    ? "bg-primary/5 hover:bg-primary/10 text-primary border-primary/10"
                     : event.status === "ongoing"
-                    ? "bg-chart-2/10 text-chart-2 border-chart-2/20"
+                    ? "bg-chart-2/5 hover:bg-chart-2/10 text-chart-2 border-chart-2/10"
                     : event.status === "completed"
-                    ? "bg-chart-4/10 text-chart-4 border-chart-4/20"
-                    : "bg-destructive/10 text-destructive border-destructive/20"
+                    ? "bg-chart-4/5 hover:bg-chart-4/10 text-chart-4 border-chart-4/10"
+                    : "bg-destructive/5 hover:bg-destructive/10 text-destructive border-destructive/10"
                 )}
               >
-                <div className="font-medium">{event.title}</div>
-                <div className="text-sm mt-1">
-                  {new Date(event.start_time).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  {event.location && (
-                    <div className="mt-1 text-sm">📍 {event.location}</div>
-                  )}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-1">
+                    <div className="font-medium">{event.title}</div>
+                    <div className="text-sm opacity-90">
+                      {new Date(event.start_time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                    {event.location && (
+                      <div className="text-sm opacity-90 flex items-center gap-1">
+                        <span className="text-base">📍</span> {event.location}
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className={cn(
+                      "px-2 py-1 text-xs rounded-full whitespace-nowrap",
+                      event.status === "upcoming"
+                        ? "bg-primary/10"
+                        : event.status === "ongoing"
+                        ? "bg-chart-2/10"
+                        : event.status === "completed"
+                        ? "bg-chart-4/10"
+                        : "bg-destructive/10"
+                    )}
+                  >
+                    {event.status.charAt(0).toUpperCase() +
+                      event.status.slice(1)}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center text-sm text-muted-foreground">
-            No events scheduled for today
+          <div className="text-center py-8">
+            <div className="text-4xl mb-3">🌟</div>
+            <p className="text-sm text-muted-foreground">
+              No events scheduled for today
+            </p>
           </div>
         )}
       </div>
