@@ -1,14 +1,17 @@
 "use client";
 
+import { IncomeTracker } from "../widgets/income/IncomeTracker";
+import { IncomeSourcesBreakdown } from "../widgets/income/IncomeSourcesBreakdown";
+import { RecurringIncome } from "../widgets/income/RecurringIncome";
+import { ProjectedIncome } from "../widgets/income/ProjectedIncome";
+
 export const IncomeManagement = () => {
   return (
-    <div className="grid gap-4">
-      <div className="bg-card p-6 rounded-lg border">
-        <h2 className="text-lg font-semibold mb-4">Income Management</h2>
-        <p className="text-muted-foreground">
-          Income management features coming soon...
-        </p>
-      </div>
+    <div className="grid gap-6 md:grid-cols-2">
+      <IncomeTracker />
+      <IncomeSourcesBreakdown />
+      <RecurringIncome />
+      <ProjectedIncome />
     </div>
   );
 };
