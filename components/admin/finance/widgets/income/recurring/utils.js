@@ -1,6 +1,8 @@
 "use client";
 
 export const getFrequencyColor = (frequency) => {
+  if (!frequency) return "bg-muted text-muted-foreground border-muted";
+
   switch (frequency.toLowerCase()) {
     case "monthly":
       return "bg-primary/10 text-primary border-primary/20";
