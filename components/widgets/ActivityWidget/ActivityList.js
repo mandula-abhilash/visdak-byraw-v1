@@ -89,7 +89,7 @@ export const ActivityList = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-2 pb-6">
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
@@ -127,7 +127,7 @@ export const ActivityList = ({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 pb-6">
       {filteredActivities.map((activity) => (
         <ActivityItem key={activity.id} activity={activity} />
       ))}
