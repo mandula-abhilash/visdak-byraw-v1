@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActivityWidgetVariants } from "./ActivityWidgetVariants";
+import { ActivityTimeline } from "./ActivityTimeline";
 import {
   Select,
   SelectContent,
@@ -22,7 +23,7 @@ export const ActivityWidgetTabs = () => {
           <SelectTrigger className="w-full py-2">
             <SelectValue>
               {activeTab === "widgets" && "Widgets"}
-              {activeTab === "analytics" && "Analytics"}
+              {activeTab === "timeline" && "Timeline"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent
@@ -33,8 +34,8 @@ export const ActivityWidgetTabs = () => {
             <SelectItem value="widgets" className="py-2 focus:bg-primary/10">
               Widgets
             </SelectItem>
-            <SelectItem value="analytics" className="py-2 focus:bg-primary/10">
-              Analytics
+            <SelectItem value="timeline" className="py-2 focus:bg-primary/10">
+              Timeline
             </SelectItem>
           </SelectContent>
         </Select>
@@ -49,10 +50,10 @@ export const ActivityWidgetTabs = () => {
           Widgets
         </TabsTrigger>
         <TabsTrigger
-          value="analytics"
+          value="timeline"
           className="rounded-md px-6 py-2 bg-muted/100 hover:bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors"
         >
-          Analytics
+          Timeline
         </TabsTrigger>
       </TabsList>
 
@@ -60,10 +61,8 @@ export const ActivityWidgetTabs = () => {
         <ActivityWidgetVariants />
       </TabsContent>
 
-      <TabsContent value="analytics" className="space-y-4 mt-4">
-        <div className="text-sm text-muted-foreground">
-          Analytics features coming soon...
-        </div>
+      <TabsContent value="timeline" className="space-y-4 mt-4">
+        <ActivityTimeline />
       </TabsContent>
     </Tabs>
   );
