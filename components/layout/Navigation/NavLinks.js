@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const SubNavItem = ({ subItem, onClick, isActive }) => {
-  // Get icon component dynamically
   const IconComponent = Icons[subItem.icon];
 
   return (
@@ -36,7 +35,9 @@ export const NavLinks = ({ collapsed, onClick }) => {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [expandedItems, setExpandedItems] = useState({});
+  const [expandedItems, setExpandedItems] = useState({
+    widgets: true,
+  });
 
   useEffect(() => {
     setMounted(true);
