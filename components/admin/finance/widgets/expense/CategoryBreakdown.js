@@ -24,6 +24,36 @@ const COLORS = [
   "hsl(var(--chart-5))",
 ];
 
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-3">
+        <p className="text-sm font-medium">{payload[0].name}</p>
+        <p className="text-sm text-muted-foreground">
+          {formatCurrency(payload[0].value)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomLegend = ({ payload }) => {
+  return (
+    <div className="flex flex-wrap justify-center gap-4 mt-4">
+      {payload.map((entry, index) => (
+        <div key={`legend-${index}`} className="flex items-center gap-2">
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: entry.color }}
+          />
+          <span className="text-sm text-muted-foreground">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const CategoryBreakdown = ({ title, description }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const data = generateExpenseCategories();
@@ -59,33 +89,25 @@ export const CategoryBreakdown = ({ title, description }) => {
               onMouseEnter={(_, index) => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                  className="transition-all duration-300"
-                  style={{
-                    transform:
-                      index === activeIndex ? "scale(1.1)" : "scale(1)",
-                    filter: index === activeIndex ? "brightness(1.1)" : "none",
-                  }}
-                />
-              ))}
+              {data.map((entry, index) => {
+                const isActive = index === activeIndex;
+                return (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                    className="transition-all duration-300 ease-in-out"
+                    style={{
+                      transform: isActive ? "scale(1.1)" : "scale(1)",
+                      filter: isActive ? "brightness(1.1)" : "none",
+                      transformOrigin: "center",
+                      cursor: "pointer",
+                    }}
+                  />
+                );
+              })}
             </Pie>
-            <Tooltip
-              formatter={(value) => [formatCurrency(value), "Amount"]}
-              contentStyle={{
-                backgroundColor: "hsl(var(--background))",
-                border: "1px solid hsl(var(--border))",
-              }}
-            />
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              formatter={(value) => (
-                <span className="text-sm text-muted-foreground">{value}</span>
-              )}
-            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend content={<CustomLegend />} />
           </PieChart>
         </ResponsiveContainer>
       </div>
