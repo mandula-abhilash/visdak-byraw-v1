@@ -1,36 +1,25 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  generateRecurringIncomeData,
-  formatCurrency,
-} from "../../utils/mockData";
+import { RecurringIncomeList } from "./recurring/RecurringIncomeList";
+import { generateRecurringIncomeData } from "../../utils/mockData";
 
-export const RecurringIncome = () => {
+export const RecurringIncome = ({
+  title = "Recurring Income",
+  description = "Regular income streams and schedules",
+}) => {
   const data = generateRecurringIncomeData();
 
   return (
     <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4">Recurring Income</h3>
-      <div className="space-y-4 max-h-[300px] overflow-y-auto">
-        {data.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-start justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-          >
-            <div className="space-y-1">
-              <p className="font-medium">{item.name}</p>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Badge variant="secondary">{item.frequency}</Badge>
-                <span>Next: {item.nextDate}</span>
-              </div>
-            </div>
-            <p className="font-semibold text-primary">
-              {formatCurrency(item.amount)}
-            </p>
-          </div>
-        ))}
+      <div className="flex flex-col space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold">{title}</h3>
+          {description && (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          )}
+        </div>
+        <RecurringIncomeList items={data} />
       </div>
     </Card>
   );

@@ -24,7 +24,7 @@ export const IncomeManagement = () => {
       component: IncomeTracker,
       title: "Income Tracker",
       description: "Monthly income overview",
-      width: "1/2",
+      width: "1/3",
     },
     {
       component: IncomeSourcesBreakdown,

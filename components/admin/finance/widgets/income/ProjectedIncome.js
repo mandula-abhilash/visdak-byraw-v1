@@ -66,21 +66,21 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export const ProjectedIncome = () => {
+export const ProjectedIncome = ({
+  title = "Projected Income",
+  description = "Projected vs actual income for the next 6 months",
+}) => {
   const data = generateProjectedIncomeData();
   const colors = {
     projected: "hsl(var(--primary))",
     actual: "hsl(var(--chart-2))",
   };
-
   return (
     <Card className="p-6">
       <div className="flex flex-col space-y-4">
         <div>
-          <h3 className="text-lg font-semibold">Projected Income</h3>
-          <p className="text-sm text-muted-foreground">
-            Projected vs actual income for the next 6 months
-          </p>
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
