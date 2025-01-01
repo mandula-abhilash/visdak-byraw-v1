@@ -24,7 +24,7 @@ export const IncomeManagement = () => {
       component: IncomeTracker,
       title: "Income Tracker",
       description: "Monthly income overview",
-      width: "1/3",
+      width: "1/2",
     },
     {
       component: IncomeSourcesBreakdown,
@@ -36,13 +36,13 @@ export const IncomeManagement = () => {
       component: RecurringIncome,
       title: "Recurring Income",
       description: "Regular income streams",
-      width: "1/2",
+      width: "full",
     },
     {
       component: ProjectedIncome,
       title: "Projected Income",
       description: "Future income projections",
-      width: "1/2",
+      width: "full",
     },
   ];
 
@@ -50,9 +50,12 @@ export const IncomeManagement = () => {
     <div className="flex flex-wrap -mx-3">
       {widgets.map((widget, index) => {
         const Widget = widget.component;
+        const widthClass = getWidgetWidth(widget.width);
         return (
-          <div key={index} className={`${getWidgetWidth(widget.width)} mb-6`}>
-            <Widget title={widget.title} description={widget.description} />
+          <div key={index} className={widthClass}>
+            <div className="h-full mb-6">
+              <Widget title={widget.title} description={widget.description} />
+            </div>
           </div>
         );
       })}

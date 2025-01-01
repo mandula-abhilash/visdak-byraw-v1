@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   PieChart,
@@ -13,6 +14,7 @@ import {
   generateIncomeSourcesData,
   formatCurrency,
 } from "../../utils/mockData";
+import { WIDGET_STYLES } from "@/lib/constants/widget-styles";
 
 const COLORS = [
   "hsl(var(--primary))",
@@ -27,45 +29,71 @@ export const IncomeSourcesBreakdown = ({
   description = "Distribution of income across different sources",
 }) => {
   const data = generateIncomeSourcesData();
+  const [activeIndex, setActiveIndex] = useState(null);
 
   return (
-    <Card className="p-6">
-      <div className="flex flex-col space-y-4">
-        <div>
+    <Card className="h-full flex flex-col shadow-lg">
+      <div className="p-6 flex-none border-b">
+        <div className="space-y-1">
           <h3 className="text-lg font-semibold">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          {description && (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          )}
         </div>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                fill="#8884d8"
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {data.map((entry, index) => (
+      </div>
+      <div
+        className="flex-1 p-4"
+        style={{
+          minHeight: WIDGET_STYLES.MIN_HEIGHT,
+          maxHeight: WIDGET_STYLES.MAX_HEIGHT,
+        }}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={5}
+              dataKey="value"
+              nameKey="name"
+              onMouseEnter={(_, index) => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+            >
+              {data.map((entry, index) => {
+                const isActive = index === activeIndex;
+                return (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
+                    className="transition-all duration-300 ease-in-out"
+                    style={{
+                      transform: isActive ? "scale(1.1)" : "scale(1)",
+                      filter: isActive ? "brightness(1.1)" : "none",
+                      transformOrigin: "center",
+                    }}
                   />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value) => [formatCurrency(value), "Amount"]}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--background))",
-                  border: "1px solid hsl(var(--border))",
-                }}
-              />
-              <Legend verticalAlign="bottom" height={36} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+                );
+              })}
+            </Pie>
+            <Tooltip
+              formatter={(value) => [formatCurrency(value), "Amount"]}
+              contentStyle={{
+                backgroundColor: "hsl(var(--background))",
+                border: "1px solid hsl(var(--border))",
+              }}
+            />
+            <Legend
+              verticalAlign="bottom"
+              height={36}
+              formatter={(value) => (
+                <span className="text-sm text-muted-foreground">{value}</span>
+              )}
+            />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
     </Card>
   );
