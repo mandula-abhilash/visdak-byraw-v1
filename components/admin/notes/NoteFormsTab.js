@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { NOTE_TYPES } from "@/components/widgets/NotesWidget/forms/NoteTypes";
 import { CreateNoteDialog } from "@/components/widgets/NotesWidget/dialogs/CreateNoteDialog";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import * as Icons from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const NoteFormsTab = () => {
   const [selectedType, setSelectedType] = useState(null);
@@ -16,24 +17,35 @@ export const NoteFormsTab = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {Object.values(NOTE_TYPES).map((type) => {
           const Icon = Icons[type.icon];
           return (
-            <Button
+            <Card
               key={type.id}
-              variant="outline"
-              className="h-auto py-4 px-4 flex flex-col items-center gap-2 text-left"
+              className={cn(
+                "relative overflow-hidden cursor-pointer group transition-all duration-300",
+                "hover:shadow-lg hover:border-primary/50 hover:-translate-y-0.5"
+              )}
               onClick={() => setSelectedType(type.id)}
             >
-              <Icon className="h-6 w-6" />
-              <div>
-                <div className="font-medium">{type.label}</div>
-                <div className="text-xs text-muted-foreground">
-                  {type.description}
+              <div className="relative p-6 flex items-start gap-4">
+                {/* Main Icon */}
+                <div className="shrink-0">
+                  <div className="p-3 rounded-lg bg-primary/10 text-primary">
+                    <Icon className="h-8 w-8" />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-1">
+                  <h3 className="font-semibold tracking-tight">{type.label}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {type.description}
+                  </p>
                 </div>
               </div>
-            </Button>
+            </Card>
           );
         })}
       </div>
