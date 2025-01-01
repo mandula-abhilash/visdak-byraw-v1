@@ -16,349 +16,188 @@ import {
   Upload,
   Download,
   Users,
-  Lock,
-  Unlock,
-  Star,
 } from "lucide-react";
 
-// Generate more realistic mock data
-const generateMockActivities = () => {
-  const activities = [];
+// Generate activity logs with proper grouping by date
+const generateActivityLogs = () => {
+  const logs = [];
   const now = new Date();
   const types = [
-    "task",
-    "payment",
-    "system",
-    "notification",
-    "alert",
-    "calendar",
-    "document",
-    "comment",
-    "upload",
-    "download",
-    "team",
-    "security",
-  ];
-  const users = [
-    "Alice Baker",
-    "Bob Johnson",
-    "Carol White",
-    "David Brown",
-    "Emma Davis",
-    "Frank Miller",
-    "Grace Wilson",
-    "Henry Taylor",
+    { type: "task", icon: CheckCircle2, color: "text-primary" },
+    { type: "payment", icon: DollarSign, color: "text-chart-2" },
+    { type: "system", icon: Settings, color: "text-chart-3" },
+    { type: "calendar", icon: Calendar, color: "text-chart-4" },
+    { type: "document", icon: FileText, color: "text-chart-5" },
+    { type: "message", icon: MessageSquare, color: "text-primary" },
   ];
 
+  const actions = [
+    // Task actions
+    { type: "task", action: "completed", target: "Project Milestone" },
+    { type: "task", action: "updated", target: "Bug Fix #123" },
+    { type: "task", action: "created", target: "New Feature Implementation" },
+
+    // Calendar actions
+    { type: "calendar", action: "scheduled", target: "Team Meeting" },
+    { type: "calendar", action: "rescheduled", target: "Client Call" },
+    { type: "calendar", action: "cancelled", target: "Project Review" },
+
+    // Document actions
+    { type: "document", action: "uploaded", target: "Project Proposal.pdf" },
+    { type: "document", action: "edited", target: "Meeting Notes" },
+    { type: "document", action: "shared", target: "Budget Report" },
+
+    // Message actions
+    { type: "message", action: "sent", target: "Project Update" },
+    { type: "message", action: "received", target: "Client Feedback" },
+    { type: "message", action: "mentioned", target: "Design Review Thread" },
+  ];
+
+  // Generate 25 random logs
   for (let i = 0; i < 25; i++) {
-    const type = types[Math.floor(Math.random() * types.length)];
+    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+    const typeInfo = types.find((t) => t.type === randomAction.type);
     const timestamp = new Date(now - Math.random() * 7 * 24 * 60 * 60 * 1000);
-    const user = users[Math.floor(Math.random() * users.length)];
 
-    let activity = {
+    logs.push({
       id: i + 1,
-      type,
-      user,
+      type: randomAction.type,
+      icon: typeInfo.icon,
+      iconColor: typeInfo.color,
+      action: randomAction.action,
+      target: randomAction.target,
       timestamp: timestamp.toISOString(),
-    };
-
-    switch (type) {
-      case "task":
-        activity = {
-          ...activity,
-          title: "Task Update",
-          description: `${user} ${
-            Math.random() > 0.5 ? "completed" : "updated"
-          } the task "${
-            [
-              "Website Redesign",
-              "Bug Fix",
-              "Feature Implementation",
-              "Code Review",
-            ][Math.floor(Math.random() * 4)]
-          }"`,
-          status: Math.random() > 0.5 ? "completed" : "pending",
-        };
-        break;
-      case "payment":
-        activity = {
-          ...activity,
-          title: "Payment Transaction",
-          description: `${
-            Math.random() > 0.5 ? "Received" : "Sent"
-          } payment of $${Math.floor(Math.random() * 1000) + 100} ${
-            Math.random() > 0.5 ? "from" : "to"
-          } Client XYZ`,
-          status: "completed",
-        };
-        break;
-      case "calendar":
-        activity = {
-          ...activity,
-          title: "Calendar Event",
-          description: `${user} ${
-            Math.random() > 0.5 ? "scheduled" : "updated"
-          } meeting: "${
-            [
-              "Team Sync",
-              "Client Presentation",
-              "Project Review",
-              "Sprint Planning",
-            ][Math.floor(Math.random() * 4)]
-          }"`,
-        };
-        break;
-      case "document":
-        activity = {
-          ...activity,
-          title: "Document Activity",
-          description: `${user} ${
-            Math.random() > 0.5 ? "created" : "modified"
-          } document: "${
-            [
-              "Project Proposal",
-              "Technical Spec",
-              "Meeting Notes",
-              "Status Report",
-            ][Math.floor(Math.random() * 4)]
-          }"`,
-        };
-        break;
-      case "comment":
-        activity = {
-          ...activity,
-          title: "New Comment",
-          description: `${user} commented on ${
-            ["task", "document", "project", "issue"][
-              Math.floor(Math.random() * 4)
-            ]
-          }: "Great work on this!"`,
-        };
-        break;
-      case "system":
-        activity = {
-          ...activity,
-          title: "System Update",
-          description: `${
-            [
-              "New feature deployed",
-              "System maintenance completed",
-              "Performance optimization",
-              "Security update installed",
-            ][Math.floor(Math.random() * 4)]
-          }`,
-        };
-        break;
-      case "team":
-        activity = {
-          ...activity,
-          title: "Team Update",
-          description: `${user} ${
-            [
-              "joined the team",
-              "updated team settings",
-              "modified team permissions",
-              "invited new member",
-            ][Math.floor(Math.random() * 4)]
-          }`,
-        };
-        break;
-      case "security":
-        activity = {
-          ...activity,
-          title: "Security Alert",
-          description: `${
-            [
-              "New login detected",
-              "Password changed",
-              "Two-factor authentication enabled",
-              "Security settings updated",
-            ][Math.floor(Math.random() * 4)]
-          }`,
-          status: Math.random() > 0.7 ? "alert" : "completed",
-        };
-        break;
-    }
-
-    activities.push(activity);
+      details: `${randomAction.action} ${randomAction.target}`,
+      category:
+        randomAction.type.charAt(0).toUpperCase() + randomAction.type.slice(1),
+    });
   }
 
-  return activities.sort(
-    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+  // Sort by date and group by day
+  return logs
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .reduce((groups, log) => {
+      const date = new Date(log.timestamp).toLocaleDateString();
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(log);
+      return groups;
+    }, {});
+};
+
+const TimelineHeader = ({ date }) => {
+  const isToday =
+    new Date(date).toLocaleDateString() === new Date().toLocaleDateString();
+
+  return (
+    <div className="sticky top-0 z-10 -ml-8 pl-8 -mr-4 pr-4 pb-4 pt-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="font-medium">
+        {isToday
+          ? "Today"
+          : new Date(date).toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            })}
+      </div>
+    </div>
   );
 };
 
-const TimelineItem = ({ activity }) => {
-  const getIcon = () => {
-    switch (activity.type) {
-      case "task":
-        return activity.status === "completed" ? (
-          <CheckCircle2 className="h-5 w-5 text-primary" />
-        ) : (
-          <Clock className="h-5 w-5 text-muted-foreground" />
-        );
-      case "payment":
-        return <DollarSign className="h-5 w-5 text-chart-2" />;
-      case "system":
-        return <Settings className="h-5 w-5 text-chart-3" />;
-      case "notification":
-        return <Bell className="h-5 w-5 text-chart-4" />;
-      case "alert":
-        return <AlertCircle className="h-5 w-5 text-destructive" />;
-      case "calendar":
-        return <Calendar className="h-5 w-5 text-primary" />;
-      case "document":
-        return <FileText className="h-5 w-5 text-chart-2" />;
-      case "comment":
-        return <MessageSquare className="h-5 w-5 text-chart-3" />;
-      case "upload":
-        return <Upload className="h-5 w-5 text-chart-4" />;
-      case "download":
-        return <Download className="h-5 w-5 text-chart-5" />;
-      case "team":
-        return <Users className="h-5 w-5 text-primary" />;
-      case "security":
-        return activity.status === "alert" ? (
-          <Unlock className="h-5 w-5 text-destructive" />
-        ) : (
-          <Lock className="h-5 w-5 text-chart-4" />
-        );
-      default:
-        return <Star className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
+const TimelineItem = ({ log, isFirst, isLast }) => {
+  const Icon = log.icon;
 
-  const getStatusColor = () => {
-    switch (activity.status) {
-      case "completed":
-        return "bg-primary/10 text-primary border-primary/20";
-      case "pending":
-        return "bg-chart-5/10 text-chart-5 border-chart-5/20";
-      case "alert":
-        return "bg-destructive/10 text-destructive border-destructive/20";
-      default:
-        return "bg-muted text-muted-foreground border-muted";
-    }
-  };
-
-  const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (minutes < 60) {
-      return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
-    } else if (hours < 24) {
-      return `${hours} hour${hours === 1 ? "" : "s"} ago`;
-    } else {
-      return `${days} day${days === 1 ? "" : "s"} ago`;
-    }
+  const formatTime = (timestamp) => {
+    return new Date(timestamp).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
   };
 
   return (
-    <div className="relative pb-8">
+    <div className="relative pl-8 pb-8 last:pb-0">
       {/* Timeline line */}
-      <div className="absolute left-5 top-5 -bottom-3 w-px bg-border" />
+      {!isLast && (
+        <div className="absolute left-[11px] top-2 bottom-0 w-px bg-border" />
+      )}
 
-      <div className="relative flex items-start space-x-3">
-        {/* Icon */}
-        <div className="relative">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-background border shadow-sm">
-            {getIcon()}
-          </div>
+      {/* Timeline node */}
+      <div
+        className={cn(
+          "absolute left-0 p-1.5 rounded-full bg-background border-2",
+          log.type === "task" && "border-primary",
+          log.type === "payment" && "border-chart-2",
+          log.type === "system" && "border-chart-3",
+          log.type === "calendar" && "border-chart-4",
+          log.type === "document" && "border-chart-5",
+          log.type === "message" && "border-primary"
+        )}
+      >
+        <Icon className={cn("h-3 w-3", log.iconColor)} />
+      </div>
+
+      {/* Content */}
+      <div className="group">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-sm font-medium">
+            {formatTime(log.timestamp)}
+          </span>
+          <span className="px-2 py-0.5 text-xs rounded-full bg-secondary">
+            {log.category}
+          </span>
         </div>
 
-        {/* Content */}
-        <div className="min-w-0 flex-1">
-          <div className="bg-background rounded-lg border shadow-sm p-4">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <h3 className="font-medium">{activity.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {activity.description}
-                </p>
-              </div>
-              {activity.status && (
-                <div
-                  className={cn(
-                    "px-2.5 py-0.5 rounded-full text-xs font-medium",
-                    getStatusColor()
-                  )}
-                >
-                  {activity.status}
-                </div>
-              )}
-            </div>
-            <div className="mt-2 text-xs text-muted-foreground">
-              <span>{formatDate(activity.timestamp)}</span>
-              {activity.user && (
-                <>
-                  <span className="mx-1">•</span>
-                  <span>{activity.user}</span>
-                </>
-              )}
-            </div>
+        <Card className="p-4 transition-all duration-200 group-hover:shadow-md group-hover:-translate-y-0.5">
+          <div className="space-y-1">
+            <div className="text-sm font-medium">{log.target}</div>
+            <div className="text-sm text-muted-foreground">{log.details}</div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
 };
 
 export const ActivityTimeline = () => {
-  const [activities, setActivities] = useState([]);
+  const [logGroups, setLogGroups] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
   const loader = useRef(null);
 
   useEffect(() => {
-    const loadActivities = async () => {
+    const loadLogs = async () => {
       setIsLoading(true);
       try {
-        // Simulate API call
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockData = generateMockActivities();
-        setActivities(mockData);
+        const mockData = generateActivityLogs();
+        setLogGroups(mockData);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadActivities();
+    loadLogs();
   }, []);
 
-  // Infinite scroll handler
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (loader.current) {
-      observer.observe(loader.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasMore, isLoading]);
-
-  if (isLoading && !activities.length) {
+  if (isLoading) {
     return (
       <div className="space-y-8">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="flex items-start space-x-3">
-              <div className="h-10 w-10 rounded-full bg-accent" />
-              <div className="flex-1 space-y-2">
-                <div className="h-24 rounded-lg bg-accent" />
-              </div>
+          <div key={i} className="space-y-4">
+            <div className="h-6 bg-accent/50 rounded w-32 animate-pulse" />
+            <div className="space-y-4">
+              {[...Array(2)].map((_, j) => (
+                <Card key={j} className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-6 w-6 rounded-full bg-accent animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-accent rounded animate-pulse w-3/4" />
+                      <div className="h-3 bg-accent rounded animate-pulse w-1/2" />
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         ))}
@@ -367,13 +206,23 @@ export const ActivityTimeline = () => {
   }
 
   return (
-    <Card className="p-6">
-      <div className="space-y-8">
-        {activities.map((activity) => (
-          <TimelineItem key={activity.id} activity={activity} />
-        ))}
-        <div ref={loader} className="h-4" />
-      </div>
-    </Card>
+    <div className="relative space-y-8">
+      {Object.entries(logGroups).map(([date, logs], groupIndex) => (
+        <div key={date} className="relative">
+          <TimelineHeader date={date} />
+          <div className="space-y-6">
+            {logs.map((log, index) => (
+              <TimelineItem
+                key={log.id}
+                log={log}
+                isFirst={index === 0}
+                isLast={index === logs.length - 1}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+      <div ref={loader} className="h-4" />
+    </div>
   );
 };
