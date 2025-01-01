@@ -51,6 +51,8 @@ export const NoteRecurrence = ({ value = {}, onChange }) => {
         <Switch
           checked={value.enabled}
           onCheckedChange={(checked) => handleChange("enabled", checked)}
+          className="h-6 w-11 rounded-full bg-muted transition-colors data-[state=checked]:bg-primary"
+          thumbClassName="block h-5 w-5 rounded-full bg-background transition-transform data-[state=checked]:translate-x-5"
         />
         <label className="text-sm font-medium">Enable recurrence</label>
       </div>
