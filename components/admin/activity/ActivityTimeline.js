@@ -13,78 +13,9 @@ import {
   Calendar,
   FileText,
   MessageSquare,
-  Upload,
-  Download,
-  Users,
 } from "lucide-react";
-
-// Generate activity logs with proper grouping by date
-const generateActivityLogs = () => {
-  const logs = [];
-  const now = new Date();
-  const types = [
-    { type: "task", icon: CheckCircle2, color: "text-primary" },
-    { type: "payment", icon: DollarSign, color: "text-chart-2" },
-    { type: "system", icon: Settings, color: "text-chart-3" },
-    { type: "calendar", icon: Calendar, color: "text-chart-4" },
-    { type: "document", icon: FileText, color: "text-chart-5" },
-    { type: "message", icon: MessageSquare, color: "text-primary" },
-  ];
-
-  const actions = [
-    // Task actions
-    { type: "task", action: "completed", target: "Project Milestone" },
-    { type: "task", action: "updated", target: "Bug Fix #123" },
-    { type: "task", action: "created", target: "New Feature Implementation" },
-
-    // Calendar actions
-    { type: "calendar", action: "scheduled", target: "Team Meeting" },
-    { type: "calendar", action: "rescheduled", target: "Client Call" },
-    { type: "calendar", action: "cancelled", target: "Project Review" },
-
-    // Document actions
-    { type: "document", action: "uploaded", target: "Project Proposal.pdf" },
-    { type: "document", action: "edited", target: "Meeting Notes" },
-    { type: "document", action: "shared", target: "Budget Report" },
-
-    // Message actions
-    { type: "message", action: "sent", target: "Project Update" },
-    { type: "message", action: "received", target: "Client Feedback" },
-    { type: "message", action: "mentioned", target: "Design Review Thread" },
-  ];
-
-  // Generate 25 random logs
-  for (let i = 0; i < 25; i++) {
-    const randomAction = actions[Math.floor(Math.random() * actions.length)];
-    const typeInfo = types.find((t) => t.type === randomAction.type);
-    const timestamp = new Date(now - Math.random() * 7 * 24 * 60 * 60 * 1000);
-
-    logs.push({
-      id: i + 1,
-      type: randomAction.type,
-      icon: typeInfo.icon,
-      iconColor: typeInfo.color,
-      action: randomAction.action,
-      target: randomAction.target,
-      timestamp: timestamp.toISOString(),
-      details: `${randomAction.action} ${randomAction.target}`,
-      category:
-        randomAction.type.charAt(0).toUpperCase() + randomAction.type.slice(1),
-    });
-  }
-
-  // Sort by date and group by day
-  return logs
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .reduce((groups, log) => {
-      const date = new Date(log.timestamp).toLocaleDateString();
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(log);
-      return groups;
-    }, {});
-};
+import { TimelineFilters } from "./filters/TimelineFilters";
+import { generateActivityLogs } from "./utils/activityMockData";
 
 const TimelineHeader = ({ date }) => {
   const isToday =
@@ -162,8 +93,19 @@ const TimelineItem = ({ log, isFirst, isLast }) => {
 export const ActivityTimeline = () => {
   const [logGroups, setLogGroups] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("all");
   const loader = useRef(null);
+
+  const filterOptions = [
+    { value: "all", label: "All Activities" },
+    { value: "task", label: "Tasks" },
+    { value: "payment", label: "Payments" },
+    { value: "system", label: "System" },
+    { value: "calendar", label: "Calendar" },
+    { value: "document", label: "Documents" },
+    { value: "message", label: "Messages" },
+  ];
 
   useEffect(() => {
     const loadLogs = async () => {
@@ -179,6 +121,28 @@ export const ActivityTimeline = () => {
 
     loadLogs();
   }, []);
+
+  const filterLogs = (logs) => {
+    return Object.entries(logs).reduce((filtered, [date, dayLogs]) => {
+      const filteredDayLogs = dayLogs.filter((log) => {
+        const matchesSearch = searchQuery
+          ? log.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            log.details.toLowerCase().includes(searchQuery.toLowerCase())
+          : true;
+
+        const matchesFilter =
+          selectedFilter === "all" ? true : log.type === selectedFilter;
+
+        return matchesSearch && matchesFilter;
+      });
+
+      if (filteredDayLogs.length > 0) {
+        filtered[date] = filteredDayLogs;
+      }
+
+      return filtered;
+    }, {});
+  };
 
   if (isLoading) {
     return (
@@ -205,23 +169,39 @@ export const ActivityTimeline = () => {
     );
   }
 
+  const filteredLogs = filterLogs(logGroups);
+
   return (
     <div className="relative space-y-8">
-      {Object.entries(logGroups).map(([date, logs], groupIndex) => (
-        <div key={date} className="relative">
-          <TimelineHeader date={date} />
-          <div className="space-y-6">
-            {logs.map((log, index) => (
-              <TimelineItem
-                key={log.id}
-                log={log}
-                isFirst={index === 0}
-                isLast={index === logs.length - 1}
-              />
-            ))}
-          </div>
+      <TimelineFilters
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedFilter={selectedFilter}
+        onFilterChange={setSelectedFilter}
+        filterOptions={filterOptions}
+      />
+
+      {Object.keys(filteredLogs).length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          No activities found
         </div>
-      ))}
+      ) : (
+        Object.entries(filteredLogs).map(([date, logs], groupIndex) => (
+          <div key={date} className="relative">
+            <TimelineHeader date={date} />
+            <div className="space-y-6">
+              {logs.map((log, index) => (
+                <TimelineItem
+                  key={log.id}
+                  log={log}
+                  isFirst={index === 0}
+                  isLast={index === logs.length - 1}
+                />
+              ))}
+            </div>
+          </div>
+        ))
+      )}
       <div ref={loader} className="h-4" />
     </div>
   );
