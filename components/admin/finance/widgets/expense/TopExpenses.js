@@ -29,7 +29,7 @@ export const TopExpenses = ({ title, description }) => {
                 <div className="flex items-center gap-2 text-sm">
                   <Badge
                     variant="secondary"
-                    className="bg-destructive/10 text-destructive"
+                    className="bg-destructive/10 text-destructive px-2"
                   >
                     {expense.category}
                   </Badge>

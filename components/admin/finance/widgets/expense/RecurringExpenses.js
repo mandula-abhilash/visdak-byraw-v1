@@ -47,7 +47,7 @@ export const RecurringExpenses = ({ title, description }) => {
                 <div className="flex items-center gap-2 text-sm">
                   <Badge
                     variant="secondary"
-                    className={getFrequencyColor(expense.frequency)}
+                    className={`${getFrequencyColor(expense.frequency)} px-2`}
                   >
                     {expense.frequency}
                   </Badge>

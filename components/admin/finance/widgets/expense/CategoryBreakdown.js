@@ -14,6 +14,7 @@ import {
   generateExpenseCategories,
   formatCurrency,
 } from "../../utils/mockData";
+import { WIDGET_STYLES } from "@/lib/constants/widget-styles";
 
 const COLORS = [
   "hsl(var(--destructive))",
@@ -28,7 +29,7 @@ export const CategoryBreakdown = ({ title, description }) => {
   const data = generateExpenseCategories();
 
   return (
-    <Card className="flex flex-col shadow-lg">
+    <Card className="h-full flex flex-col shadow-lg">
       <div className="p-6 flex-none border-b">
         <div className="space-y-1">
           <h3 className="text-lg font-semibold">{title}</h3>
@@ -37,7 +38,13 @@ export const CategoryBreakdown = ({ title, description }) => {
           )}
         </div>
       </div>
-      <div className="flex-1 p-4 min-h-[400px]">
+      <div
+        className="flex-1 p-4"
+        style={{
+          minHeight: WIDGET_STYLES.MIN_HEIGHT,
+          maxHeight: WIDGET_STYLES.MAX_HEIGHT,
+        }}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -48,6 +55,7 @@ export const CategoryBreakdown = ({ title, description }) => {
               outerRadius={80}
               paddingAngle={5}
               dataKey="value"
+              nameKey="name"
               onMouseEnter={(_, index) => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
             >

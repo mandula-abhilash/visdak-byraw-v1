@@ -50,7 +50,7 @@ export const SpendingAlerts = ({ title, description }) => {
                   <p className="font-medium">{alert.category}</p>
                   <Badge
                     variant="secondary"
-                    className={getAlertColor(alert.severity)}
+                    className={`${getAlertColor(alert.severity)} px-2`}
                   >
                     {alert.severity}
                   </Badge>
