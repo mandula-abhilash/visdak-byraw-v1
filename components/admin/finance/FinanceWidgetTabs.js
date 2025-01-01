@@ -74,7 +74,7 @@ export const FinanceWidgetTabs = () => {
 
       {/* Desktop Tabs */}
       <div className="hidden md:block relative">
-        <div className="overflow-x-auto pb-2">
+        <div className="overflow-x-auto pb-2 finance-tabs">
           <TabsList className="bg-transparent justify-start p-1 gap-2 inline-flex min-w-full">
             {tabs.map((tab) => (
               <TabsTrigger

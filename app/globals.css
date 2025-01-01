@@ -144,4 +144,14 @@
   .hover\:pause:hover {
     animation-play-state: paused;
   }
+
+  /* Hide scrollbar for finance tabs */
+  .finance-tabs {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .finance-tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 }
