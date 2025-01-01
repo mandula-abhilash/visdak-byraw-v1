@@ -1,5 +1,6 @@
 "use client";
 
-export * from "./mockData/budgetData";
-export * from "./mockData/incomeData";
-export { formatCurrency } from "./formatters";
+export * from "./budgetData";
+export * from "./incomeData";
+export * from "./expenseData";
+export { formatCurrency } from "../formatters";

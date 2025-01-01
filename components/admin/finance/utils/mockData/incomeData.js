@@ -1,7 +1,5 @@
 "use client";
 
-import { formatCurrency } from "../formatters";
-
 // Income-related mock data
 export const generateMonthlyIncome = () => {
   const months = [
@@ -66,4 +64,21 @@ export const generateRecurringIncomeData = () => {
       nextDate: "Feb 28, 2024",
     },
   ];
+};
+
+// Generate projected income data for future months
+export const generateProjectedIncomeData = () => {
+  const months = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+  return months.map((month) => {
+    const projected = Math.floor(Math.random() * 200000) + 800000;
+    const actual =
+      month === "Mar" || month === "Apr"
+        ? Math.floor(Math.random() * 200000) + 800000
+        : null;
+    return {
+      month,
+      projected,
+      actual,
+    };
+  });
 };

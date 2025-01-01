@@ -1,7 +1,5 @@
 "use client";
 
-import { formatCurrency } from "../formatters";
-
 // Generate monthly budget data
 export const generateMonthlyBudgetData = () => {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
