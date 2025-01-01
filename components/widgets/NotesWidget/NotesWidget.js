@@ -14,6 +14,7 @@ export const NotesWidget = ({
   showLabels = true,
   showDates = true,
   limit = null,
+  noteType = null,
 }) => {
   const [selectedView, setSelectedView] = useState(view);
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -42,6 +43,7 @@ export const NotesWidget = ({
           onFilterChange={setSelectedFilter}
           noteCount={notes?.length || 0}
           showCount={showCount}
+          noteType={noteType} // Pass the noteType prop
         />
       </CardHeader>
       <CardContent

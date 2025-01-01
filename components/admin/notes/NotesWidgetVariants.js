@@ -1,6 +1,7 @@
 "use client";
 
 import { NotesWidget } from "@/components/widgets";
+import { NOTE_TYPES } from "@/components/widgets/NotesWidget/forms/NoteTypes";
 
 const widthClasses = {
   "1/4": "w-full md:w-1/4 px-3",
@@ -18,38 +19,40 @@ const getWidgetWidth = (width) => {
 export const NotesWidgetVariants = () => {
   const widgets = [
     {
-      title: "All Notes",
+      title: "Basic Notes",
       view: "list",
       showCount: true,
       showLabels: true,
       showDates: true,
       width: "2/3",
+      noteType: NOTE_TYPES.BASIC.id,
     },
     {
-      title: "Quick Notes",
+      title: "Event Notes",
       view: "grid",
       showCount: true,
-      showLabels: false,
-      showDates: false,
+      showLabels: true,
+      showDates: true,
       width: "2/3",
+      noteType: NOTE_TYPES.EVENT.id,
     },
     {
-      title: "Pinned Notes",
+      title: "Task Notes",
       view: "list",
       showCount: true,
       showLabels: true,
       showDates: true,
-      filter: "pinned",
       width: "2/3",
+      noteType: NOTE_TYPES.TASK.id,
     },
     {
-      title: "Recent Notes",
+      title: "Location Notes",
       view: "grid",
       showCount: true,
       showLabels: true,
       showDates: true,
-      limit: 6,
       width: "2/3",
+      noteType: NOTE_TYPES.LOCATION.id,
     },
   ];
 

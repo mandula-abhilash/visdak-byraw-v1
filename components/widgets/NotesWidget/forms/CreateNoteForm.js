@@ -1,18 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { NoteTypeSelector } from "./NoteTypeSelector";
 import { BasicNoteForm } from "./variations/BasicNoteForm";
 import { EventNoteForm } from "./variations/EventNoteForm";
@@ -21,9 +10,15 @@ import { ReminderNoteForm } from "./variations/ReminderNoteForm";
 import { LocationNoteForm } from "./variations/LocationNoteForm";
 import { NOTE_TYPES } from "./NoteTypes";
 
-export const CreateNoteForm = ({ onSubmit, onCancel }) => {
-  const [noteType, setNoteType] = useState(null);
+export const CreateNoteForm = ({ onSubmit, onCancel, initialNoteType }) => {
+  const [noteType, setNoteType] = useState(initialNoteType || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialNoteType) {
+      setNoteType(initialNoteType);
+    }
+  }, [initialNoteType]);
 
   const handleSubmit = async (data) => {
     if (isSubmitting) return;
@@ -55,7 +50,7 @@ export const CreateNoteForm = ({ onSubmit, onCancel }) => {
     }
   };
 
-  if (!noteType) {
+  if (!noteType && !initialNoteType) {
     return (
       <div className="space-y-6">
         <NoteTypeSelector selectedType={noteType} onSelect={setNoteType} />
@@ -70,19 +65,21 @@ export const CreateNoteForm = ({ onSubmit, onCancel }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setNoteType(null)}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          ← Back to note types
-        </Button>
-        <div className="text-sm text-muted-foreground">
-          {NOTE_TYPES[noteType.toUpperCase()].label}
+      {!initialNoteType && (
+        <div className="flex items-center justify-between">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setNoteType(null)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            ← Back to note types
+          </Button>
+          <div className="text-sm text-muted-foreground">
+            {NOTE_TYPES[noteType.toUpperCase()].label}
+          </div>
         </div>
-      </div>
+      )}
       {renderNoteForm()}
     </div>
   );

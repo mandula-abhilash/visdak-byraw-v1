@@ -21,6 +21,7 @@ export const NotesWidgetHeader = ({
   onFilterChange,
   noteCount,
   showCount,
+  noteType,
 }) => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
@@ -99,6 +100,7 @@ export const NotesWidgetHeader = ({
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onSubmit={handleCreateNote}
+        noteType={noteType}
       />
     </>
   );
