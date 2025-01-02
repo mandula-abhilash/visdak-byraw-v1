@@ -52,24 +52,27 @@ export const NetWorthWidget = ({
           maxHeight: WIDGET_STYLES.MAX_HEIGHT,
         }}
       >
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="p-4 border rounded-lg">
-            <div className="text-sm text-muted-foreground">Total Assets</div>
-            <div className="text-lg font-semibold text-primary">
+        {/* Updated grid layout for better small screen support */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          <div className="p-3 border rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">
+              Total Assets
+            </div>
+            <div className="text-base sm:text-lg font-semibold text-primary truncate">
               {formatCurrency(data.total_assets)}
             </div>
           </div>
-          <div className="p-4 border rounded-lg">
-            <div className="text-sm text-muted-foreground">
+          <div className="p-3 border rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">
               Total Liabilities
             </div>
-            <div className="text-lg font-semibold text-destructive">
+            <div className="text-base sm:text-lg font-semibold text-destructive truncate">
               {formatCurrency(data.total_liabilities)}
             </div>
           </div>
-          <div className="p-4 border rounded-lg">
-            <div className="text-sm text-muted-foreground">Net Worth</div>
-            <div className="text-lg font-semibold">
+          <div className="p-3 border rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">Net Worth</div>
+            <div className="text-base sm:text-lg font-semibold truncate">
               {formatCurrency(data.net_worth)}
             </div>
           </div>
