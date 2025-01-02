@@ -45,69 +45,79 @@ export const LoanCalculatorWidget = ({
           maxHeight: WIDGET_STYLES.MAX_HEIGHT,
         }}
       >
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Loan Amount</label>
-            <Input
-              type="number"
-              value={loanAmount}
-              onChange={(e) => setLoanAmount(e.target.value)}
-              placeholder="Enter loan amount"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Interest Rate (%)</label>
-            <Input
-              type="number"
-              value={interestRate}
-              onChange={(e) => setInterestRate(e.target.value)}
-              placeholder="Enter annual interest rate"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Loan Term (Years)</label>
-            <Input
-              type="number"
-              value={loanTerm}
-              onChange={(e) => setLoanTerm(e.target.value)}
-              placeholder="Enter loan term in years"
-            />
-          </div>
-
-          <Button onClick={calculateLoan} className="w-full">
-            Calculate
-          </Button>
-
-          {result && (
-            <div className="mt-6 space-y-4 p-4 border rounded-lg">
-              <div className="space-y-2">
-                <div className="text-sm text-muted-foreground">
-                  Monthly Payment
-                </div>
-                <div className="text-lg font-semibold">
-                  {formatCurrency(result.monthlyPayment)}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm text-muted-foreground">
-                  Total Interest
-                </div>
-                <div className="text-lg font-semibold text-destructive">
-                  {formatCurrency(result.totalInterest)}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm text-muted-foreground">
-                  Total Payment
-                </div>
-                <div className="text-lg font-semibold">
-                  {formatCurrency(result.totalPayment)}
-                </div>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left side - Inputs */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Loan Amount</label>
+              <Input
+                type="number"
+                value={loanAmount}
+                onChange={(e) => setLoanAmount(e.target.value)}
+                placeholder="Enter loan amount"
+              />
             </div>
-          )}
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Interest Rate (%)</label>
+              <Input
+                type="number"
+                value={interestRate}
+                onChange={(e) => setInterestRate(e.target.value)}
+                placeholder="Enter annual interest rate"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Loan Term (Years)</label>
+              <Input
+                type="number"
+                value={loanTerm}
+                onChange={(e) => setLoanTerm(e.target.value)}
+                placeholder="Enter loan term in years"
+              />
+            </div>
+
+            <Button onClick={calculateLoan} className="w-full">
+              Calculate
+            </Button>
+          </div>
+
+          {/* Right side - Results */}
+          <div className="flex items-center justify-center">
+            {result ? (
+              <div className="w-full space-y-6 p-6 border rounded-lg bg-accent/5">
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Monthly Payment
+                  </div>
+                  <div className="text-2xl font-semibold">
+                    {formatCurrency(result.monthlyPayment)}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Total Interest
+                  </div>
+                  <div className="text-2xl font-semibold text-destructive">
+                    {formatCurrency(result.totalInterest)}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Total Payment
+                  </div>
+                  <div className="text-2xl font-semibold">
+                    {formatCurrency(result.totalPayment)}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-muted-foreground">
+                <p>Enter loan details to see calculation results</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Card>
