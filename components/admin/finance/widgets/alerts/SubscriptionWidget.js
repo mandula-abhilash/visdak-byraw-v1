@@ -48,14 +48,14 @@ export const SubscriptionWidget = ({
               key={subscription.id}
               className="p-4 border rounded-lg hover:bg-accent/50 transition-colors"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div className="space-y-2">
                   <div className="font-medium">{subscription.title}</div>
                   <div className="text-sm text-muted-foreground">
                     Renews:{" "}
                     {new Date(subscription.renewalDate).toLocaleDateString()}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Badge variant="secondary" className="text-xs px-2">
                       {subscription.category}
                     </Badge>
@@ -75,13 +75,13 @@ export const SubscriptionWidget = ({
                     )}
                   </div>
                 </div>
-                <div className="text-right space-y-2">
-                  <div className="font-semibold">
+                <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-2">
+                  <div className="font-semibold order-1 md:order-none">
                     {formatCurrency(subscription.amount)}
                   </div>
                   <Badge
                     variant="outline"
-                    className={`px-2 ${getStatusColor(
+                    className={`px-2 order-2 md:order-none whitespace-nowrap ${getStatusColor(
                       subscription.renewalDate
                     )}`}
                   >
