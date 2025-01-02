@@ -1,19 +1,14 @@
 "use client";
 
-export const generateBillPayments = () => {
-  const today = new Date();
-  const getDate = (daysOffset) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + daysOffset);
-    return date;
-  };
+import { getDateStr } from "./dateUtils";
 
+export const generateBillPayments = () => {
   return [
     {
       id: 1,
       title: "Electricity Bill",
       amount: 3500,
-      dueDate: getDate(5),
+      dueDate: getDateStr(5),
       category: "Utilities",
       status: "upcoming",
       reminderSet: "3 days before",
@@ -22,7 +17,7 @@ export const generateBillPayments = () => {
       id: 2,
       title: "Rent Payment",
       amount: 25000,
-      dueDate: getDate(2),
+      dueDate: getDateStr(2),
       category: "Housing",
       status: "upcoming",
       reminderSet: "1 week before",
@@ -31,7 +26,7 @@ export const generateBillPayments = () => {
       id: 3,
       title: "Internet Bill",
       amount: 1200,
-      dueDate: getDate(-2),
+      dueDate: getDateStr(-2),
       category: "Utilities",
       status: "overdue",
       reminderSet: "1 day before",
@@ -40,19 +35,12 @@ export const generateBillPayments = () => {
 };
 
 export const generateSubscriptions = () => {
-  const today = new Date();
-  const getDate = (daysOffset) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + daysOffset);
-    return date;
-  };
-
   return [
     {
       id: 1,
       title: "Netflix",
       amount: 649,
-      renewalDate: getDate(15),
+      renewalDate: getDateStr(15),
       category: "Entertainment",
       status: "active",
       billingCycle: "monthly",
@@ -62,7 +50,7 @@ export const generateSubscriptions = () => {
       id: 2,
       title: "Amazon Prime",
       amount: 1499,
-      renewalDate: getDate(45),
+      renewalDate: getDateStr(45),
       category: "Shopping",
       status: "active",
       billingCycle: "yearly",
@@ -72,7 +60,7 @@ export const generateSubscriptions = () => {
       id: 3,
       title: "ChatGPT Plus",
       amount: 1640,
-      renewalDate: getDate(8),
+      renewalDate: getDateStr(8),
       category: "Productivity",
       status: "active",
       billingCycle: "monthly",
@@ -82,7 +70,7 @@ export const generateSubscriptions = () => {
       id: 4,
       title: "Chola Vehicle Insurance",
       amount: 12000,
-      renewalDate: getDate(30),
+      renewalDate: getDateStr(30),
       category: "Insurance",
       status: "active",
       billingCycle: "yearly",

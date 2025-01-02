@@ -56,16 +56,19 @@ export const SubscriptionWidget = ({
                     {new Date(subscription.renewalDate).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className="text-xs px-2">
                       {subscription.category}
                     </Badge>
-                    <Badge variant="secondary" className="text-xs capitalize">
+                    <Badge
+                      variant="secondary"
+                      className="text-xs capitalize px-2"
+                    >
                       {subscription.billingCycle}
                     </Badge>
                     {subscription.autoRenew && (
                       <Badge
                         variant="outline"
-                        className="text-xs bg-primary/10 text-primary border-primary/20"
+                        className="text-xs bg-primary/10 text-primary border-primary/20 px-2"
                       >
                         Auto-renew
                       </Badge>

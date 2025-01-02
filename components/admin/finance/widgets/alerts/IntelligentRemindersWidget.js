@@ -126,7 +126,7 @@ export const IntelligentRemindersWidget = ({
                       <div className="text-sm text-muted-foreground">
                         Due in {daysUntilDue} days
                       </div>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs px-2">
                         {payment.type === "bill" ? "Bill" : "Subscription"}
                       </Badge>
                     </div>

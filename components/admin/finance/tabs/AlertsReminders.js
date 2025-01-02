@@ -4,6 +4,9 @@ import { BillPaymentWidget } from "../widgets/alerts/BillPaymentWidget";
 import { SubscriptionWidget } from "../widgets/alerts/SubscriptionWidget";
 import { LowBalanceWidget } from "../widgets/alerts/LowBalanceWidget";
 import { IntelligentRemindersWidget } from "../widgets/alerts/IntelligentRemindersWidget";
+import { PaymentDistributionWidget } from "../widgets/alerts/PaymentDistributionWidget";
+import { PaymentTimelineWidget } from "../widgets/alerts/PaymentTimelineWidget";
+import { PaymentTrendsWidget } from "../widgets/alerts/PaymentTrendsWidget";
 
 const widthClasses = {
   "1/4": "w-full md:w-1/4 px-3",
@@ -43,6 +46,24 @@ export const AlertsReminders = () => {
       title: "Intelligent Reminders",
       description: "Smart payment insights",
       width: "1/2",
+    },
+    {
+      component: PaymentDistributionWidget,
+      title: "Payment Distribution",
+      description: "Distribution by category",
+      width: "1/3",
+    },
+    {
+      component: PaymentTimelineWidget,
+      title: "Payment Timeline",
+      description: "Upcoming payment schedule",
+      width: "1/3",
+    },
+    {
+      component: PaymentTrendsWidget,
+      title: "Payment Trends",
+      description: "Historical payment analysis",
+      width: "1/3",
     },
   ];
 
