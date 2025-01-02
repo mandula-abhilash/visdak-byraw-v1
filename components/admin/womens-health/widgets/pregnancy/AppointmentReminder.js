@@ -21,15 +21,18 @@ export const AppointmentReminder = ({ title, description }) => {
     return "bg-primary/10 text-primary border-primary/20";
   };
 
-  // Format time in a consistent way for both server and client
+  // Format date in a consistent way
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString();
+  };
+
+  // Format time in a consistent way using 24-hour format to avoid AM/PM hydration issues
   const formatTime = (date) => {
-    const d = new Date(date);
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
-    const ampm = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 || 12;
-    const formattedMinutes = minutes.toString().padStart(2, "0");
-    return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    return new Date(date).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
   };
 
   return (
@@ -59,7 +62,7 @@ export const AppointmentReminder = ({ title, description }) => {
                 <div className="space-y-1">
                   <div className="font-medium">{appointment.title}</div>
                   <div className="text-sm text-muted-foreground">
-                    {new Date(appointment.date).toLocaleDateString()} at{" "}
+                    {formatDate(appointment.date)} at{" "}
                     {formatTime(appointment.date)}
                   </div>
                   <div className="text-sm text-muted-foreground">

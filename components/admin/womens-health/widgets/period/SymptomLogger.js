@@ -102,7 +102,7 @@ export const SymptomLogger = ({ title, description }) => {
           {/* Severity Guide */}
           <div className="space-y-3">
             <h4 className="font-medium">Severity Guide</h4>
-            <div className="space-y-2">
+            <div className="grid gap-4">
               {[
                 {
                   level: "Mild",
@@ -120,12 +120,12 @@ export const SymptomLogger = ({ title, description }) => {
               ].map((guide, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-2 rounded-lg border hover:bg-accent/50 transition-colors"
+                  className="p-3 rounded-lg border hover:bg-accent/50 transition-colors space-y-1"
                 >
-                  <span className="text-sm font-medium">{guide.level}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <div className="font-medium">{guide.level}</div>
+                  <div className="text-sm text-muted-foreground">
                     {guide.description}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
