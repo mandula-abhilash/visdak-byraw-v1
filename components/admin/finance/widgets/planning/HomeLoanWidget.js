@@ -142,7 +142,7 @@ export const HomeLoanWidget = ({
           </div>
 
           {/* Buttons at bottom */}
-          <div className="mt-6 flex justify-between gap-2">
+          <div className="mt-6 pb-6 flex justify-between gap-2">
             <Button variant="outline" onClick={() => setResult(null)}>
               Reset
             </Button>
