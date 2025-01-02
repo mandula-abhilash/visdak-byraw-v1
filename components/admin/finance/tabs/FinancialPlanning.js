@@ -3,6 +3,8 @@
 import { RetirementPlannerWidget } from "../widgets/planning/RetirementPlannerWidget";
 import { EducationFundWidget } from "../widgets/planning/EducationFundWidget";
 import { HomeLoanWidget } from "../widgets/planning/HomeLoanWidget";
+import { GoalPriorityWidget } from "../widgets/planning/GoalPriorityWidget";
+import { InflationImpactWidget } from "../widgets/planning/InflationImpactWidget";
 
 const widthClasses = {
   "1/4": "w-full md:w-1/4 px-3",
@@ -26,6 +28,12 @@ export const FinancialPlanning = () => {
       width: "2/3",
     },
     {
+      component: GoalPriorityWidget,
+      title: "Goal Priority",
+      description: "Visualize financial goals by priority",
+      width: "1/3",
+    },
+    {
       component: EducationFundWidget,
       title: "Education Fund",
       description: "Plan for education expenses",
@@ -36,6 +44,12 @@ export const FinancialPlanning = () => {
       title: "Home Loan Affordability",
       description: "Calculate home loan eligibility",
       width: "1/2",
+    },
+    {
+      component: InflationImpactWidget,
+      title: "Inflation Impact",
+      description: "See how inflation affects your savings",
+      width: "full",
     },
   ];
 
