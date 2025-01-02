@@ -4,6 +4,10 @@ import { FinancialGoalsWidget } from "../widgets/goals/FinancialGoalsWidget";
 import { SavingsGoalsWidget } from "../widgets/goals/SavingsGoalsWidget";
 import { InvestmentGoalsWidget } from "../widgets/goals/InvestmentGoalsWidget";
 import { DebtGoalsWidget } from "../widgets/goals/DebtGoalsWidget";
+import { GoalTimelineWidget } from "../widgets/goals/visualizations/GoalTimelineWidget";
+import { GoalAllocationWidget } from "../widgets/goals/visualizations/GoalAllocationWidget";
+import { GoalProgressWidget } from "../widgets/goals/visualizations/GoalProgressWidget";
+import { GoalForecastWidget } from "../widgets/goals/visualizations/GoalForecastWidget";
 
 const widthClasses = {
   "1/4": "w-full md:w-1/4 px-3",
@@ -33,6 +37,18 @@ export const FinancialGoal = () => {
       width: "1/3",
     },
     {
+      component: GoalTimelineWidget,
+      title: "Goal Timeline",
+      description: "Expected vs actual progress",
+      width: "1/2",
+    },
+    {
+      component: GoalAllocationWidget,
+      title: "Goal Allocation",
+      description: "Distribution of funds across goals",
+      width: "1/2",
+    },
+    {
       component: InvestmentGoalsWidget,
       title: "Investment Goals",
       description: "Track investment portfolio targets",
@@ -42,6 +58,18 @@ export const FinancialGoal = () => {
       component: DebtGoalsWidget,
       title: "Debt Goals",
       description: "Monitor debt repayment progress",
+      width: "1/2",
+    },
+    {
+      component: GoalProgressWidget,
+      title: "Goal Progress",
+      description: "Compare progress across goals",
+      width: "1/2",
+    },
+    {
+      component: GoalForecastWidget,
+      title: "Goal Forecast",
+      description: "Projected goal completion timeline",
       width: "1/2",
     },
   ];
