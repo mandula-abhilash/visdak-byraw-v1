@@ -47,7 +47,7 @@ export const DebtManagement = () => {
     },
     {
       component: LoanComparisonWidget,
-      title: "Loan Comparison",
+      title: "Loan Comparison (Work in progress)",
       description: "Compare different loan options",
       width: "full",
     },

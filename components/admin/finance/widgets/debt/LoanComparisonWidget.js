@@ -15,49 +15,15 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
 import { X } from "lucide-react";
 
-const LoanBadge = ({ loan, onRemove }) => {
-  const formattedAmount = formatCurrency(parseFloat(loan.amount));
-  // Truncate amount if it's too long
-  const displayAmount =
-    formattedAmount.length > 10
-      ? formattedAmount.slice(0, 8) + "..."
-      : formattedAmount;
-
-  return (
-    <Badge
-      variant="secondary"
-      className="px-3 py-1.5 flex items-center gap-2 hover:bg-accent group"
-    >
-      <div className="flex flex-col min-w-0">
-        <div className="flex items-center gap-1">
-          <span className="font-medium truncate" title={formattedAmount}>
-            L{loan.id}: {displayAmount}
-          </span>
-        </div>
-        <span className="text-xs text-muted-foreground whitespace-nowrap">
-          {loan.rate}% / {loan.term}yr
-        </span>
-      </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(loan.id);
-        }}
-        className="h-5 w-5 ml-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/20 hover:text-destructive"
-      >
-        <X className="h-3 w-3" />
-      </Button>
-    </Badge>
-  );
-};
+const COLORS = [
+  "hsl(var(--primary))",
+  "hsl(var(--destructive))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -80,13 +46,6 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--destructive))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-];
-
 export const LoanComparisonWidget = ({
   title = "Loan Comparison",
   description = "Compare different loan options",
@@ -98,7 +57,6 @@ export const LoanComparisonWidget = ({
     rate: "",
     term: "",
   });
-  const [activeChart, setActiveChart] = useState("payment");
 
   const addLoan = () => {
     if (!formData.amount || !formData.rate || !formData.term) return;
@@ -141,140 +99,101 @@ export const LoanComparisonWidget = ({
   const generateTimelineData = () => {
     const timelineData = [];
 
-    // Generate data points for each loan independently
     loans.forEach((loan) => {
       const term = parseInt(loan.term);
       const metrics = calculateLoanMetrics(loan);
       const monthlyPayment = metrics?.monthlyPayment || 0;
 
-      // Add data points only up to this loan's term
       for (let year = 0; year <= term; year++) {
-        // Find or create data point for this year
         let yearData = timelineData.find((d) => d.year === year);
         if (!yearData) {
           yearData = { year };
           timelineData.push(yearData);
         }
-        // Add this loan's payment to the year data
         yearData[`L${loan.id}`] = year === term ? 0 : monthlyPayment * 12;
       }
     });
 
-    // Sort by year to ensure correct display
     return timelineData.sort((a, b) => a.year - b.year);
-  };
-
-  const generateBreakdownData = () => {
-    return loans
-      .map((loan) => {
-        const metrics = calculateLoanMetrics(loan);
-        if (!metrics) return null;
-        return {
-          name: `L${loan.id}`,
-          principal: metrics.principal,
-          interest: metrics.totalInterest,
-        };
-      })
-      .filter(Boolean);
   };
 
   return (
     <Card className="h-full flex flex-col shadow-lg">
       <DebtHeader title={title} description={description} />
-      <div className="flex-1 p-4 space-y-3 overflow-y-auto">
-        {/* Top Section with Badges and Toggle */}
-        <div className="space-y-2">
-          <div className="flex flex-wrap gap-2">
-            {loans.map((loan) => (
-              <LoanBadge key={loan.id} loan={loan} onRemove={removeLoan} />
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={activeChart === "payment" ? "default" : "outline"}
-              onClick={() => setActiveChart("payment")}
-              size="sm"
-              className="text-xs h-7"
-            >
-              Payment Timeline
-            </Button>
-            <Button
-              variant={activeChart === "breakdown" ? "default" : "outline"}
-              onClick={() => setActiveChart("breakdown")}
-              size="sm"
-              className="text-xs h-7"
-            >
-              Cost Breakdown
-            </Button>
-          </div>
-        </div>
-
-        {/* Chart Section */}
-        <div className="flex justify-center">
-          <div className="h-[280px] w-[90%]">
-            {loans.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                {activeChart === "payment" ? (
-                  <LineChart
-                    data={generateTimelineData()}
-                    margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+      <div className="flex-1 p-4 space-y-4 lg:space-y-0 overflow-y-auto">
+        <div className="flex flex-col-reverse lg:flex-row gap-4">
+          {/* Left side - Loan List */}
+          <div className="w-full lg:w-64">
+            <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2">
+              {loans.map((loan) => (
+                <div
+                  key={loan.id}
+                  className="flex items-center justify-between p-2 border rounded-lg bg-card hover:bg-accent/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="h-5 shrink-0">
+                      Loan {loan.id}
+                    </Badge>
+                    <div className="text-xs">
+                      <span className="font-medium">
+                        {formatCurrency(parseFloat(loan.amount))}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {" "}
+                        @ {loan.rate}% / {loan.term}y
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeLoan(loan.id)}
+                    className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
                   >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      className="stroke-muted"
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {loans.length === 0 && (
+                <div className="text-center p-3 border rounded-lg text-sm text-muted-foreground">
+                  No loans added yet
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right side - Graph */}
+          <div className="flex-1 min-h-[300px]">
+            {loans.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart
+                  data={generateTimelineData()}
+                  margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    className="stroke-muted"
+                  />
+                  <XAxis
+                    dataKey="year"
+                    tickFormatter={(value) => value}
+                    label={{ value: "Years", position: "bottom", offset: -5 }}
+                  />
+                  <YAxis tickFormatter={formatCurrency} width={80} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  {loans.map((loan, index) => (
+                    <Line
+                      key={loan.id}
+                      type="monotone"
+                      dataKey={`L${loan.id}`}
+                      name={`Loan ${loan.id}`}
+                      stroke={COLORS[index % COLORS.length]}
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
                     />
-                    <XAxis
-                      dataKey="year"
-                      label={{ value: "Years", position: "bottom", dy: 10 }}
-                      tickFormatter={(value) => `Year ${value}`}
-                    />
-                    <YAxis tickFormatter={formatCurrency} width={80} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    {loans.map((loan, index) => (
-                      <Line
-                        key={loan.id}
-                        type="monotone"
-                        dataKey={`L${loan.id}`}
-                        name={`Loan ${loan.id}`}
-                        stroke={COLORS[index % COLORS.length]}
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                      />
-                    ))}
-                  </LineChart>
-                ) : (
-                  <PieChart margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-                    {loans.map((loan, index) => {
-                      const metrics = calculateLoanMetrics(loan);
-                      if (!metrics) return null;
-                      const data = [
-                        { name: "Principal", value: metrics.principal },
-                        { name: "Interest", value: metrics.totalInterest },
-                      ];
-                      return (
-                        <Pie
-                          key={loan.id}
-                          data={data}
-                          cx={`${(index + 1) * (100 / (loans.length + 1))}%`}
-                          cy="50%"
-                          innerRadius={40}
-                          outerRadius={55}
-                          label={({ name, value }) =>
-                            `${name}: ${formatCurrency(value)}`
-                          }
-                        >
-                          {data.map((entry, index) => (
-                            <Cell
-                              key={index}
-                              fill={COLORS[index % COLORS.length]}
-                            />
-                          ))}
-                        </Pie>
-                      );
-                    })}
-                  </PieChart>
-                )}
+                  ))}
+                </LineChart>
               </ResponsiveContainer>
             ) : (
               <div className="h-full flex items-center justify-center border rounded-lg">
@@ -286,8 +205,8 @@ export const LoanComparisonWidget = ({
           </div>
         </div>
 
-        {/* Input Form Section */}
-        <div className="p-3 border rounded-lg bg-accent/5">
+        {/* Bottom Input Form */}
+        <div className="mt-4 p-3 border rounded-lg bg-accent/5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
             <div className="space-y-1">
               <label className="text-xs font-medium">Loan Amount</label>
@@ -348,5 +267,3 @@ export const LoanComparisonWidget = ({
     </Card>
   );
 };
-
-export default LoanComparisonWidget;
