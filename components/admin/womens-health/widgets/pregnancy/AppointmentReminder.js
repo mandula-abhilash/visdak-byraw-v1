@@ -21,6 +21,17 @@ export const AppointmentReminder = ({ title, description }) => {
     return "bg-primary/10 text-primary border-primary/20";
   };
 
+  // Format time in a consistent way for both server and client
+  const formatTime = (date) => {
+    const d = new Date(date);
+    const hours = d.getHours();
+    const minutes = d.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  };
+
   return (
     <Card className="h-full flex flex-col shadow-lg">
       <div className="p-6 flex-none border-b">
@@ -49,10 +60,7 @@ export const AppointmentReminder = ({ title, description }) => {
                   <div className="font-medium">{appointment.title}</div>
                   <div className="text-sm text-muted-foreground">
                     {new Date(appointment.date).toLocaleDateString()} at{" "}
-                    {new Date(appointment.date).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatTime(appointment.date)}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     👨‍⚕️ {appointment.doctor}

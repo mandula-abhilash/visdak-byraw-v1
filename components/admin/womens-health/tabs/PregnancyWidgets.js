@@ -30,12 +30,18 @@ export const PregnancyWidgets = () => {
       component: PregnancyWeekTracker,
       title: "Pregnancy Week Tracker",
       description: "Track your pregnancy progress week by week",
-      width: "2/3",
+      width: "1/3",
     },
     {
       component: TrimesterOverview,
       title: "Trimester Overview",
       description: "Key milestones and activities for your current trimester",
+      width: "1/3",
+    },
+    {
+      component: AppointmentReminder,
+      title: "Appointment Reminder",
+      description: "Track your upcoming medical appointments",
       width: "1/3",
     },
     {
@@ -50,12 +56,7 @@ export const PregnancyWidgets = () => {
       description: "Personalized health tips for your pregnancy stage",
       width: "1/2",
     },
-    {
-      component: AppointmentReminder,
-      title: "Appointment Reminder",
-      description: "Track your upcoming medical appointments",
-      width: "1/3",
-    },
+
     {
       component: DueDateCountdown,
       title: "Due Date Countdown",
