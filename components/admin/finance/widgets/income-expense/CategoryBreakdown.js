@@ -75,8 +75,8 @@ export const CategoryBreakdown = ({ title, description, type = "income" }) => {
           maxHeight: WIDGET_STYLES.MAX_HEIGHT,
         }}
       >
-        <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="flex items-center justify-center">
+        <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-auto">
+          <div className="flex items-center justify-center min-h-[200px]">
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
@@ -110,8 +110,8 @@ export const CategoryBreakdown = ({ title, description, type = "income" }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="flex items-center">
-            <div className="w-full space-y-2">
+          <div className="flex items-center min-h-[200px]">
+            <div className="w-full space-y-2 overflow-auto">
               {data.map((item, index) => (
                 <div
                   key={index}

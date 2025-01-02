@@ -62,7 +62,7 @@ export const IncomeExpenseOverview = ({ title, description }) => {
         </div>
       </div>
       <div className="p-4 border-b bg-muted/50">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="flex flex-wrap gap-4">
           <div className="space-y-1">
             <div className="text-sm text-muted-foreground">Total Income</div>
             <Badge
