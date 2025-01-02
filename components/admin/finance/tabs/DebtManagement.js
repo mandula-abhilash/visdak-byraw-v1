@@ -4,6 +4,7 @@ import { DebtOverviewWidget } from "../widgets/debt/DebtOverviewWidget";
 import { DebtSnowballWidget } from "../widgets/debt/DebtSnowballWidget";
 import { InterestOverviewWidget } from "../widgets/debt/InterestOverviewWidget";
 import { LoanCalculatorWidget } from "../widgets/debt/LoanCalculatorWidget";
+import { LoanComparisonWidget } from "../widgets/debt/LoanComparisonWidget";
 
 const widthClasses = {
   "1/4": "w-full md:w-1/4 px-3",
@@ -43,6 +44,12 @@ export const DebtManagement = () => {
       title: "Loan Calculator",
       description: "Calculate loan payments and interest",
       width: "1/2",
+    },
+    {
+      component: LoanComparisonWidget,
+      title: "Loan Comparison",
+      description: "Compare different loan options",
+      width: "full",
     },
   ];
 

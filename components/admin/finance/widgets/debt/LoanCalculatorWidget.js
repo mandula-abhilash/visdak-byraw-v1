@@ -35,6 +35,13 @@ export const LoanCalculatorWidget = ({
     });
   };
 
+  const resetCalculator = () => {
+    setLoanAmount("");
+    setInterestRate("");
+    setLoanTerm("");
+    setResult(null);
+  };
+
   return (
     <Card className="h-full flex flex-col shadow-lg">
       <DebtHeader title={title} description={description} />
@@ -78,9 +85,18 @@ export const LoanCalculatorWidget = ({
               />
             </div>
 
-            <Button onClick={calculateLoan} className="w-full">
-              Calculate
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={calculateLoan} className="flex-1">
+                Calculate
+              </Button>
+              <Button
+                onClick={resetCalculator}
+                variant="outline"
+                className="flex-1"
+              >
+                Reset
+              </Button>
+            </div>
           </div>
 
           {/* Right side - Results */}
