@@ -23,7 +23,6 @@ import { InterestSavings } from "./tabs/InterestSavings";
 import { FinancialPlanning } from "./tabs/FinancialPlanning";
 import { AlertsReminders } from "./tabs/AlertsReminders";
 import { Analytics } from "./tabs/Analytics";
-import { Advanced } from "./tabs/Advanced";
 
 export const FinanceWidgetTabs = () => {
   const [activeTab, setActiveTab] = useState("income");
@@ -41,7 +40,6 @@ export const FinanceWidgetTabs = () => {
     { id: "planning", label: "Financial Planning" },
     { id: "alerts", label: "Alerts & Reminders" },
     { id: "analytics", label: "Analytics" },
-    { id: "advanced", label: "Advanced" },
   ];
 
   return (
@@ -125,9 +123,6 @@ export const FinanceWidgetTabs = () => {
       </TabsContent>
       <TabsContent value="analytics" className="space-y-4 mt-4">
         <Analytics />
-      </TabsContent>
-      <TabsContent value="advanced" className="space-y-4 mt-4">
-        <Advanced />
       </TabsContent>
     </Tabs>
   );
