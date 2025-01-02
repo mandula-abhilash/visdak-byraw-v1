@@ -19,10 +19,10 @@ import {
 } from "recharts";
 import { X } from "lucide-react";
 
-const LoanInput = ({ loan, onUpdate, onRemove }) => {
+const LoanCard = ({ loan, onRemove }) => {
   return (
-    <div className="p-4 border rounded-lg space-y-3">
-      <div className="flex items-center justify-between mb-2">
+    <div className="p-4 border rounded-lg space-y-3 hover:bg-accent/50 transition-colors">
+      <div className="flex items-center justify-between">
         <h3 className="font-medium">Loan {loan.id}</h3>
         <Button
           variant="ghost"
@@ -33,39 +33,20 @@ const LoanInput = ({ loan, onUpdate, onRemove }) => {
           <X className="h-4 w-4" />
         </Button>
       </div>
-      <div className="space-y-3">
-        <div>
-          <label className="text-sm font-medium">Amount</label>
-          <Input
-            type="number"
-            value={loan.amount}
-            onChange={(e) =>
-              onUpdate(loan.id, { ...loan, amount: e.target.value })
-            }
-            placeholder="Enter loan amount"
-          />
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <span className="text-sm text-muted-foreground">Amount:</span>
+          <span className="font-medium">
+            {formatCurrency(parseFloat(loan.amount))}
+          </span>
         </div>
-        <div>
-          <label className="text-sm font-medium">Interest Rate (%)</label>
-          <Input
-            type="number"
-            value={loan.rate}
-            onChange={(e) =>
-              onUpdate(loan.id, { ...loan, rate: e.target.value })
-            }
-            placeholder="Enter interest rate"
-          />
+        <div className="flex justify-between">
+          <span className="text-sm text-muted-foreground">Interest Rate:</span>
+          <span className="font-medium">{loan.rate}%</span>
         </div>
-        <div>
-          <label className="text-sm font-medium">Term (Years)</label>
-          <Input
-            type="number"
-            value={loan.term}
-            onChange={(e) =>
-              onUpdate(loan.id, { ...loan, term: e.target.value })
-            }
-            placeholder="Enter loan term"
-          />
+        <div className="flex justify-between">
+          <span className="text-sm text-muted-foreground">Term:</span>
+          <span className="font-medium">{loan.term} years</span>
         </div>
       </div>
     </div>
@@ -99,14 +80,18 @@ export const LoanComparisonWidget = ({
 }) => {
   const [loans, setLoans] = useState([]);
   const [nextId, setNextId] = useState(1);
+  const [formData, setFormData] = useState({
+    amount: "",
+    rate: "",
+    term: "",
+  });
 
   const addLoan = () => {
-    setLoans([...loans, { id: nextId, amount: "", rate: "", term: "" }]);
-    setNextId(nextId + 1);
-  };
+    if (!formData.amount || !formData.rate || !formData.term) return;
 
-  const updateLoan = (id, updatedLoan) => {
-    setLoans(loans.map((loan) => (loan.id === id ? updatedLoan : loan)));
+    setLoans([...loans, { id: nextId, ...formData }]);
+    setNextId(nextId + 1);
+    setFormData({ amount: "", rate: "", term: "" });
   };
 
   const removeLoan = (id) => {
@@ -116,6 +101,7 @@ export const LoanComparisonWidget = ({
   const resetComparison = () => {
     setLoans([]);
     setNextId(1);
+    setFormData({ amount: "", rate: "", term: "" });
   };
 
   const calculateLoanMetrics = (loan) => {
@@ -161,38 +147,11 @@ export const LoanComparisonWidget = ({
           maxHeight: WIDGET_STYLES.MAX_HEIGHT,
         }}
       >
-        <div className="space-y-6">
-          {/* Controls */}
-          <div className="flex gap-2">
-            <Button onClick={addLoan} className="flex-1">
-              Add Loan
-            </Button>
-            <Button
-              onClick={resetComparison}
-              variant="outline"
-              className="flex-1"
-            >
-              Reset
-            </Button>
-          </div>
-
-          {/* Loan Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {loans.map((loan) => (
-              <LoanInput
-                key={loan.id}
-                loan={loan}
-                onUpdate={updateLoan}
-                onRemove={removeLoan}
-              />
-            ))}
-          </div>
-
-          {/* Comparison Chart */}
-          {comparisonData.length > 0 && (
-            <div className="border rounded-lg p-4 mt-6">
-              <h3 className="font-medium mb-4">Comparison Chart</h3>
-              <div className="h-[300px]">
+        <div className="flex flex-col-reverse lg:flex-row gap-6">
+          {/* Graph Section */}
+          <div className="flex-1">
+            {comparisonData.length > 0 ? (
+              <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={comparisonData}>
                     <CartesianGrid
@@ -212,8 +171,79 @@ export const LoanComparisonWidget = ({
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+            ) : (
+              <div className="h-[400px] flex items-center justify-center border rounded-lg">
+                <p className="text-muted-foreground">
+                  Add a loan to see comparison
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Loan List Section */}
+          <div className="w-full lg:w-64 space-y-4">
+            <div className="space-y-4">
+              {loans.map((loan) => (
+                <LoanCard key={loan.id} loan={loan} onRemove={removeLoan} />
+              ))}
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* Input Form Section */}
+        <div className="mt-6 p-4 border rounded-lg bg-accent/5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Loan Amount</label>
+              <Input
+                type="number"
+                value={formData.amount}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
+                placeholder="Enter amount"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Interest Rate (%)</label>
+              <Input
+                type="number"
+                value={formData.rate}
+                onChange={(e) =>
+                  setFormData({ ...formData, rate: e.target.value })
+                }
+                placeholder="Enter rate"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Term (Years)</label>
+              <Input
+                type="number"
+                value={formData.term}
+                onChange={(e) =>
+                  setFormData({ ...formData, term: e.target.value })
+                }
+                placeholder="Enter term"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={addLoan}
+              className="flex-1"
+              disabled={!formData.amount || !formData.rate || !formData.term}
+            >
+              Add Loan
+            </Button>
+            <Button
+              onClick={resetComparison}
+              variant="outline"
+              className="flex-1"
+              disabled={loans.length === 0}
+            >
+              Reset
+            </Button>
+          </div>
         </div>
       </div>
     </Card>
